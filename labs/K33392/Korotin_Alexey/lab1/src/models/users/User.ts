@@ -1,5 +1,6 @@
-import {AllowNull, Column, Model, Table, Unique} from "sequelize-typescript";
+import {AllowNull, BeforeCreate, BeforeUpdate, Column, Model, Table, Unique} from "sequelize-typescript";
 import {Optional} from "sequelize";
+import bcrypt from "bcrypt";
 
 
 export type UserAttributes = {
@@ -24,4 +25,13 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     @AllowNull(false)
     @Column
     password: string;
+
+    @BeforeUpdate
+    @BeforeCreate
+    static hashPassword(instance: User): void {
+        const {password} = instance;
+        if (instance.changed('password')) {
+            instance.password = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+        }
+    }
 }

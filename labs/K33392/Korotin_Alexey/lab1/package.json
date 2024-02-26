@@ -6,6 +6,7 @@
     "migrate": "npx sequelize db:migrate"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.20",
@@ -19,6 +20,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "reflect-metadata": "^0.2.1",
     "sequelize": "^6.37.1",
