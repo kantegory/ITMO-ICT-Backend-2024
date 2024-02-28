@@ -19,6 +19,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     name: string;
 
     @Unique
+    @AllowNull(false)
     @Column
     email: string;
 

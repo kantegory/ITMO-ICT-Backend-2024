@@ -1,9 +1,13 @@
 import UserService from "../../services/users/UserService";
 import {Request, Response} from "express";
-import {UserCreationAttributes} from "../../models/users/User";
+import {User, UserCreationAttributes} from "../../models/users/User";
+import Mapper from "../../mappers/Mapper";
+import UserMapper from "../../mappers/users/UserMapper";
 
 class UserController {
     private readonly userService: UserService;
+
+    private readonly userMapper: Mapper<User> = new UserMapper();
 
     constructor(userService: UserService) {
         this.userService = userService;
@@ -15,7 +19,10 @@ class UserController {
         if (!user) {
             return res.status(404).send();
         }
-        return res.status(200).send(user.toJSON());
+
+        const dto = this.userMapper.toDto(user);
+
+        return res.status(200).json(dto);
     }
 
     post = async (req: Request, res: Response) => {
@@ -23,7 +30,8 @@ class UserController {
 
         try {
             const createdUser = await this.userService.create(body);
-            return res.status(201).send(createdUser.toJSON());
+            const dto = this.userMapper.toDto(createdUser);
+            return res.status(201).send(dto);
         } catch (e: any) {
             return res.status(400).send({"message": e.message});
         }
