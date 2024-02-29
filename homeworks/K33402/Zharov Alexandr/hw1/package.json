@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "rme": "npm uninstall express",
+    "inst": "npm install express"
+  }
+}
