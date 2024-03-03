@@ -28,6 +28,22 @@ class UserService implements CrudService<number, User, UserCreationAttributes> {
             }
         });
     }
+
+    async updateById(id: number, data: UserCreationAttributes): Promise<User> {
+        const result = await this.userRepository.update(data, {
+            where: {
+                id: id
+            },
+            returning: true
+        });
+        if (result[0] === 0) {
+            return Promise.reject({message: "Not found"});
+        }
+
+        return Promise.resolve(result[1][0]);
+    }
+
+
 }
 
 export default UserService;

@@ -5,3 +5,4 @@ interface Dto<E extends Model>{
 }
 
 export default Dto;
+

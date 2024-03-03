@@ -6,13 +6,11 @@ import UserMapper from "../../mappers/users/UserMapper";
 
 class UserController {
     private readonly userService: UserService;
-
     private readonly userMapper: Mapper<User> = new UserMapper();
 
     constructor(userService: UserService) {
         this.userService = userService;
     }
-
     get = async (req: Request, res: Response) => {
         const id = Number(req.params.id);
         const user = await this.userService.findById(id);

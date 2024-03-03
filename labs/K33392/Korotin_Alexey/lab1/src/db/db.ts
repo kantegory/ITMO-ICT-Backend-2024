@@ -8,7 +8,8 @@ const sequelize = new Sequelize({
     username: process.env.username,
     password: process.env.password,
     storage: process.env.storage, // if embedded
-    logging: console.log
+    logging: console.log,
+    repositoryMode: true
 });
 
 const models = [User,];
