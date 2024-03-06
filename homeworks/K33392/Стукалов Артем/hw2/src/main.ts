@@ -130,12 +130,3 @@ async function main() {
   }
 }
 main()
-
-// app.listen({ port: 3000 }, (err) => {
-//   if (err) {
-//     console.error(err)
-//     prisma.$disconnect()
-//     process.exit(1)
-//   }
-//   console.log('🚀 Server ready at: http://localhost:3000')
-// })
