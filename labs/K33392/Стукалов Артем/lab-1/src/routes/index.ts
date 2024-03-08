@@ -1,8 +1,14 @@
 import { ServerT } from 'config/server'
-import { setUpTodoRoutes } from 'routes/todos'
+import { setUpV1Routes } from 'routes/v1'
 
 export function setUpRoutes(server: ServerT): void {
-  server.register(setUpTodoRoutes, {
-    prefix: '/todos',
-  })
+  server.register(
+    (server: ServerT, _opts, done) => {
+      setUpV1Routes(server)
+      done()
+    },
+    {
+      prefix: '/v1',
+    },
+  )
 }

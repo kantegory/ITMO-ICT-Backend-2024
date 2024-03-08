@@ -24,7 +24,6 @@ app.register(fastifySwagger, {
       description: '',
       version: '1.0.0',
     },
-    servers: [],
   },
   transform: jsonSchemaTransform,
 })
