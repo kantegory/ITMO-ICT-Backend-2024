@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NoodeJS + Sequelize + SQLite</title>
+</head>
+<body>
+    <table>
+        <h1>Пример работы NoodeJS и Sequelize</h1>
+        <td><th>Name</th><th></th><th>Age</th><th>Course</th></td>
+        <a href="/create">Добавить пользователя</a>
+            {{#each users}}
+                <tr>
+                    <td></td>
+                    <td>{{this.name}}</td>
+                    <td></td>
+                    <td>{{this.age}}</td>
+                    <td>{{this.course}}</td>
+
+                    <td>
+                            <a href="/edit/{{this.id}}">Edit</a>|
+                            <form action="delete/{{this.id}}" method="POST" style="display:inline;">
+                                <input type="submit" value="Delete" />
+                            </form>
+                    </td>
+                
+                </tr>
+            {{/each}}
+    </table>
+</body>
+</html>
