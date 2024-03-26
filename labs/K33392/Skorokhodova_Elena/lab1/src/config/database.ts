@@ -1,5 +1,8 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('postgres://postgres:123123@localhost:3000/express');
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'db.sqlite'
+});
 
 export { sequelize };
