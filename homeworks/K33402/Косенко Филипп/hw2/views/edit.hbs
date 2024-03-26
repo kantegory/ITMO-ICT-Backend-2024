@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Редактирование пользователя</h1>
+    <form id ="form" action="/edit" method="post">
+        <input type="hidden" name="id" value="{{users.id}}" />
+        <h2>Имя</h2>
+        <input name="name" value="{{users.name}}" type="text"><br><br>
+        <h2>Возраст</h2>
+        <input name="age" value="{{users.age}}" type="number"><br><br>
+        <h2>Курс</h2>
+        <input name="course" value="{{users.course}}" type="number"><br>
+        <input type="submit" value="Отправить" />
+        <a href="/">К списку пользователей</a>
+    </form>
+    <script>
+        const form = document.querySelector("#form");
+
+        form.addEventListener("submit", (e) => {
+            console.log(`POST: name/${form.name.value}\nage${form.age.value}\ncourse${form.course.value}`)
+        })
+    </script>
+</body>
+</html>
