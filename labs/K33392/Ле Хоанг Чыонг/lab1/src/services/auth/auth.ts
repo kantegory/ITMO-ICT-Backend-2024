@@ -1,6 +1,7 @@
 import User from '../../models/users/user'
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import checkPassword from '../../utils/checkPassword'
+import RefreshTokenService from '../auth/RefreshToken'
 require('dotenv').config()
 
 if (!process.env.SECRET_KEY) {
@@ -20,24 +21,52 @@ class AuthService {
         }
     }
 
-    async login(email: string, password: string): Promise<any> {
+    async login(email: string, password: string): Promise<{ token: string, refreshToken: string }> {
         try {
             const user = await User.findOne({ where: { email } })
 
             if (!user || !checkPassword(user, password))
                 throw new Error('Email or password is not correct');
-
+            const refreshTokenService = new RefreshTokenService(user)
+            const refreshToken = await refreshTokenService.generateRefreshToken()
             const token = jwt.sign({ id: user.id?.toString() }, SECRET_KEY, {
                 expiresIn: '2 days',
             });
-            return { user , token: token };
+            return { refreshToken: refreshToken, token: token };
 
         } catch (error) {
             throw error;
         }
     }
 
+    async refreshToken(refreshToken: string): Promise<{ token: string, refreshToken: string }> {
 
+        const refreshTokenService = new RefreshTokenService()
+
+        try {
+            const { userId, isExpired } = await refreshTokenService
+                .isRefreshTokenExpired(refreshToken)
+
+            if (!isExpired && userId) {
+
+                const user = await User.findByPk(userId)
+
+                const accessToken = jwt.sign({ id: userId?.toString() }, SECRET_KEY, {
+                    expiresIn: '2 days',
+                });
+
+                const refreshTokenService = new RefreshTokenService(user)
+
+                const refreshToken = await refreshTokenService.generateRefreshToken()
+
+                return { refreshToken: refreshToken, token: accessToken };
+            } else {
+                throw new Error('Invalid credentials')
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
 
 }
 
