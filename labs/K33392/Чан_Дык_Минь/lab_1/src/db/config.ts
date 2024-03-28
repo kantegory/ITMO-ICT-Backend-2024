@@ -1,7 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
 import { Users } from "../models/users";
-import dotenv from 'dotenv';
-dotenv.config();
+import RefreshToken from "../models/refreshToken";
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 const connection = new Sequelize({
     dialect: "sqlite",
@@ -10,8 +11,12 @@ const connection = new Sequelize({
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
     storage: "./src/lab1.sqlite",
-    models:[Users]
+    logging: console.log,
 });
+
+const models = [Users, RefreshToken]
+
+connection.addModels(models)
 
 export default connection;
 

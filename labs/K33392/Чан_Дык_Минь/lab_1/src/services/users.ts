@@ -1,12 +1,15 @@
 import { Users, UserAttributes, AuthResult, UserLogin } from "../models/users";
 import bcrypt from  "bcrypt"; 
 import jwt from "jsonwebtoken";
+import RefreshTokenService from "./refreshToken";
 import dotenv from 'dotenv';
+
 dotenv.config();
+const refreshTokenService = new RefreshTokenService()
 
 export const createUser = async (userData: UserAttributes): Promise<Users> => {
     const user = await Users.findOne({ where: { username: userData.username } });
-        if (!user) {
+        if (user) {
             throw new Error("User already exists");
         }
         
@@ -24,8 +27,12 @@ export const login = async (userData: UserLogin): Promise<AuthResult | null> => 
             throw new Error("Password is not correct");
         }
         else {
-            const token = jwt.sign({ username: userData.username }, process.env.SECRET_KEY || ''); 
-            return { username: user.username, token };
+            const accessToken = jwt.sign({ username: userData.username }, process.env.SECRET_KEY || ''); 
+
+            const refreshTokenService = new RefreshTokenService(user)
+            const refreshToken = await refreshTokenService.generateRefreshToken()
+            
+            return { username: user.username, accessToken, refreshToken };
         }      
 
     } catch (error) {

@@ -1,8 +1,8 @@
-import { RequestHandler } from "express";
+import { NextFunction, RequestHandler } from "express";
 import { Users } from "../models/users";
 import * as userService from "../services/users"
 
-export const registerUser: RequestHandler = async(req, res, next) => {
+export const registerUser: RequestHandler = async(req: any, res: any, next: any) => {
     try{
         const user = await userService.createUser(req.body);
         return res.status(201).json({ message: "User registered successfully!", data: user });
@@ -11,16 +11,20 @@ export const registerUser: RequestHandler = async(req, res, next) => {
     }
 };
 
-export const loginUser: RequestHandler = async(req, res, next) => {
+export const loginUser: RequestHandler = async(req: any, res: any) => {
+    const { body } = req;
+
     try{
-        const user = await userService.login(req.body);
+        const user = await userService.login(body);
+        console.log(user)
         return res.status(201).json({ message: "User logged in successfully!", data: user });
     } catch (error: any) {
+        console.log("body: ", body)
         return res.status(500).json({ message: "Error login user", error: error.message });
     }
 };
 
-export const deleteUser: RequestHandler = async(req, res, next) => {
+export const deleteUser: RequestHandler = async(req: any, res: any, next: any) => {
     try{
         const {id} = req.params;
         const user = await userService.deleteUser(parseInt(id));
@@ -33,7 +37,7 @@ export const deleteUser: RequestHandler = async(req, res, next) => {
     }
 };
 
-export const getAllUser: RequestHandler = async(req, res, next) => {
+export const getAllUser: RequestHandler = async(req: any, res: any, next: any) => {
     try{
         const allUsers = await userService.getAllUsers();
         return res.status(200).json({ message: "User fetched using userService successfully!", data: allUsers });
@@ -42,7 +46,7 @@ export const getAllUser: RequestHandler = async(req, res, next) => {
     }
 };
 
-export const getUserById: RequestHandler = async(req, res, next) => {
+export const getUserById: RequestHandler = async(req: any, res: any, next: any) => {
     try{
         const {id} = req.params;
         const user = await userService.getUserById(parseInt(id));
@@ -55,7 +59,7 @@ export const getUserById: RequestHandler = async(req, res, next) => {
     }
 };
 
-export const updateUser: RequestHandler = async(req, res, next) => {
+export const updateUser: RequestHandler = async(req: any, res: any, next: any) => {
     try{
         const {id} = req.params;
         const user = await userService.updateUsers(parseInt(id), req.body);

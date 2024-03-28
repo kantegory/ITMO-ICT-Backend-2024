@@ -16,9 +16,15 @@ exports.updateUsers = exports.getAllUsers = exports.getUserById = exports.delete
 const users_1 = require("../models/users");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const refreshToken_1 = __importDefault(require("./refreshToken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+const refreshTokenService = new refreshToken_1.default();
 const createUser = (userData) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.Users.findOne({ where: { username: userData.username } });
+    if (user) {
+        throw new Error("User already exists");
+    }
     return yield users_1.Users.create(userData);
 });
 exports.createUser = createUser;
@@ -26,15 +32,17 @@ const login = (userData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield users_1.Users.findOne({ where: { username: userData.username } });
         if (!user) {
-            throw new Error("User is not exist");
+            throw new Error("User does not exist");
         }
         const isPasswordValid = yield bcrypt_1.default.compare(userData.password, user.password);
         if (!isPasswordValid) {
             throw new Error("Password is not correct");
         }
         else {
-            const token = jsonwebtoken_1.default.sign({ username: userData.username }, process.env.SECRET_KEY || '');
-            return { username: user.username, token };
+            const accessToken = jsonwebtoken_1.default.sign({ username: userData.username }, process.env.SECRET_KEY || '');
+            const refreshTokenService = new refreshToken_1.default(user);
+            const refreshToken = yield refreshTokenService.generateRefreshToken();
+            return { username: user.username, accessToken, refreshToken };
         }
     }
     catch (error) {

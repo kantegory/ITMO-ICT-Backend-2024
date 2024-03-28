@@ -44,12 +44,15 @@ const registerUser = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.registerUser = registerUser;
-const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { body } = req;
     try {
-        const user = yield userService.login(req.body);
+        const user = yield userService.login(body);
+        console.log(user);
         return res.status(201).json({ message: "User logged in successfully!", data: user });
     }
     catch (error) {
+        console.log("body: ", body);
         return res.status(500).json({ message: "Error login user", error: error.message });
     }
 });

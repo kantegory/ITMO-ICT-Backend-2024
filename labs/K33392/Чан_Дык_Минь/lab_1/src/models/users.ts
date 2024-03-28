@@ -2,20 +2,21 @@ import { Table, Model, Column, DataType, AllowNull, BeforeCreate, BeforeUpdate, 
 import { Optional } from "sequelize";
 import bcrypt from  "bcrypt"; 
 
-export type UserAttributes = {
-    id: number,
-    username: string,
-    email: string,
-    password: string
-}
-
 export interface AuthResult {
     username: string;
-    token: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 export type UserLogin = {
     username: string,
+    password: string
+}
+
+export type UserAttributes = {
+    id: number,
+    username: string,
+    email: string,
     password: string
 }
 
@@ -36,7 +37,6 @@ export class Users extends Model<UserAttributes, UserCreationAttributes> {
     @AllowNull(false)
     @Column(DataType.STRING)
     email!: string;
-
 
     @AllowNull(false)
     @Column(DataType.STRING)
