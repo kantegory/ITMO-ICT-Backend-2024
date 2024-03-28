@@ -1,15 +1,17 @@
 import User from '../../models/users/user'
 class UserService {
-    async getById(id: number): Promise<any> {
+    async getById(id: number): Promise<User> {
         try {
             const user = await User.findByPk(id)
-            if (user) return user
+            if (!user) 
+                throw new Error('Not Found');
+            return user
         }
         catch (error) {
-            throw new Error('Not Found');
+            throw error;
         }
     }
-    async getAll(): Promise<any> {
+    async getAll(): Promise<User[]> {
         try {
             const user = await User.findAll()
             return user
@@ -17,7 +19,7 @@ class UserService {
             throw error;
         }
     }
-    async update(id: number, userData: any): Promise<any> {
+    async update(id: number, userData: any): Promise<User> {
         try {
             const [updatedRowsCount, updatedUser] = await User.update(userData, {
                 where: { id },
