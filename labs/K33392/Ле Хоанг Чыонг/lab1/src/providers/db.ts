@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript'
 
 import User from '../models/users/user'
+import RefreshToken from "../models/auth/RefreshToken"
 require('dotenv').config();
 
 const sequelize = new Sequelize({
@@ -11,7 +12,7 @@ const sequelize = new Sequelize({
     dialect: "postgres"
 })
 
-const models = [User,]
+const models = [User,RefreshToken]
 
 sequelize.addModels(models)
 
