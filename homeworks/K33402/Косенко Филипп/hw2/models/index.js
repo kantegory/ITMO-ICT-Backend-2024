@@ -28,7 +28,7 @@ const user = sequelize.define("user", {
       }
 });
 
-module.exports = user
+module.exports = user;
 
 // sequelize.sync().then(result=>{
 //     console.log(result)
