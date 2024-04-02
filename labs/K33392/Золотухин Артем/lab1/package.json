@@ -5,6 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsnd --respawn --transpile-only --exit-child src/app.ts",
+    "swc": "swc ./src --strip-leading-paths --config-file ./.swcrc -d dist",
+    "eslint": "eslint --ext .ts,tsx --max-warnings=0 ./src",
     "migrate": "npx prisma migrate dev --name init"
   },
   "dependencies": {
