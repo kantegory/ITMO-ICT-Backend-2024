@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@types/express": "^4.17.21",
-    "axios": "^1.6.8",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "sequelize-typescript": "^2.1.6",
