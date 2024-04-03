@@ -9,7 +9,7 @@ const userController: UserController = new UserController()
 userRouter.route('/id/:id')
     .get(userController.get)
 
-userRouter.route('/create')
+userRouter.route('/create/')
     .post(userController.post)
 
 userRouter.route('/all')

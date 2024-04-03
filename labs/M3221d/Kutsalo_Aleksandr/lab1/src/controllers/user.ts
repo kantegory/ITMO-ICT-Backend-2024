@@ -27,7 +27,13 @@ class UserController {
     }
 
     post = async (request: any, response: any) => {
-        const user: User | Error = await this.userService.createUser(request.body)
+        try {
+            const user: User | Error = await this.userService.createUser(request.body)
+        } catch (error) {
+            response.send("Error occurred")
+            console.error(error)
+        }
+
     }
 
 }

@@ -25,7 +25,6 @@ class UserService {
     
     async createUser(userBody: any): Promise<User> {
         try {
-            console.log(userBody)
             const user = await User.create(userBody)
 
             return user.toJSON()
