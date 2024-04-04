@@ -1,24 +1,27 @@
+import dotenv from "dotenv";
 import express, { Application } from "express";
-import bodyParser from "body-parser";
-import { Sequelize } from "sequelize";
-import { initUser } from "./models/User";
-import userRoutes from "./routes/users";
+import sequelize from "./db";
+import User from "./models/User";
+import router from "./routes/index";
+
+dotenv.config();
+
+const PORT: number = parseInt(process.env.PORT || "5000");
 
 const app: Application = express();
+app.use(express.json());
+app.use("/api", router);
 
-const sequelize: Sequelize = new Sequelize("database", "username", "password", {
-  host: "localhost",
-  dialect: "mysql",
-});
+const start = async (): Promise<void> => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-initUser(sequelize);
-
-app.use(bodyParser.json());
-
-app.use("/users", userRoutes);
-
-sequelize.sync().then(() => {
-  app.listen(3000, () => {
-    console.log("Server is running on port 3000");
-  });
-});
+start();
