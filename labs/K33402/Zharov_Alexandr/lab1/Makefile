@@ -1,5 +1,3 @@
-.PHONY: serve build
-
 run:
 	npm run start
 
