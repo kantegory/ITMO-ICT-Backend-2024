@@ -1,4 +1,4 @@
-import { NotUniqueError, ValidationError } from "../errors/user_errors";
+import { NotUniqueError, UserNotFound, ValidationError } from "../errors/user_errors";
 import User from "../models/user"
 import UserService from "../services/user"
 
@@ -8,7 +8,7 @@ class UserController {
 
     constructor() {
         try {
-        this.userService = new UserService()
+            this.userService = new UserService()
         }
         catch (error) {
             throw error
@@ -16,15 +16,12 @@ class UserController {
     }
     get = async (request: any, response: any) => {
         try {
-            const user: User | Error = await this.userService.getById(Number(request.params.id))
-            response.send(user)
+            const user: User | UserNotFound = await this.userService.getById(Number(request.params.id))
+            response.status(200).send(user)
         } catch (error) {
-            throw error
+            response.status(404).send({"response": error.message})
+            return
         }
-    }
-
-    getAll = async (request: any, response: any) => {
-        const users: User[] | Error = await this.userService.getAllUsers()
     }
 
     post = async (request: any, response: any) => {

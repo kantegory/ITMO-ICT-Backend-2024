@@ -1,6 +1,6 @@
 import 'bcrypt'
 import User from '../models/user'
-import { NotUniqueError, ValidationError } from '../errors/user_errors'
+import { NotUniqueError, UserNotFound, ValidationError } from '../errors/user_errors'
 
 
 class UserService {
@@ -10,7 +10,7 @@ class UserService {
         if (user) {
             return user.toJSON()
         } else {
-            throw new Error("User not found")
+            throw new UserNotFound(`User with id of ${id} doesn't exist`)
         }
     }
 
