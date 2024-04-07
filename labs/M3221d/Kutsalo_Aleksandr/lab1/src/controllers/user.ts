@@ -33,7 +33,7 @@ class UserController {
             response.send("Error occurred")
             console.error(error)
         }
-
+        response.status(200).send({'response': "Success"})
     }
 
 }
