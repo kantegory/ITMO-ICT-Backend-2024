@@ -1,6 +1,6 @@
 import 'bcrypt'
 import User from '../models/user'
-import { error } from 'console'
+import { NotUniqueError, ValidationError } from '../errors/user_errors'
 
 
 class UserService {
@@ -10,7 +10,7 @@ class UserService {
         if (user) {
             return user.toJSON()
         } else {
-            throw new Error()
+            throw new Error("User not found")
         }
     }
 
@@ -29,7 +29,12 @@ class UserService {
 
             return user.toJSON()
         } catch (error) {
-            throw new Error(error)
+            switch (error.name) {
+                case "SequelizeUniqueConstraintError": 
+                    throw new NotUniqueError("User with this email already exists")
+                case "SequelizeValidationError":
+                    throw new ValidationError("User's data was given incorrectly")
+            }
         }
     }
 

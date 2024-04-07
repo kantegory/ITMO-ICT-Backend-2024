@@ -1,3 +1,4 @@
+import { NotUniqueError, ValidationError } from "../errors/user_errors";
 import User from "../models/user"
 import UserService from "../services/user"
 
@@ -28,12 +29,13 @@ class UserController {
 
     post = async (request: any, response: any) => {
         try {
-            const user: User | Error = await this.userService.createUser(request.body)
+            const user: User | ValidationError | NotUniqueError = await this.userService.createUser(request.body)
         } catch (error) {
-            response.send("Error occurred")
-            console.error(error)
+            response.status(400).send({'response': error.message})
+            return
         }
         response.status(200).send({'response': "Success"})
+        return
     }
 
 }
