@@ -1,14 +1,14 @@
-import userRouter from "./routers/users"
 import * as cors from 'cors'
 import express from 'express'
 import sequelize from "./instances/db"
+import mainRouter from "./routers/router"
 
 const app = express()
 const port = 4001
 
 sequelize
 
-app.use('/users', userRouter)
+app.use('/', mainRouter)
 
 
 app.listen(port, () => {
