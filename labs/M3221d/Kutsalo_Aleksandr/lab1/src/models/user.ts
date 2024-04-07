@@ -1,4 +1,4 @@
-import { Table, Column, Model, Unique, AllowNull, BeforeCreate, BeforeUpdate, DataType } from 'sequelize-typescript'
+import { Table, Column, Model, Unique, AllowNull, BeforeCreate, BeforeUpdate, DataType, IsEmail } from 'sequelize-typescript'
 import {hashSync} from 'bcrypt'
 
 @Table
@@ -9,6 +9,7 @@ class User extends Model {
 
     @Unique
     @AllowNull(false)
+    @IsEmail
     @Column(DataType.STRING)
     email: string
 
