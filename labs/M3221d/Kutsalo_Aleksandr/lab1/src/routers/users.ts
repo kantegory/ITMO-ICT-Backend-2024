@@ -11,7 +11,5 @@ userRouter.route('/id/:id')
 
 userRouter.route('/create/')
     .post(userController.post)
-
-userRouter.route('/all')
-    .get(userController.getAll)
+    
 export default userRouter

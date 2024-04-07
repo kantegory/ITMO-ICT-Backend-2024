@@ -5,7 +5,10 @@ const db_file = 'db.sqlite'
 const username = 'root'
 const password = 'root'
 
-const sequelize = new Sequelize(db_file, username, password,  {
+const sequelize = new Sequelize({
+    storage: db_file,
+    username: username,
+    password: password,
     database: 'users_db',
     dialect: 'sqlite',
     logging: console.log
