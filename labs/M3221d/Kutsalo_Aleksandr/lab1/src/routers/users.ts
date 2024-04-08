@@ -1,5 +1,6 @@
 import { Router } from "express";
 import UserController from "../controllers/user";
+import requireAuth from "../middleware/auth_middleware";
 
 const userRouter: Router = Router()
 
@@ -14,4 +15,10 @@ userRouter.route('/create/')
     
 userRouter.route('/login')
     .post(userController.login)
+
+userRouter.route('/auth_only')
+    .get(requireAuth, userController.privatePage)
+
+userRouter.route('/logout')
+    .post(userController.logout)
 export default userRouter

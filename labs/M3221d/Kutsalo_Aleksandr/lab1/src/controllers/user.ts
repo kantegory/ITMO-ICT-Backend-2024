@@ -4,6 +4,7 @@ import User from "../models/user"
 import UserService from "../services/user"
 import { isCorrectPassword } from "../utility/password_check";
 import { TOKEN_AGE_MS } from "../config/config";
+import { request } from "http";
 
 
 class UserController {
@@ -58,6 +59,15 @@ class UserController {
             response.status(405).json({'error': error.message})
         }
      }
+
+    privatePage = async (request: any, response: any) => {
+        response.status(200).json({'response': "Success", 'content': 'Very protected auth only content'})
+    }
+
+    logout = async (request: any, response: any) => {
+        response.cookie('jwt', '', { maxAge: 1 })
+        response.status(200).json({'response': "Success", 'content': 'Cleaned current authorization'})
+    }
 
 }
 
