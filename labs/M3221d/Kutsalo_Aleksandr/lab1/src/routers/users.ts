@@ -12,4 +12,6 @@ userRouter.route('/id/:id')
 userRouter.route('/create/')
     .post(userController.post)
     
+userRouter.route('/login')
+    .post(userController.login)
 export default userRouter

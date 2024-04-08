@@ -38,6 +38,15 @@ class UserService {
         }
     }
 
+    async getByEmail(email: string): Promise<User> {
+        const user = await User.findOne({ where: { email: email }})
+        if (user) {
+            return user
+        } else {
+            throw new UserNotFound("There are no users with this email")
+        }
+    }
+
 
 }
 
