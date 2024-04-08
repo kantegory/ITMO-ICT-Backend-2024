@@ -16,28 +16,29 @@ class UserController {
             throw error
         }
     }
+
     get = async (request: any, response: any) => {
         try {
             const user: User | UserNotFound = await this.userService.getById(Number(request.params.id))
-            response.status(200).send(user)
+            response.status(200).json(user)
         } catch (error) {
-            response.status(404).send({"response": error.message})
+            response.status(404).json({"response": "error", "error_message": error.message})
             return
         }
     }
 
-    post = async (request: any, response: any) => {
+    create = async (request: any, response: any) => {
         try {
             const user: User | ValidationError | NotUniqueError = await this.userService.createUser(request.body)
             
             const token = createToken(user.id)
             response.cookie('jwt', token, {httpOnly: true, maxAge: maxTokenAge})
             
-            response.status(200).send({'response': "Success", 'userId': user.id})
+            response.status(200).json({'response': "success", 'userId': user.id})
             console.log(token)
             return
         } catch (error) {
-            response.status(400).send({'response': error.message})
+            response.status(400).json({'response': 'error', 'error_message': error.message})
             return
         }
         
@@ -51,9 +52,9 @@ class UserController {
             }
             const token = createToken(user.id)
             response.cookie('jwt', token, {httpOnly: true, maxAge: maxTokenAge})
-            response.status(200).send({'response': "Success", 'userId': user.id})
+            response.status(200).json({'response': "Success", 'userId': user.id})
         } catch (error) {
-            response.status(405).send(error.message)
+            response.status(405).json({'error': error.message})
         }
      }
 

@@ -10,7 +10,7 @@ userRouter.route('/id/:id')
     .get(userController.get)
 
 userRouter.route('/create/')
-    .post(userController.post)
+    .post(userController.create)
     
 userRouter.route('/login')
     .post(userController.login)
