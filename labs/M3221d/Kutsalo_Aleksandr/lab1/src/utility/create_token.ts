@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken"
+import { SECRET_KEY, TOKEN_AGE_MS } from "../config/config"
 
-export const maxTokenAge = 3 * 24 * 60 * 60
+const maxTokenAge = TOKEN_AGE_MS / 1000
 
 export const createToken = (id: number) => {
 
-    return jwt.sign({ id }, 'boiler_secretkey', {
+    return jwt.sign({ id }, SECRET_KEY, {
         expiresIn: maxTokenAge
     })
 }

@@ -4,9 +4,10 @@ import sequelize from "./instances/db"
 import mainRouter from "./routers/router"
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import { PORT } from './config/config'
 
 const app = express()
-const port = 4001
+const port = PORT
 
 sequelize
 
