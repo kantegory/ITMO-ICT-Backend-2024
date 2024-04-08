@@ -1,4 +1,5 @@
 import { NotUniqueError, UserNotFound, ValidationError } from "../errors/user_errors";
+import { createToken, maxTokenAge } from "../middleware/create_token";
 import User from "../models/user"
 import UserService from "../services/user"
 
@@ -27,12 +28,18 @@ class UserController {
     post = async (request: any, response: any) => {
         try {
             const user: User | ValidationError | NotUniqueError = await this.userService.createUser(request.body)
+            
+            const token = createToken(user.id)
+            response.cookie('jwt', token, {httpOnly: true, maxAge: maxTokenAge})
+            
+            response.status(200).send({'response': "Success", 'userId': user.id})
+            console.log(token)
+            return
         } catch (error) {
             response.status(400).send({'response': error.message})
             return
         }
-        response.status(200).send({'response': "Success"})
-        return
+        
     }
 
 }
