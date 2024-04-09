@@ -1,5 +1,7 @@
-import { Table, Column, Model, Unique, AllowNull, BeforeCreate, BeforeUpdate, DataType, IsEmail } from 'sequelize-typescript'
+import { Table, Column, Model, Unique, AllowNull, BeforeCreate, BeforeUpdate, DataType, IsEmail, HasMany } from 'sequelize-typescript'
 import {hashSync} from 'bcrypt'
+import ShoppingCartItem from './shopping_cart_item'
+import Item from './product'
 
 @Table
 class User extends Model {
@@ -16,6 +18,9 @@ class User extends Model {
     @AllowNull(false)
     @Column(DataType.STRING)
     password: string
+
+    @HasMany(() => ShoppingCartItem, 'userId')
+    shoppingCartItems: Item[]
 
     @BeforeCreate
     @BeforeUpdate
