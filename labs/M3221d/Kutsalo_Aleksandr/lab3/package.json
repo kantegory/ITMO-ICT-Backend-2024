@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-jsonwebtoken": "^0.0.1",
     "nodemon": "^3.1.0",
+    "pug": "^3.0.2",
     "sequelize": "^6.37.2",
     "sequelize-typescript": "^2.1.6",
     "sqlite": "^5.1.1",

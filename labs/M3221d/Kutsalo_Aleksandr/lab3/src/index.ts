@@ -4,11 +4,15 @@ import mainRouter from "./routers/router"
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import { PORT } from './config/config'
+import path from 'path'
 
 const app = express()
 const port = PORT
 
 sequelize
+
+app.set('view engine', 'pug')
+app.set('views', path.join(path.resolve(), 'src/views'));
 
 app.use(bodyParser.json())
 app.use(cookieParser())
