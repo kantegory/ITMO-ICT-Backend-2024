@@ -1,13 +1,13 @@
 import { Router } from "express";
+import ShopController from "../controllers/shop";
 
 
 
 const shopRouter = Router()
+const shopController = new ShopController()
 
 shopRouter.route('/')
-    .get((req,res) => {
-        res.render('shop/index.pug', {title: 'world'})
-    })
+    .get(shopController.index)
 
 
 export default shopRouter
