@@ -8,6 +8,7 @@ const username = 'root'
 const password = 'root'
 
 const sequelize = new Sequelize({
+    repositoryMode: true,
     storage: db_file,
     username: username,
     password: password,

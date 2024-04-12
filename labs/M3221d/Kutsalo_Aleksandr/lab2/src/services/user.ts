@@ -1,12 +1,18 @@
 import 'bcrypt'
 import User from '../models/user'
 import { NotUniqueError, UserNotFound, ValidationError } from '../errors/user_errors'
-
+import sequelize from '../instances/db'
+import { Repository } from 'sequelize-typescript';
 
 class UserService {
+    private userRepository: Repository<User>;
+
+    constructor() {
+        this.userRepository = sequelize.getRepository(User)
+    }
 
     async getById(id: number): Promise<User> {
-        const user = await User.findByPk(id)
+        const user = await this.userRepository.findByPk(id)
         if (user) {
             return user.toJSON()
         } else {
@@ -15,7 +21,7 @@ class UserService {
     }
 
     async getAllUsers(): Promise<User[]> {
-        const users = await User.findAll()
+        const users = await this.userRepository.findAll()
         if (users) {
             return users
         } else {
@@ -25,7 +31,7 @@ class UserService {
     
     async createUser(userBody: any): Promise<User> {
         try {
-            const user = await User.create(userBody)
+            const user = await this.userRepository.create(userBody)
 
             return user.toJSON()
         } catch (error) {
@@ -39,7 +45,7 @@ class UserService {
     }
 
     async getByEmail(email: string): Promise<User> {
-        const user = await User.findOne({ where: { email: email }})
+        const user = await this.userRepository.findOne({ where: { email: email }})
         if (user) {
             return user
         } else {
