@@ -10,7 +10,7 @@ mainRouter.use('/users', userRouter)
 
 mainRouter.use('/shop', shopRouter)
 
-// mainRouter.use('/admin', adminRouter)
+mainRouter.use('/admin', adminRouter)
 
 
 export default mainRouter

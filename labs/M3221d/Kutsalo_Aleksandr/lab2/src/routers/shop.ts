@@ -9,5 +9,7 @@ const shopController = new ShopController()
 shopRouter.route('/')
     .get(shopController.index)
 
+shopRouter.route('/item/:id')
+    .get(shopController.getItem)
 
 export default shopRouter
