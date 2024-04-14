@@ -45,6 +45,24 @@ class ShopService {
         }
         return deletedCount
     }
+
+    async addToCart(itemId: number, userId: number, quantity: number): Promise<ShoppingCartItem> {
+        const item = await this.getById(itemId)
+        if (item.quantity < quantity) {
+            throw Error(`Not enough items: ${item.quantity} left, ${quantity} is required`)
+        }
+        const shoppingCartItem = await this.shoppingCartItemRepository.create({
+            'userId': userId,
+            'itemId': itemId,
+            'quantity': quantity
+        })
+        return shoppingCartItem.toJSON()
+    }
+
+    async getShoppingCartContents(userId: number): Promise<ShoppingCartItem[]> {
+        const items = await this.shoppingCartItemRepository.findAll({where: {'userId': userId}})
+        return items
+    }
 }
 
 export default ShopService

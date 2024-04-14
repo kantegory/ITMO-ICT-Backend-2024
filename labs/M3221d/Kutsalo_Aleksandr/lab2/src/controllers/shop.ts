@@ -4,13 +4,16 @@ import Item from "../models/product";
 import ShoppingCartItem from "../models/shopping_cart_item";
 import sequelize from "../instances/db";
 import ShopService from "../services/shop";
+import UserService from "../services/user";
 
 
 class ShopController {
     private shopService: ShopService
+    private userService: UserService
 
     constructor() {
         this.shopService = new ShopService()
+        this.userService = new UserService()
     }
 
     index = (request: Request, response: Response) => {
@@ -45,6 +48,26 @@ class ShopController {
             console.log(error)
             response.status(404).json({"response": "error", "error_message": error.message})
             return
+        }
+    }
+
+    addToShoppingCart = async (request: Request, response: Response) => {
+        try {
+            await this.shopService.addToCart(Number(request.params.id), response.locals.uId, request.body.quantity)
+            response.status(200).json({'response': "success"})
+        } catch (error) {
+            console.log(error)
+            response.status(400).json({"response": "error", "error_message": error.message})
+        }
+    }
+
+    getShoppingCartContents = async (request: Request, response: Response) => {
+        try {
+            const items = await this.shopService.getShoppingCartContents(response.locals.uId)
+            response.status(200).json(items)
+        } catch (error) {
+            console.log(error)
+            response.status(400).json({"response": "error", "error_message": error.message})
         }
     }
 }
