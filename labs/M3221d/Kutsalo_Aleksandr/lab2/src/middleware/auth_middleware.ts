@@ -1,24 +1,24 @@
-import { decodeToken } from '../utility/decode_token'
+import jwt from 'jsonwebtoken'
+import { SECRET_KEY } from '../config/config'
 
 const requireAuth = (req: any, res: any, next: any) => {
     try {
         const token = req.cookies.jwt
 
         if (token) {
-            try {
-                const decodedToken = decodeToken(token)
-                console.log(decodedToken)
-                next()
-            } catch (err) {
-                res.status(403).send("Invalid token")
+            jwt.verify(token, SECRET_KEY, async (err, decodedToken) => {
+                if (err) {
+                    res.status(403).send("Invalid token")
                     console.log(err.message)
-            }
-
+                } else {
+                    console.log(decodedToken)
+                    res.locals.uId = decodedToken.id
+                    next()
+                }
+            })
         } else {
             res.status(403).send("Authorization is required for this page")
         }
-
-        console.log(token)
     }
     catch (err) {
         if (err.name == "TypeError") {
