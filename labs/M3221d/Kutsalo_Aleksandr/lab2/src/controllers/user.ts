@@ -61,7 +61,7 @@ class UserController {
      }
 
     privatePage = async (request: any, response: any) => {
-        response.status(200).json({'response': "Success", 'content': 'Very protected auth only content'})
+        response.status(200).json({'response': "Success", 'content': `Very protected auth only content for userID = ${response.locals.uId}`})
     }
 
     logout = async (request: any, response: any) => {
