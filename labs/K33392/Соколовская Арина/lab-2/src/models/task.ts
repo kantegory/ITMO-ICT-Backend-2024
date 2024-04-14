@@ -1,19 +1,50 @@
-import { Table, Model } from 'sequelize-typescript';
+import { Table, Model, Column, PrimaryKey } from 'sequelize-typescript';
 
 
-export @Table
-class Task extends Model {
-    //
+@Table
+export class Task extends Model {
+    @PrimaryKey
+    @Column
+    id!: number;
+
+    @Column
+    name!: string;
+
+    @Column
+    description!: string;
+
+    @Column
+    start_datetime!: Date;
+
+    @Column
+    end_datetime!: Date;
 }
 
+@Table
+export class Link extends Model {
+    @PrimaryKey
+    @Column
+    id!: number;
 
-export @Table
-class Link extends Model {
-    //
+    @Column
+    url!: string;
+
+    @Column
+    description?: string;
+
+    @Column
+    task_id!: number;
 }
 
-export @Table
-class File extends Model {
-    //
-}
+@Table
+export class File extends Model {
+    @PrimaryKey
+    @Column
+    id!: number;
 
+    @Column
+    name!: string;
+
+    @Column
+    task_id!: number;
+}
