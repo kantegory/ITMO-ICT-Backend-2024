@@ -12,9 +12,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Todo {
-  id          Int     @id @default(autoincrement())
-  title       String
-  description String?
-  createdAt   Int
+model User {
+  id         Int     @id @default(autoincrement())
+  username   String  @unique()
+  pass_hash  String
+  pass_salt  String
+  created_at Int
+  is_active  Boolean @default(true)
 }

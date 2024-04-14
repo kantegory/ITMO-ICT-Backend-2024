@@ -11,7 +11,7 @@ const start = async () => {
 
   const shutdown = async () => {
     await Promise.all([server.close(), prisma.$disconnect()])
-    process.exit(1)
+    process.exit(0)
   }
 
   try {

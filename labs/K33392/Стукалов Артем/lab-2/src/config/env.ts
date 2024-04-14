@@ -7,3 +7,4 @@ export const ENV_TYPE: EnvT =
 export const IS_DEV = ENV_TYPE === 'development'
 export const LISTEN_PORT = Number(process.env.LISTEN_PORT) || 3000
 export const LISTEN_HOST = process.env.LISTEN_HOST || 'localhost'
+export const AUTH_SECRET = process.env.AUTH_SECRET || 'supersecret'
