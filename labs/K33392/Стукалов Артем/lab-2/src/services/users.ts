@@ -12,9 +12,9 @@ export async function cerate(
   const user = await prisma.user.create({
     data: {
       username,
-      created_at: Math.floor(Date.now() / 1000),
-      pass_hash: hash,
-      pass_salt: salt,
+      createdAt: Math.floor(Date.now() / 1000),
+      passHash: hash,
+      passSalt: salt,
     },
   })
 

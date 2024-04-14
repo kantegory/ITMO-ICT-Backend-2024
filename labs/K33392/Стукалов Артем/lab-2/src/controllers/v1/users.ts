@@ -27,8 +27,8 @@ export const login: ControllerHandler<typeof UsersSchemaV1.login> = async (
 
   const isPassCorrect = verifyPassword({
     password: password,
-    salt: user.pass_salt,
-    hash: user.pass_hash,
+    salt: user.passSalt,
+    hash: user.passHash,
   })
   if (!isPassCorrect) {
     throw new WrongPassword()

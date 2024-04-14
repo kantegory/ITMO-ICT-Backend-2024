@@ -10,8 +10,8 @@ export const register = {
   }),
   response: {
     200: UserModelSchema.omit({
-      pass_hash: true,
-      pass_salt: true,
+      passHash: true,
+      passSalt: true,
     }),
   },
 } satisfies FastifySchema
@@ -31,8 +31,8 @@ export const login = {
 export const getSelf = {
   response: {
     200: UserModelSchema.omit({
-      pass_hash: true,
-      pass_salt: true,
+      passHash: true,
+      passSalt: true,
     }),
   },
   security: [
