@@ -1,4 +1,6 @@
-import { AllowNull, Column, DataType, Model, Table } from "sequelize-typescript";
+import { AllowNull, BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
+import Tag from "./tag";
+import ItemTag from "./item_tag";
 
 
 @Table
@@ -18,6 +20,9 @@ class Item extends Model {
     @AllowNull(false)
     @Column(DataType.STRING)
     imageURL: string
+
+    @BelongsToMany(() => Tag, () => ItemTag)
+    tags: Tag[]
 
     @Column(DataType.INTEGER)
     quantity: number
