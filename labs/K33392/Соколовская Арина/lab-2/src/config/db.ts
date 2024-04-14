@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript'
-import { Curator, Jury, Roles, TeamLead, User } from '../models/user';
-import { Participient, Team } from '../models/team';
+import Jury, { Curator, User } from '../models/user';
+import { Participant, Team } from '../models/team';
 import { Grading, Solution } from '../models/solution';
 import { File, Link, Task } from '../models/task';
 
@@ -15,7 +15,7 @@ const sequelize = new Sequelize({
     repositoryMode: true
 });
 
-const models = [User, Jury, Curator, Roles, TeamLead, Task, Team, File, Link, Participient, Solution, Grading];
+const models = [User, Jury, Curator, Task, Team, File, Link, Solution, Grading];
 sequelize.addModels(models);
 
 sequelize
