@@ -5,7 +5,12 @@ import {Profile} from "../../profile";
 import {TeapotEvent} from "./Event";
 
 
-export type TeapotState = 'OFFLINE' | 'WAITING' | 'WORKING' | 'OUT_OF_WATER';
+export enum TeapotState {
+    OFFLINE = "OFFLINE",
+    WAITING = "WAITING",
+    WORKING = "WORKING",
+    OUT_OF_WATER = "OUT_OF_WATER"
+}
 
 export enum TeapotEventType {
     STARTED = "TEAPOT_STARTED",
@@ -20,15 +25,15 @@ export class Teapot extends SmartDevice {
     public readonly MIN_WATER_THRESHOLD = 0.1; // liter
 
     private subscriptions: Array<EventSubscription<any>>;
-    private state: TeapotState;
+    public state: TeapotState;
 
     public constructor(id: string, name: string, profile: Profile,
-                       private temperature: number, private capacity: number,
-                       private waterSupply: number, state?: TeapotState,
+                       public temperature: number, public capacity: number,
+                       public waterSupply: number, state?: TeapotState,
                        subscriptions?: Array<EventSubscription<any>>) {
         super(id, name, profile);
         this.subscriptions = subscriptions ?? [];
-        this.state = state ?? 'WAITING';
+        this.state = state ?? TeapotState.WAITING;
     }
 
     protected dispatchEvent<E extends DomainEvent<Teapot>>(event: E): void {
@@ -49,22 +54,22 @@ export class Teapot extends SmartDevice {
     }
 
     public start(): void {
-        if (this.state === 'OUT_OF_WATER' || this.state === 'OFFLINE') {
+        if (this.state === TeapotState.OUT_OF_WATER || this.state === TeapotState.OFFLINE) {
             return; // todo throw domain exception
         }
-        if (this.state === 'WORKING') {
+        if (this.state === TeapotState.WORKING) {
             return; // already in work
         }
 
-        this.state = 'WORKING';
+        this.state = TeapotState.WORKING;
         this.dispatchEvent(new TeapotEvent(this, new Date(), TeapotEventType.STARTED));
     }
 
     public finish(): void {
-        if (this.state !== 'WORKING') {
+        if (this.state !== TeapotState.WORKING) {
             return; // todo throw domain exception
         }
-        this.state = 'WAITING';
+        this.state = TeapotState.WAITING;
         this.dispatchEvent(new TeapotEvent(this, new Date(), TeapotEventType.FINISHED));
     }
 

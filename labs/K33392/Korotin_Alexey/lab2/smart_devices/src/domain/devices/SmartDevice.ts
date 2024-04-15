@@ -5,8 +5,8 @@ import {EventSubscription} from "../subscriptions";
 
 
 export abstract class SmartDevice implements Entity<string> {
-    protected constructor(public id: string, protected name: string,
-                          protected linkedProfile: Profile) {
+    protected constructor(public id: string, public name: string,
+                          public linkedProfile: Profile) {
     }
 
     protected abstract dispatchEvent<E extends DomainEvent<any>>(event: E): void;
