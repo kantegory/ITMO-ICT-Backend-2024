@@ -2,14 +2,15 @@
 
 import { Router, Request, Response } from 'express';
 
+const teamController = require(require("../controller/team")); 
 const teamRouter = Router();
 
 teamRouter
   .route('/:id')
-  .patch()
+  .patch(teamController.patch_team);
 
 teamRouter
   .route('/:id/:user_id')
-  .post()
+  .post(teamController.post_participant);
 
 export default teamRouter;

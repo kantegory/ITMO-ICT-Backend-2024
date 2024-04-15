@@ -2,10 +2,11 @@
 
 import { Router, Request, Response } from 'express';
 
+const homeController = require(require("../controller/home")); 
 const homeRouter = Router();
 
 homeRouter
   .route('/')
-  .get()
+  .get(homeController.get_active_hackathons);
 
 export default homeRouter;

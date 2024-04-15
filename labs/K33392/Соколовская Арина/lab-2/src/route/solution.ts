@@ -2,12 +2,13 @@
 
 import { Router, Request, Response } from 'express';
 
+const solutionController = require(require("../controller/solution")); 
 const solutionRouter = Router();
 
 solutionRouter
   .route('/:id')
-  .get()
-  .patch()
+  .get(solutionController.get_solution)
+  .patch(solutionController.patch_solution);
 
 
 export default solutionRouter;

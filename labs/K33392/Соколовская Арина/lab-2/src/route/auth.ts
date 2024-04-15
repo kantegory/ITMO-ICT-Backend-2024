@@ -2,14 +2,15 @@
 
 import { Router, Request, Response } from 'express';
 
+const authController = require(require("../controller/auth")); 
 const authRouter = Router();
 
 authRouter
-  .route('/login')
-  .post()
+  .route('/register')
+  .post(authController.register_user);
 
 authRouter
-  .route('/enter')
-  .post()
+  .route('/login')
+  .post(authController.login_user);
 
 export default authRouter;

@@ -3,23 +3,24 @@
 
 import { Router, Request, Response } from 'express';
 
+const hackathonController = require(require("../controller/hackathon")); 
 const hackathonRouter = Router();
 
 hackathonRouter
   .route('/:id')
-  .get()
+  .get(hackathonController.get_hackathon);
 
 hackathonRouter
   .route('/:id/register')
-  .post()
+  .post(hackathonController.post_hackathon_team);
 
 hackathonRouter
   .route('/:id/task')
-  .get()
-  .patch()
+  .get(hackathonController.get_hackathon_task)
+  .patch(hackathonController.patch_hackathon_task);
 
 hackathonRouter
   .route('/:id/solution')
-  .post()
+  .post(hackathonController.post_hackathon_solution);
 
 export default hackathonRouter;

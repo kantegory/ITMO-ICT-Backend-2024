@@ -3,19 +3,20 @@
 
 import { Router, Request, Response } from 'express';
 
+const userController = require(require("../controller/user")); 
 const userRouter = Router();
 
 userRouter
-  .route('/user/:id')
-  .get()
-  .patch()
+  .route('/:id')
+  .get(userController.get_user)
+  .patch(userController.patch_user);
 
 userRouter
-  .route('/user/:id/hackathons')
-  .get()
+  .route('/:id/hackathons')
+  .get(userController.get_hackathons_by_user);
 
 userRouter
-  .route('/user/:id/hackathons/active')
-  .get()
+  .route('/:id/hackathons/active')
+  .get(userController.get_active_hackathons_by_user);
 
 export default userRouter;
