@@ -2,7 +2,7 @@ import { Table, Model, Column, PrimaryKey } from 'sequelize-typescript';
 
 
 @Table
-export class Task extends Model {
+export class Hackathon extends Model {
     @PrimaryKey
     @Column
     id!: number;
@@ -12,6 +12,9 @@ export class Task extends Model {
 
     @Column
     description!: string;
+
+    @Column
+    task!: string;
 
     @Column
     start_datetime!: Date;
@@ -47,4 +50,15 @@ export class File extends Model {
 
     @Column
     task_id!: number;
+}
+
+@Table
+export class HackathonJury extends Model {
+    @PrimaryKey
+    @Column
+    hackathon_id!: number;
+
+    @PrimaryKey
+    @Column
+    jury_id!: number;
 }
