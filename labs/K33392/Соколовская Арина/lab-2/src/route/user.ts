@@ -3,16 +3,19 @@
 
 import { Router, Request, Response } from 'express';
 
-// New Router instance
-const router = Router();
+const userRouter = Router();
 
-// Users routes
-router.get('/', (req: Request, res: Response) => {
-  res.send('Users route!');
-});
+userRouter
+  .route('/user/:id')
+  .get()
+  .patch()
 
-router.get('/:id', (req: Request, res: Response) => {
-  res.send(`User ${req.params.id} route!`);
-});
+userRouter
+  .route('/user/:id/hackathons')
+  .get()
 
-export default router;
+userRouter
+  .route('/user/:id/hackathons/active')
+  .get()
+
+export default userRouter;
