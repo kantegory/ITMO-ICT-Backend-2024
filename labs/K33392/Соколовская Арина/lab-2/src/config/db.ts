@@ -1,8 +1,8 @@
 import { Sequelize } from 'sequelize-typescript'
-import Jury, { Curator, User } from '../models/user';
-import { Participant, Team } from '../models/team';
-import { Grading, Solution } from '../models/solution';
-import { File, Link, Task } from '../models/task';
+import Jury, { Curator, User } from '../model/user';
+import { Participant, Team } from '../model/team';
+import { Grading, Solution } from '../model/solution';
+import { File, Link, Task } from '../model/task';
 
 const sequelize = new Sequelize({
     database: process.env.database,

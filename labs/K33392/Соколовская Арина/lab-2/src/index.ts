@@ -1,10 +1,16 @@
-import express from "express"
+import express, { Router } from "express"
 import 'dotenv/config'
 import sequelize from "./config/db";
 
 const app = express()
 app.use(express.json());
-// app.use('/api', router);
+
+const router = Router();
+
+// router.use('/', homeRouter);
+// router.use('/users', usersRouter);
+
+export default router;
 
 app.listen(process.env.port, () => {
   sequelize 
