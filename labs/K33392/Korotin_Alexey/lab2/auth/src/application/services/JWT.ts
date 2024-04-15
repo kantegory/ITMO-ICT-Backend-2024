@@ -32,7 +32,7 @@ export type DecodeResult =
 
 export type ExpirationStatus = "expired" | "active";
 
-const SECRET = process.env.jwt_secret ?? "";
+const SECRET = process.env["app.secret"] ?? "";
 export function encodeSession(partialSession: PartialSession): EncodeResult {
     // Always use HS512 to sign the token
     const algorithm: TAlgorithm = "HS512";

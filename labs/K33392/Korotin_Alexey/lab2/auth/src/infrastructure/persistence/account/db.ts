@@ -4,12 +4,12 @@ import {Dialect} from "sequelize";
 
 
 const sequelize = new Sequelize({
-    database: process.env.database,
-    dialect: process.env.dialect as Dialect,
-    host: process.env.host,
-    port: Number(process.env.port),
-    username: process.env.db_username,
-    password: process.env.db_password,
+    database: process.env["datasource.database"],
+    dialect: process.env["datasource.dialect"] as Dialect,
+    host: process.env["datasource.host"],
+    port: Number(process.env["datasource.port"]),
+    username: process.env["datasource.username"],
+    password: process.env["datasource.password"],
     logging: console.log,
     repositoryMode: true
 });
