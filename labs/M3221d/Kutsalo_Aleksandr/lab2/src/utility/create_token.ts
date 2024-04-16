@@ -1,4 +1,7 @@
+import { config } from "dotenv"
 import jwt from "jsonwebtoken"
+
+config()
 
 const maxTokenAge = Number(process.env.TOKEN_AGE_MS) / 1000
 
