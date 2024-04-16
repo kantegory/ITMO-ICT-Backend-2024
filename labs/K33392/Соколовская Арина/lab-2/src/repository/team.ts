@@ -15,6 +15,11 @@ export class TeamRepository {
         return teams;
     }
 
+    async post(team: Team): Promise<Team | null> {
+        const new_team = this.repository.create(team.toJSON());
+        return new_team;
+    }
+
     async patch(id: number, team: Team): Promise<Team | null> {
         let db_team = await this.repository.findByPk(id);
         db_team = team;

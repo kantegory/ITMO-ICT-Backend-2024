@@ -17,4 +17,9 @@ export class SolutionRepository {
         db_solution.save();
         return db_solution;
     }
+
+    async post(solutin: Solution): Promise<Solution | null> {
+        const new_solution = await this.repository.create(solutin.toJSON());
+        return new_solution;
+    }
 }
