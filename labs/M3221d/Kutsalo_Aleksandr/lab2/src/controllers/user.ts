@@ -3,19 +3,13 @@ import { createToken } from "../utility/create_token";
 import User from "../models/user"
 import UserService from "../services/user"
 import { isCorrectPassword } from "../utility/password_check";
-import { request } from "http";
 
 
 class UserController {
     private userService: UserService; // lazy
 
     constructor() {
-        try {
-            this.userService = new UserService()
-        }
-        catch (error) {
-            throw error
-        }
+        this.userService = new UserService()
     }
 
     get = async (request: any, response: any) => {

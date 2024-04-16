@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import { Repository } from "sequelize-typescript";
 import Item from "../models/product";
-import ShoppingCartItem from "../models/shopping_cart_item";
-import sequelize from "../instances/db";
 import ShopService from "../services/shop";
 import UserService from "../services/user";
 

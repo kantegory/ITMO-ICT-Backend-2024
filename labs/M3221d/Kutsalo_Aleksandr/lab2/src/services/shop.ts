@@ -45,7 +45,7 @@ class ShopService {
         }
     }
 
-    async getItems(body: any) {
+    async getItems(body: any): Promise<Item[]> {
         if (body.tagId) {
             const items = await this.itemRepository.findAll({
                 include: [
@@ -62,7 +62,7 @@ class ShopService {
             return items
         }
     }
-    async deleteById(id: number): Promise<Number> {
+    async deleteById(id: number): Promise<number> {
         const deletedCount = await this.itemRepository.destroy({where: { id }})
         if (deletedCount != 1) {
             throw Error(`Item with id of ${id} doesn't exist`)
