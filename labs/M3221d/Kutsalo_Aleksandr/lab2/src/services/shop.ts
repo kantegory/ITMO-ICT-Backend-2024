@@ -5,6 +5,7 @@ import ShoppingCartItem from "../models/shopping_cart_item";
 import sequelize from "../instances/db";
 import Tag from "../models/tag";
 import ItemTag from "../models/item_tag";
+import { Op } from "sequelize";
 
 
 class ShopService {
@@ -48,14 +49,10 @@ class ShopService {
         if (body.tagId) {
             const items = await this.itemRepository.findAll({
                 include: [
-                    {
-                        model: sequelize.models.Tag,
-                        through: {
-                            model: sequelize.models.TagId,
-                            where: {tagId: body.tagId}
-                        }
-                    }
-                ]
+                    {model: sequelize.models.Tag,
+                    as: 'tags'
+                }],
+                where: {'$tags.id$': {[Op.in]: body.tagId}}
             })
             return items
         } else {
