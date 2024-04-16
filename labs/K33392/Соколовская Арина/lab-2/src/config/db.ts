@@ -15,7 +15,7 @@ const sequelize = new Sequelize({
     repositoryMode: true
 });
 
-const models = [User, Jury, Curator, Hackathon, Team, File, Link, Solution, Grading];
+const models = [User, Jury, Curator, Hackathon, Team, File, Link, Solution, Grading, Participant];
 sequelize.addModels(models);
 
 sequelize
