@@ -10,6 +10,9 @@ const shopController = new ShopController()
 shopRouter.route('/')
     .get(shopController.index)
 
+shopRouter.route('/item')
+    .get(shopController.getAllItems)
+
 shopRouter.route('/item/:id')
     .get(shopController.getItem)
     .post(requireAuth, shopController.addToShoppingCart) // {'quantity': number}

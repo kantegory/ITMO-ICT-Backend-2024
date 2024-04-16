@@ -8,6 +8,8 @@ import UserService from "../services/user";
 
 
 class ShopController {
+    
+    
     private shopService: ShopService
     private userService: UserService
 
@@ -50,6 +52,16 @@ class ShopController {
             return
         }
     }
+    getAllItems = async (request: Request, response: Response) => {
+        try {
+            const items = await this.shopService.getItems()
+
+            response.status(200).json(items)
+        } catch (error) {
+            response.status(404).json({"response": "error", "error_message": error.message})
+            return
+        }
+    }
 
     addToShoppingCart = async (request: Request, response: Response) => {
         try {
@@ -65,6 +77,34 @@ class ShopController {
         try {
             const items = await this.shopService.getShoppingCartContents(response.locals.uId)
             response.status(200).json(items)
+        } catch (error) {
+            console.log(error)
+            response.status(400).json({"response": "error", "error_message": error.message})
+        }
+    }
+
+    makeAssociation = async (request: Request, response: Response) => {
+        try {
+            const association = await this.shopService.makeAssociation(Number(request.body.itemId), Number(request.body.tagId))
+            response.status(200).json(association)
+        } catch (error) {
+            console.log(error)
+            response.status(400).json({"response": "error", "error_message": error.message})
+        }
+    }
+    getTags = async (request: Request, response: Response) => {
+        try {
+            const tags = await this.shopService.getTags()
+            response.status(200).json(tags)
+        } catch (error) {
+            console.log(error)
+            response.status(400).json({"response": "error", "error_message": error.message})
+        }
+    }
+    addTag = async (request: Request, response: Response) => {
+        try {
+            const tag = await this.shopService.addTag(request.body)
+            response.status(200).json(tag)
         } catch (error) {
             console.log(error)
             response.status(400).json({"response": "error", "error_message": error.message})

@@ -3,15 +3,21 @@ import { NotUniqueError, ValidationError } from "../errors/user_errors";
 import Item from "../models/product";
 import ShoppingCartItem from "../models/shopping_cart_item";
 import sequelize from "../instances/db";
+import Tag from "../models/tag";
+import ItemTag from "../models/item_tag";
 
 
 class ShopService {
     private itemRepository: Repository<Item>
     private shoppingCartItemRepository: Repository<ShoppingCartItem>
+    private tagRepository: Repository<Tag>
+    private itemTagRepository: Repository<ItemTag>
 
     constructor() {
         this.itemRepository = sequelize.getRepository(Item);
         this.shoppingCartItemRepository = sequelize.getRepository(ShoppingCartItem)
+        this.tagRepository = sequelize.getRepository(Tag)
+        this.itemTagRepository = sequelize.getRepository(ItemTag)
     }
 
     async addItem(itemBody: any): Promise<Item> {
@@ -38,6 +44,10 @@ class ShopService {
         }
     }
 
+    async getItems() {
+        const items = await this.itemRepository.findAll({})
+        return items
+    }
     async deleteById(id: number): Promise<Number> {
         const deletedCount = await this.itemRepository.destroy({where: { id }})
         if (deletedCount != 1) {
@@ -59,9 +69,29 @@ class ShopService {
         return shoppingCartItem.toJSON()
     }
 
-    async getShoppingCartContents(userId: number): Promise<ShoppingCartItem[]> {
-        const items = await this.shoppingCartItemRepository.findAll({where: {'userId': userId}})
+    async getShoppingCartContents(userId: number): Promise<Item[]> {
+        const cartItems = await this.shoppingCartItemRepository.findAll({
+            where: {'userId': userId}, 
+            include: sequelize.models.Item
+        })
+        const items = cartItems.map(item => item.item)
         return items
+    }
+
+    async makeAssociation(itemId: number, tagId: number): Promise<ItemTag> {
+        const itemTag = await this.itemTagRepository.create({
+            tagId: tagId,
+            itemId: itemId
+        })
+        return itemTag.toJSON()
+    }
+    async getTags(): Promise<Tag[]> {
+        const tags = await this.tagRepository.findAll()
+        return tags
+    }
+    async addTag(body: any): Promise<Tag> {
+        const tag = await this.tagRepository.create(body)
+        return tag.toJSON()
     }
 }
 
