@@ -14,19 +14,19 @@ export class BaseService<T extends Model> implements IService<T> {
     this.model = model
   }
 
-  async create(data: any): Promise<T> {
+  create = async (data: any): Promise<T> => {
     return (await this.model.create(data)) as T
   }
 
-  async findByPk(pk: number): Promise<T | null> {
+  findByPk = async (pk: number): Promise<T | null> => {
     return (await this.model.findByPk(pk)) as T | null
   }
 
-  async updateByPk(pk: any, data: any): Promise<[affectedCount: number]> {
+  updateByPk = async (pk: any, data: any): Promise<[affectedCount: number]> => {
     return await this.model.update(data, { where: { id: pk } })
   }
 
-  async deleteByPk(pk: any): Promise<number> {
+  deleteByPk = async (pk: any): Promise<number> => {
     return await this.model.destroy({ where: { id: pk } })
   }
 }

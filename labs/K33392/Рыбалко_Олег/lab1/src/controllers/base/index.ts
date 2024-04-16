@@ -5,7 +5,7 @@ import { Request, Response } from 'express'
 export class BaseController<T extends Model> {
   protected service: IService<T>
 
-  async get(req: Request, res: Response) {
+  get = async (req: Request, res: Response) => {
     try {
       const data = await this.service.findByPk(+req.params.pk)
       if (!data) {
@@ -19,7 +19,7 @@ export class BaseController<T extends Model> {
     }
   }
 
-  async post(req: Request, res: Response) {
+  post = async (req: Request, res: Response) => {
     try {
       res.status(201).send(await this.service.create(req.body))
     } catch (error) {
@@ -28,7 +28,7 @@ export class BaseController<T extends Model> {
     }
   }
 
-  async put(req: Request, res: Response) {
+  put = async (req: Request, res: Response) => {
     try {
       const updatedData = await this.service.updateByPk(
         +req.params.pk,
@@ -41,7 +41,7 @@ export class BaseController<T extends Model> {
     }
   }
 
-  async delete(req: Request, res: Response) {
+  delete = async (req: Request, res: Response) => {
     try {
       const deletedCount = await this.service.deleteByPk(+req.params.pk)
       if (deletedCount === 0) {

@@ -28,8 +28,8 @@ export class User extends Model {
   @Column
   declare email: string
 
-  @Column
   @Default(false)
+  @Column
   declare isAdmin: boolean
 }
 

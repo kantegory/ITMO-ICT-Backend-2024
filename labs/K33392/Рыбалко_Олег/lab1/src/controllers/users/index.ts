@@ -14,7 +14,7 @@ export class UsersController extends BaseController<User> {
     this.service = new UsersService(User)
   }
 
-  async get(req: Request, res: Response) {
+  get = async (req: Request, res: Response) => {
     try {
       const data = await this.service.findByPk(+req.params.pk)
       if (!data) {
@@ -28,7 +28,7 @@ export class UsersController extends BaseController<User> {
     }
   }
 
-  async post(req: Request, res: Response) {
+  post = async (req: Request, res: Response) => {
     try {
       const body = req.body as UserCreate
 
@@ -48,7 +48,7 @@ export class UsersController extends BaseController<User> {
     }
   }
 
-  async put(req: Request, res: Response) {
+  put = async (req: Request, res: Response) => {
     try {
       const updatedData = await this.service.updateByPk(
         +req.params.pk,
@@ -61,7 +61,7 @@ export class UsersController extends BaseController<User> {
     }
   }
 
-  async delete(req: Request, res: Response) {
+  delete = async (req: Request, res: Response) => {
     try {
       const deletedCount = await this.service.deleteByPk(+req.params.pk)
       if (deletedCount === 0) {
