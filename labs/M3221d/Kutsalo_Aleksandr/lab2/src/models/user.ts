@@ -1,7 +1,7 @@
 import { Table, Column, Model, Unique, AllowNull, BeforeCreate, BeforeUpdate, DataType, IsEmail, HasMany } from 'sequelize-typescript'
 import {hashSync} from 'bcrypt'
-import ShoppingCartItem from './shopping_cart_item'
-import Item from './product'
+import ShoppingCartItem from './ShoppingCartItem'
+import Item from './Item'
 
 @Table
 class User extends Model {

@@ -1,8 +1,8 @@
-import { NotUniqueError, UserNotFound, ValidationError } from "../errors/user_errors";
-import { createToken } from "../utility/create_token";
-import User from "../models/user"
+import { NotUniqueError, UserNotFound, ValidationError } from "../errors/userErrors";
+import { createToken } from "../utility/createToken";
+import User from "../models/User"
 import UserService from "../services/user"
-import { isCorrectPassword } from "../utility/password_check";
+import { isCorrectPassword } from "../utility/passwordCheck";
 import { config } from "dotenv";
 
 config()

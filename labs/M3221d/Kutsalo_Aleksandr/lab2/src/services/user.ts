@@ -1,6 +1,6 @@
 import 'bcrypt'
-import User from '../models/user'
-import { NotUniqueError, UserNotFound, ValidationError } from '../errors/user_errors'
+import User from '../models/User'
+import { NotUniqueError, UserNotFound, ValidationError } from '../errors/userErrors'
 import sequelize from '../instances/db'
 import { Repository } from 'sequelize-typescript';
 

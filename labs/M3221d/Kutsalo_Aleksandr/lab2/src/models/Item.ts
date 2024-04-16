@@ -1,6 +1,6 @@
 import { AllowNull, BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
-import Tag from "./tag";
-import ItemTag from "./item_tag";
+import Tag from "./Tag";
+import ItemTag from "./ItemTag";
 
 
 @Table

@@ -1,9 +1,9 @@
 import { Sequelize } from "sequelize-typescript";
-import User from "../models/user";
-import Item from "../models/product";
-import ShoppingCartItem from "../models/shopping_cart_item";
-import Tag from "../models/tag";
-import ItemTag from "../models/item_tag";
+import User from "../models/User";
+import Item from "../models/Item";
+import ShoppingCartItem from "../models/ShoppingCartItem";
+import Tag from "../models/Tag";
+import ItemTag from "../models/ItemTag";
 
 const db_file = 'db.sqlite'
 const username = 'root'

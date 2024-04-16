@@ -1,10 +1,10 @@
 import { Repository } from "sequelize-typescript";
-import { NotUniqueError, ValidationError } from "../errors/user_errors";
-import Item from "../models/product";
-import ShoppingCartItem from "../models/shopping_cart_item";
+import { NotUniqueError, ValidationError } from "../errors/userErrors";
+import Item from "../models/Item";
+import ShoppingCartItem from "../models/ShoppingCartItem";
 import sequelize from "../instances/db";
-import Tag from "../models/tag";
-import ItemTag from "../models/item_tag";
+import Tag from "../models/Tag";
+import ItemTag from "../models/ItemTag";
 import { Op } from "sequelize";
 
 

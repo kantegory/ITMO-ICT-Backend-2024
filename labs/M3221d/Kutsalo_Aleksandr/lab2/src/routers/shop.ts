@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ShopController from "../controllers/shop";
-import requireAuth from "../middleware/auth_middleware";
+import requireAuth from "../middleware/authMiddleware";
 
 
 

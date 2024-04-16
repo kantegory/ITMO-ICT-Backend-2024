@@ -1,6 +1,6 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
-import Item from "./product";
-import Tag from "./tag";
+import Item from "./Item";
+import Tag from "./Tag";
 
 @Table
 class ItemTag extends Model {
