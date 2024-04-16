@@ -4,11 +4,13 @@ import { IService } from '../../services/base/index.js'
 import { UsersService } from '../../services/users/index.js'
 import { UserCreate } from './models.js'
 import crypto from 'crypto'
+import { BaseController } from '../base/index.js'
 
-export class UsersController {
-  private service: IService<User>
+export class UsersController extends BaseController<User> {
+  protected service: IService<User>
 
   constructor() {
+    super()
     this.service = new UsersService(User)
   }
 

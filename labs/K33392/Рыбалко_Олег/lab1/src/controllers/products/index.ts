@@ -5,7 +5,7 @@ import { ProductsService } from '../../services/products/index.js'
 import { BaseController } from '../base/index.js'
 
 export class ProductsController extends BaseController<Product> {
-  service: IService<Product>
+  protected service: IService<Product>
 
   constructor() {
     super()

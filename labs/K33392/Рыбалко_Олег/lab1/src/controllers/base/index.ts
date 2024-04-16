@@ -3,7 +3,7 @@ import { Model } from 'sequelize-typescript'
 import { Request, Response } from 'express'
 
 export class BaseController<T extends Model> {
-  service: IService<T>
+  protected service: IService<T>
 
   async get(req: Request, res: Response) {
     try {
