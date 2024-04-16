@@ -15,6 +15,15 @@ export class HackathonRepository {
         return hackathons;
     }
 
+    async findAllExcluding(attributes: string[]): Promise<Hackathon[] | []> {
+        const hackathons = await this.repository.findAll({
+            attributes: {
+                exclude: attributes,
+            }
+        });
+        return hackathons;
+    }
+
     async findByIdExcluding(id: number, attributes: string[]): Promise<Hackathon | null> {
         const hackathon = await this.repository.findByPk(id, {
             attributes: {
@@ -32,7 +41,7 @@ export class HackathonRepository {
     async patch(id: number, hackathon: Hackathon): Promise<Hackathon | null> {
         let db_hackathon = await this.repository.findByPk(id);
         db_hackathon = hackathon;
-        db_hackathon.save();
+        await db_hackathon.save();
         
         return db_hackathon;
     }

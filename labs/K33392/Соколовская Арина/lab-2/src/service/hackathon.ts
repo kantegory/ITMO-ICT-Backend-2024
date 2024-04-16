@@ -16,6 +16,11 @@ export class HackathonService {
         this.teamRepository = new TeamRepository();
     }
 
+    async findAll(): Promise<Hackathon[] | []> {
+        const hackathons = await this.hackathonRepository.findAllExcluding(['about', 'task']);
+        return hackathons;
+    }
+
     async findById(id: number): Promise<Hackathon | null> {
         const hackathon = await this.hackathonRepository.findByIdExcluding(id, ['task']);
         return hackathon;

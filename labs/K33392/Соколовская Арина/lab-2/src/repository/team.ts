@@ -23,7 +23,7 @@ export class TeamRepository {
     async patch(id: number, team: Team): Promise<Team | null> {
         let db_team = await this.repository.findByPk(id);
         db_team = team;
-        db_team.save();
+        await db_team.save();
         return db_team;
     }
 }
