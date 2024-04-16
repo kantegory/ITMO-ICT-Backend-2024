@@ -44,9 +44,26 @@ class ShopService {
         }
     }
 
-    async getItems() {
-        const items = await this.itemRepository.findAll({})
-        return items
+    async getItems(body: any) {
+        if (body.tagId) {
+            const items = await this.itemRepository.findAll({
+                include: [
+                    {
+                        model: sequelize.models.Tag,
+                        through: {
+                            model: sequelize.models.TagId,
+                            where: {tagId: body.tagId}
+                        }
+                    }
+                ]
+            })
+            return items
+        } else {
+            const items = await this.itemRepository.findAll({
+                include: sequelize.models.Tag
+            })
+            return items
+        }
     }
     async deleteById(id: number): Promise<Number> {
         const deletedCount = await this.itemRepository.destroy({where: { id }})

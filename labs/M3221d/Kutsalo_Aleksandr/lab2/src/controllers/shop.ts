@@ -54,7 +54,7 @@ class ShopController {
     }
     getAllItems = async (request: Request, response: Response) => {
         try {
-            const items = await this.shopService.getItems()
+            const items = await this.shopService.getItems(request.body)
 
             response.status(200).json(items)
         } catch (error) {

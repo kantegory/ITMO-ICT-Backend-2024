@@ -11,7 +11,7 @@ shopRouter.route('/')
     .get(shopController.index)
 
 shopRouter.route('/item')
-    .get(shopController.getAllItems)
+    .get(shopController.getAllItems) // {tagId: number[]}
 
 shopRouter.route('/item/:id')
     .get(shopController.getItem)
