@@ -18,3 +18,6 @@ node_modules
 node_modules
 .DS_Store
 
+labs/K33392/Skorokhodova_Elena/lab2/ITMO-ICT-Backend-2024/labs/K33392/Skorokhodova_Elena/lab2/dist/dist/ITMO-ICT-Backend-2024/homeworks/K33392/Скороходова Елена/hw2/migrations/20240307231946-add-username-to-users.js
+labs/K33392/Skorokhodova_Elena/lab2/ITMO-ICT-Backend-2024/labs/K33392/Skorokhodova_Elena/lab2/dist/dist/ITMO-ICT-Backend-2024/labs/K33392/Skorokhodova_Elena/lab1/migrations/20240326194551-remove_timestamps_from_users.js
+labs/K33392/Skorokhodova_Elena/lab2/ITMO-ICT-Backend-2024/labs/K33392/Skorokhodova_Elena/lab2/dist/dist/ITMO-ICT-Backend-2024/labs/K33392/Skorokhodova_Elena/lab1/src/migrations/20240326111049-create-users-table.js
