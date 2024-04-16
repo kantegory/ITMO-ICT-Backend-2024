@@ -15,7 +15,7 @@ export class TeapotModel extends Model {
     @Column
     declare name: string;
 
-    @BelongsTo(() => ProfileModel, 'profile_id')
+    @BelongsTo(() => ProfileModel, 'profileId')
     declare profile: NonAttribute<ProfileModel>;
 
     @Column(DataType.UUID)

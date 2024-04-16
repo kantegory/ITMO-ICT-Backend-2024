@@ -4,7 +4,7 @@
   "description": "Smart devices domain (Core)",
   "main": "build/index.js",
   "scripts": {
-    "start": "npx tsc && node build/index.js",
+    "start": "npx tsc && node --env-file ./.env build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alexey Korotin",

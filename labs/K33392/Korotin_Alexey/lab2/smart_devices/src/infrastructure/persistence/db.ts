@@ -1,6 +1,5 @@
-import {Model, ModelCtor, Sequelize} from "sequelize-typescript";
+import {ModelCtor, Sequelize} from "sequelize-typescript";
 import {Dialect} from "sequelize";
-import {Account} from "../../domain/replicas/Account";
 import {AccountModel} from "./account";
 import {ProfileModel} from "./profile";
 import {TeapotModel} from "./devices/teapot";

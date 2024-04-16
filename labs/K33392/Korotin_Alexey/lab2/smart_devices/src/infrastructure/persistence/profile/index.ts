@@ -15,7 +15,7 @@ export class ProfileModel extends Model {
     @Column
     declare location: string;
 
-    @BelongsTo(() => AccountModel, 'user_id')
+    @BelongsTo(() => AccountModel, 'userId')
     declare user: NonAttribute<AccountModel>;
 
     @Column(DataType.UUID)
