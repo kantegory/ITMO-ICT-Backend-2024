@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript'
-import Jury, { Curator, User } from '../model/user';
+import { Jury, Curator, User } from '../model/user';
 import { Participant, Team } from '../model/team';
 import { Grading, Solution } from '../model/solution';
 import { File, Link, Hackathon } from '../model/task';
