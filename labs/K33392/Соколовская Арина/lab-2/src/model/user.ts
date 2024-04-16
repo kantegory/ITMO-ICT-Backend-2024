@@ -35,7 +35,7 @@ class User extends Model {
 }
 
 
-export default @Table
+export @Table
 class Jury extends Model {
     @PrimaryKey
     @AutoIncrement

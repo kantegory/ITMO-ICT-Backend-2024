@@ -6,12 +6,23 @@
   "scripts": {
     "start": "npx tsc & node out/index.js",
     "build": "npx tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon"
+  },
+
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "exec": "ts-node src/index.ts"
   },
   "author": "Арина Соколовская, Мария Пронина",
   "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.3"
   },
   "dependencies": {

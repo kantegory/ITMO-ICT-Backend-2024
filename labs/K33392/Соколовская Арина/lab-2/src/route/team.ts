@@ -2,7 +2,7 @@
 
 import { Router, Request, Response } from 'express';
 
-const teamController = require(require("../controller/team")); 
+const teamController = require("../controller/team"); 
 const teamRouter = Router();
 
 teamRouter

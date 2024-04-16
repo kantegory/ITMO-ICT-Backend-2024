@@ -3,7 +3,7 @@
 
 import { Router, Request, Response } from 'express';
 
-const userController = require(require("../controller/user")); 
+const userController = require("../controller/user"); 
 const userRouter = Router();
 
 userRouter

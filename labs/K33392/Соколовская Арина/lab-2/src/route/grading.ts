@@ -2,7 +2,7 @@
 
 import { Router, Request, Response } from 'express';
 
-const gradingController = require(require("../controller/grading")); 
+const gradingController = require("../controller/grading"); 
 const gradingRouter = Router();
 
 gradingRouter

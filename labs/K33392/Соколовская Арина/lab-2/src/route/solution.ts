@@ -2,7 +2,7 @@
 
 import { Router, Request, Response } from 'express';
 
-const solutionController = require(require("../controller/solution")); 
+const solutionController = require("../controller/solution"); 
 const solutionRouter = Router();
 
 solutionRouter

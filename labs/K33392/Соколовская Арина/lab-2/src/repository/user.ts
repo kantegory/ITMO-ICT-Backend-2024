@@ -1,8 +1,5 @@
-import Repository from 'sequelize-typescript';
-import User from '../model/user'
+import { User } from '../model/user';
 import sequelize from '../config/db';
-import { Hackathon } from '../model/task';
-import { ParticipantRepository } from './participant';
 
 
 export class UserRepository {

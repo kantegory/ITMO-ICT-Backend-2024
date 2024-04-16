@@ -3,7 +3,7 @@
 
 import { Router, Request, Response } from 'express';
 
-const hackathonController = require(require("../controller/hackathon")); 
+const hackathonController = require("../controller/hackathon"); 
 const hackathonRouter = Router();
 
 hackathonRouter

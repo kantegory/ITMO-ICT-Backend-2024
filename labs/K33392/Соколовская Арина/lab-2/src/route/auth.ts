@@ -2,7 +2,7 @@
 
 import { Router, Request, Response } from 'express';
 
-const authController = require(require("../controller/auth")); 
+const authController = require("../controller/auth"); 
 const authRouter = Router();
 
 authRouter
