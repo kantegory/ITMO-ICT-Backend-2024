@@ -1,5 +1,4 @@
 import { Sequelize } from 'sequelize-typescript'
-import { Cat } from '../models/cats/index.js'
 
 const sequelize = new Sequelize({
   database: 'some_db',
@@ -10,7 +9,7 @@ const sequelize = new Sequelize({
   logging: console.log,
 })
 
-const models = [Cat]
+const models = []
 
 sequelize.addModels(models)
 
