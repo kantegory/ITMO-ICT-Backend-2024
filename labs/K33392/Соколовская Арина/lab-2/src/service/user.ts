@@ -33,4 +33,9 @@ export class UserService {
         const user = await this.userRepository.findById(id);
         return user;
     }
+
+    async patch(id: number, user: User): Promise<User | null> {
+        const updeted_user = await this.userRepository.patch(id, user);
+        return updeted_user;
+    }
 }
