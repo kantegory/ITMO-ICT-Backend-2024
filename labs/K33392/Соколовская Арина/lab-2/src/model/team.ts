@@ -28,9 +28,8 @@ class Team extends Model {
 export @Table
 class Participant extends Model {
     @PrimaryKey
-    @AutoIncrement
     @Column
-    id!: number;
+    user_id!: number;
 
     @PrimaryKey
     @Column
