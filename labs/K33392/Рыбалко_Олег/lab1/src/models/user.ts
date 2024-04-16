@@ -5,6 +5,7 @@ import {
   Unique,
   PrimaryKey,
   AutoIncrement,
+  Default,
 } from 'sequelize-typescript'
 
 @Table
@@ -26,5 +27,9 @@ export class User extends Model {
 
   @Column
   declare email: string
+
+  @Column
+  @Default(false)
+  declare isAdmin: boolean
 }
 
