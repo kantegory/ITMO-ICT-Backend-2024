@@ -1,12 +1,11 @@
 import jwt from 'jsonwebtoken'
-import { SECRET_KEY } from '../config/config'
 
 const requireAuth = (req: any, res: any, next: any) => {
     try {
         const token = req.cookies.jwt
 
         if (token) {
-            jwt.verify(token, SECRET_KEY, async (err, decodedToken) => {
+            jwt.verify(token, process.env.SECRET_KEY, async (err, decodedToken) => {
                 if (err) {
                     res.status(403).send("Invalid token")
                     console.log(err.message)

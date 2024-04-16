@@ -3,13 +3,15 @@ import sequelize from "./instances/db"
 import mainRouter from "./routers/router"
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
-import { PORT } from './config/config'
 import path from 'path'
+import { config } from 'dotenv'
 
 const app = express()
-const port = PORT
 
 sequelize
+config()
+
+const port = process.env.PORT
 
 app.set('view engine', 'pug')
 app.set('views', path.join(path.resolve(), 'src/views'));

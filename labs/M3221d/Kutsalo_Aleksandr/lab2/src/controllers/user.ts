@@ -3,7 +3,6 @@ import { createToken } from "../utility/create_token";
 import User from "../models/user"
 import UserService from "../services/user"
 import { isCorrectPassword } from "../utility/password_check";
-import { TOKEN_AGE_MS } from "../config/config";
 import { request } from "http";
 
 
@@ -34,7 +33,7 @@ class UserController {
             const user: User | ValidationError | NotUniqueError = await this.userService.createUser(request.body)
             
             const token = createToken(user.id)
-            response.cookie('jwt', token, {httpOnly: true, maxAge: TOKEN_AGE_MS})
+            response.cookie('jwt', token, {httpOnly: true, maxAge: process.env.TOKEN_AGE_MS})
             
             response.status(200).json({'response': "success", 'userId': user.id})
             console.log(token)
@@ -53,7 +52,7 @@ class UserController {
                 throw Error("Passwords don't match")
             }
             const token = createToken(user.id)
-            response.cookie('jwt', token, {httpOnly: true, maxAge: TOKEN_AGE_MS})
+            response.cookie('jwt', token, {httpOnly: true, maxAge: process.env.TOKEN_AGE_MS})
             response.status(200).json({'response': "Success", 'userId': user.id})
         } catch (error) {
             response.status(405).json({'error': error.message})
