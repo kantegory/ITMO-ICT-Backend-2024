@@ -1,6 +1,0 @@
-{
-  "watch": ["./dist"],
-  "ext": "js",
-  "exec": "node ./dist/main.js",
-  "delay": 1000
-}

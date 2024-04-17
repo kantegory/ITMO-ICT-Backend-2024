@@ -1,9 +1,53 @@
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 /////////////////////////////////////////
 // HELPER FUNCTIONS
 /////////////////////////////////////////
+
+// JSON
+//------------------------------------------------------
+
+export type NullableJsonInput = Prisma.JsonValue | null | 'JsonNull' | 'DbNull' | Prisma.NullTypes.DbNull | Prisma.NullTypes.JsonNull;
+
+export const transformJsonNull = (v?: NullableJsonInput) => {
+  if (!v || v === 'DbNull') return Prisma.DbNull;
+  if (v === 'JsonNull') return Prisma.JsonNull;
+  return v;
+};
+
+export const JsonValueSchema: z.ZodType<Prisma.JsonValue> = z.lazy(() =>
+  z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.literal(null),
+    z.record(z.lazy(() => JsonValueSchema.optional())),
+    z.array(z.lazy(() => JsonValueSchema)),
+  ])
+);
+
+export type JsonValueType = z.infer<typeof JsonValueSchema>;
+
+export const NullableJsonValue = z
+  .union([JsonValueSchema, z.literal('DbNull'), z.literal('JsonNull')])
+  .nullable()
+  .transform((v) => transformJsonNull(v));
+
+export type NullableJsonValueType = z.infer<typeof NullableJsonValue>;
+
+export const InputJsonValueSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>
+  z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.object({ toJSON: z.function(z.tuple([]), z.any()) }),
+    z.record(z.lazy(() => z.union([InputJsonValueSchema, z.literal(null)]))),
+    z.array(z.lazy(() => z.union([InputJsonValueSchema, z.literal(null)]))),
+  ])
+);
+
+export type InputJsonValueType = z.infer<typeof InputJsonValueSchema>;
 
 
 /////////////////////////////////////////
@@ -18,11 +62,23 @@ export const DeviceScalarFieldEnumSchema = z.enum(['id','name','description','is
 
 export const AreaScalarFieldEnumSchema = z.enum(['id','name','description','type','userId']);
 
+export const BaseCommandScalarFieldEnumSchema = z.enum(['id','name','args']);
+
+export const CommandScalarFieldEnumSchema = z.enum(['id','ts','isExecuted','status','params','userId','deviceId','baseCommandId']);
+
+export const ScriptScalarFieldEnumSchema = z.enum(['id','name','description','conditionParams','commandParams','userId','conditionDeviceId','commandDeviceId','baseCommandId']);
+
+export const DeviceDataScalarFieldEnumSchema = z.enum(['id','ts','status','deviceId']);
+
 export const SortOrderSchema = z.enum(['asc','desc']);
+
+export const JsonNullValueInputSchema = z.enum(['JsonNull',]).transform((value) => (value === 'JsonNull' ? Prisma.JsonNull : value));
 
 export const QueryModeSchema = z.enum(['default','insensitive']);
 
 export const NullsOrderSchema = z.enum(['first','last']);
+
+export const JsonNullValueFilterSchema = z.enum(['DbNull','JsonNull','AnyNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.JsonNull : value === 'AnyNull' ? Prisma.AnyNull : value);
 
 export const DeviceTypeSchema = z.enum(['Temperature','Relay']);
 
@@ -84,6 +140,66 @@ export const AreaSchema = z.object({
 export type Area = z.infer<typeof AreaSchema>
 
 /////////////////////////////////////////
+// BASE COMMAND SCHEMA
+/////////////////////////////////////////
+
+export const BaseCommandSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  args: JsonValueSchema.nullable(),
+})
+
+export type BaseCommand = z.infer<typeof BaseCommandSchema>
+
+/////////////////////////////////////////
+// COMMAND SCHEMA
+/////////////////////////////////////////
+
+export const CommandSchema = z.object({
+  id: z.number().int(),
+  ts: z.number().int(),
+  isExecuted: z.boolean(),
+  status: JsonValueSchema.nullable(),
+  params: JsonValueSchema.nullable(),
+  userId: z.number().int(),
+  deviceId: z.number().int(),
+  baseCommandId: z.number().int(),
+})
+
+export type Command = z.infer<typeof CommandSchema>
+
+/////////////////////////////////////////
+// SCRIPT SCHEMA
+/////////////////////////////////////////
+
+export const ScriptSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: JsonValueSchema.nullable(),
+  commandParams: JsonValueSchema.nullable(),
+  userId: z.number().int(),
+  conditionDeviceId: z.number().int().nullable(),
+  commandDeviceId: z.number().int(),
+  baseCommandId: z.number().int(),
+})
+
+export type Script = z.infer<typeof ScriptSchema>
+
+/////////////////////////////////////////
+// DEVICE DATA SCHEMA
+/////////////////////////////////////////
+
+export const DeviceDataSchema = z.object({
+  id: z.number().int(),
+  ts: z.number().int(),
+  status: JsonValueSchema.nullable(),
+  deviceId: z.number().int(),
+})
+
+export type DeviceData = z.infer<typeof DeviceDataSchema>
+
+/////////////////////////////////////////
 // SELECT & INCLUDE
 /////////////////////////////////////////
 
@@ -93,6 +209,8 @@ export type Area = z.infer<typeof AreaSchema>
 export const UserIncludeSchema: z.ZodType<Prisma.UserInclude> = z.object({
   devices: z.union([z.boolean(),z.lazy(() => DeviceFindManyArgsSchema)]).optional(),
   areas: z.union([z.boolean(),z.lazy(() => AreaFindManyArgsSchema)]).optional(),
+  commands: z.union([z.boolean(),z.lazy(() => CommandFindManyArgsSchema)]).optional(),
+  scripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -108,6 +226,8 @@ export const UserCountOutputTypeArgsSchema: z.ZodType<Prisma.UserCountOutputType
 export const UserCountOutputTypeSelectSchema: z.ZodType<Prisma.UserCountOutputTypeSelect> = z.object({
   devices: z.boolean().optional(),
   areas: z.boolean().optional(),
+  commands: z.boolean().optional(),
+  scripts: z.boolean().optional(),
 }).strict();
 
 export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
@@ -120,6 +240,8 @@ export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
   isAdmin: z.boolean().optional(),
   devices: z.union([z.boolean(),z.lazy(() => DeviceFindManyArgsSchema)]).optional(),
   areas: z.union([z.boolean(),z.lazy(() => AreaFindManyArgsSchema)]).optional(),
+  commands: z.union([z.boolean(),z.lazy(() => CommandFindManyArgsSchema)]).optional(),
+  scripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -129,11 +251,27 @@ export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
 export const DeviceIncludeSchema: z.ZodType<Prisma.DeviceInclude> = z.object({
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   area: z.union([z.boolean(),z.lazy(() => AreaArgsSchema)]).optional(),
+  commands: z.union([z.boolean(),z.lazy(() => CommandFindManyArgsSchema)]).optional(),
+  conditionScripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
+  commandScripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
+  deviceData: z.union([z.boolean(),z.lazy(() => DeviceDataFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => DeviceCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
 export const DeviceArgsSchema: z.ZodType<Prisma.DeviceDefaultArgs> = z.object({
   select: z.lazy(() => DeviceSelectSchema).optional(),
   include: z.lazy(() => DeviceIncludeSchema).optional(),
+}).strict();
+
+export const DeviceCountOutputTypeArgsSchema: z.ZodType<Prisma.DeviceCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => DeviceCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const DeviceCountOutputTypeSelectSchema: z.ZodType<Prisma.DeviceCountOutputTypeSelect> = z.object({
+  commands: z.boolean().optional(),
+  conditionScripts: z.boolean().optional(),
+  commandScripts: z.boolean().optional(),
+  deviceData: z.boolean().optional(),
 }).strict();
 
 export const DeviceSelectSchema: z.ZodType<Prisma.DeviceSelect> = z.object({
@@ -147,6 +285,11 @@ export const DeviceSelectSchema: z.ZodType<Prisma.DeviceSelect> = z.object({
   areaId: z.boolean().optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   area: z.union([z.boolean(),z.lazy(() => AreaArgsSchema)]).optional(),
+  commands: z.union([z.boolean(),z.lazy(() => CommandFindManyArgsSchema)]).optional(),
+  conditionScripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
+  commandScripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
+  deviceData: z.union([z.boolean(),z.lazy(() => DeviceDataFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => DeviceCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
 // AREA
@@ -154,7 +297,7 @@ export const DeviceSelectSchema: z.ZodType<Prisma.DeviceSelect> = z.object({
 
 export const AreaIncludeSchema: z.ZodType<Prisma.AreaInclude> = z.object({
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
-  Device: z.union([z.boolean(),z.lazy(() => DeviceFindManyArgsSchema)]).optional(),
+  devices: z.union([z.boolean(),z.lazy(() => DeviceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AreaCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -168,7 +311,7 @@ export const AreaCountOutputTypeArgsSchema: z.ZodType<Prisma.AreaCountOutputType
 }).strict();
 
 export const AreaCountOutputTypeSelectSchema: z.ZodType<Prisma.AreaCountOutputTypeSelect> = z.object({
-  Device: z.boolean().optional(),
+  devices: z.boolean().optional(),
 }).strict();
 
 export const AreaSelectSchema: z.ZodType<Prisma.AreaSelect> = z.object({
@@ -178,8 +321,119 @@ export const AreaSelectSchema: z.ZodType<Prisma.AreaSelect> = z.object({
   type: z.boolean().optional(),
   userId: z.boolean().optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
-  Device: z.union([z.boolean(),z.lazy(() => DeviceFindManyArgsSchema)]).optional(),
+  devices: z.union([z.boolean(),z.lazy(() => DeviceFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AreaCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// BASE COMMAND
+//------------------------------------------------------
+
+export const BaseCommandIncludeSchema: z.ZodType<Prisma.BaseCommandInclude> = z.object({
+  commands: z.union([z.boolean(),z.lazy(() => CommandFindManyArgsSchema)]).optional(),
+  scripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => BaseCommandCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+export const BaseCommandArgsSchema: z.ZodType<Prisma.BaseCommandDefaultArgs> = z.object({
+  select: z.lazy(() => BaseCommandSelectSchema).optional(),
+  include: z.lazy(() => BaseCommandIncludeSchema).optional(),
+}).strict();
+
+export const BaseCommandCountOutputTypeArgsSchema: z.ZodType<Prisma.BaseCommandCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => BaseCommandCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const BaseCommandCountOutputTypeSelectSchema: z.ZodType<Prisma.BaseCommandCountOutputTypeSelect> = z.object({
+  commands: z.boolean().optional(),
+  scripts: z.boolean().optional(),
+}).strict();
+
+export const BaseCommandSelectSchema: z.ZodType<Prisma.BaseCommandSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  args: z.boolean().optional(),
+  commands: z.union([z.boolean(),z.lazy(() => CommandFindManyArgsSchema)]).optional(),
+  scripts: z.union([z.boolean(),z.lazy(() => ScriptFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => BaseCommandCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// COMMAND
+//------------------------------------------------------
+
+export const CommandIncludeSchema: z.ZodType<Prisma.CommandInclude> = z.object({
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  device: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
+  baseCommand: z.union([z.boolean(),z.lazy(() => BaseCommandArgsSchema)]).optional(),
+}).strict()
+
+export const CommandArgsSchema: z.ZodType<Prisma.CommandDefaultArgs> = z.object({
+  select: z.lazy(() => CommandSelectSchema).optional(),
+  include: z.lazy(() => CommandIncludeSchema).optional(),
+}).strict();
+
+export const CommandSelectSchema: z.ZodType<Prisma.CommandSelect> = z.object({
+  id: z.boolean().optional(),
+  ts: z.boolean().optional(),
+  isExecuted: z.boolean().optional(),
+  status: z.boolean().optional(),
+  params: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  deviceId: z.boolean().optional(),
+  baseCommandId: z.boolean().optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  device: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
+  baseCommand: z.union([z.boolean(),z.lazy(() => BaseCommandArgsSchema)]).optional(),
+}).strict()
+
+// SCRIPT
+//------------------------------------------------------
+
+export const ScriptIncludeSchema: z.ZodType<Prisma.ScriptInclude> = z.object({
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  conditionDevice: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
+  commandDevice: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
+  baseCommand: z.union([z.boolean(),z.lazy(() => BaseCommandArgsSchema)]).optional(),
+}).strict()
+
+export const ScriptArgsSchema: z.ZodType<Prisma.ScriptDefaultArgs> = z.object({
+  select: z.lazy(() => ScriptSelectSchema).optional(),
+  include: z.lazy(() => ScriptIncludeSchema).optional(),
+}).strict();
+
+export const ScriptSelectSchema: z.ZodType<Prisma.ScriptSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  description: z.boolean().optional(),
+  conditionParams: z.boolean().optional(),
+  commandParams: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  conditionDeviceId: z.boolean().optional(),
+  commandDeviceId: z.boolean().optional(),
+  baseCommandId: z.boolean().optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  conditionDevice: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
+  commandDevice: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
+  baseCommand: z.union([z.boolean(),z.lazy(() => BaseCommandArgsSchema)]).optional(),
+}).strict()
+
+// DEVICE DATA
+//------------------------------------------------------
+
+export const DeviceDataIncludeSchema: z.ZodType<Prisma.DeviceDataInclude> = z.object({
+  device: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
+}).strict()
+
+export const DeviceDataArgsSchema: z.ZodType<Prisma.DeviceDataDefaultArgs> = z.object({
+  select: z.lazy(() => DeviceDataSelectSchema).optional(),
+  include: z.lazy(() => DeviceDataIncludeSchema).optional(),
+}).strict();
+
+export const DeviceDataSelectSchema: z.ZodType<Prisma.DeviceDataSelect> = z.object({
+  id: z.boolean().optional(),
+  ts: z.boolean().optional(),
+  status: z.boolean().optional(),
+  deviceId: z.boolean().optional(),
+  device: z.union([z.boolean(),z.lazy(() => DeviceArgsSchema)]).optional(),
 }).strict()
 
 
@@ -199,7 +453,9 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   isActive: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   isAdmin: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   devices: z.lazy(() => DeviceListRelationFilterSchema).optional(),
-  areas: z.lazy(() => AreaListRelationFilterSchema).optional()
+  areas: z.lazy(() => AreaListRelationFilterSchema).optional(),
+  commands: z.lazy(() => CommandListRelationFilterSchema).optional(),
+  scripts: z.lazy(() => ScriptListRelationFilterSchema).optional()
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWithRelationInput> = z.object({
@@ -211,7 +467,9 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   isActive: z.lazy(() => SortOrderSchema).optional(),
   isAdmin: z.lazy(() => SortOrderSchema).optional(),
   devices: z.lazy(() => DeviceOrderByRelationAggregateInputSchema).optional(),
-  areas: z.lazy(() => AreaOrderByRelationAggregateInputSchema).optional()
+  areas: z.lazy(() => AreaOrderByRelationAggregateInputSchema).optional(),
+  commands: z.lazy(() => CommandOrderByRelationAggregateInputSchema).optional(),
+  scripts: z.lazy(() => ScriptOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> = z.union([
@@ -238,7 +496,9 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   isActive: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   isAdmin: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   devices: z.lazy(() => DeviceListRelationFilterSchema).optional(),
-  areas: z.lazy(() => AreaListRelationFilterSchema).optional()
+  areas: z.lazy(() => AreaListRelationFilterSchema).optional(),
+  commands: z.lazy(() => CommandListRelationFilterSchema).optional(),
+  scripts: z.lazy(() => ScriptListRelationFilterSchema).optional()
 }).strict());
 
 export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderByWithAggregationInput> = z.object({
@@ -283,6 +543,10 @@ export const DeviceWhereInputSchema: z.ZodType<Prisma.DeviceWhereInput> = z.obje
   areaId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
   user: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
   area: z.union([ z.lazy(() => AreaNullableRelationFilterSchema),z.lazy(() => AreaWhereInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandListRelationFilterSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptListRelationFilterSchema).optional(),
+  commandScripts: z.lazy(() => ScriptListRelationFilterSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataListRelationFilterSchema).optional()
 }).strict();
 
 export const DeviceOrderByWithRelationInputSchema: z.ZodType<Prisma.DeviceOrderByWithRelationInput> = z.object({
@@ -295,7 +559,11 @@ export const DeviceOrderByWithRelationInputSchema: z.ZodType<Prisma.DeviceOrderB
   userId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   areaId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
-  area: z.lazy(() => AreaOrderByWithRelationInputSchema).optional()
+  area: z.lazy(() => AreaOrderByWithRelationInputSchema).optional(),
+  commands: z.lazy(() => CommandOrderByRelationAggregateInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptOrderByRelationAggregateInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptOrderByRelationAggregateInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const DeviceWhereUniqueInputSchema: z.ZodType<Prisma.DeviceWhereUniqueInput> = z.union([
@@ -324,6 +592,10 @@ export const DeviceWhereUniqueInputSchema: z.ZodType<Prisma.DeviceWhereUniqueInp
   areaId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number().int() ]).optional().nullable(),
   user: z.union([ z.lazy(() => UserNullableRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional().nullable(),
   area: z.union([ z.lazy(() => AreaNullableRelationFilterSchema),z.lazy(() => AreaWhereInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandListRelationFilterSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptListRelationFilterSchema).optional(),
+  commandScripts: z.lazy(() => ScriptListRelationFilterSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataListRelationFilterSchema).optional()
 }).strict());
 
 export const DeviceOrderByWithAggregationInputSchema: z.ZodType<Prisma.DeviceOrderByWithAggregationInput> = z.object({
@@ -366,7 +638,7 @@ export const AreaWhereInputSchema: z.ZodType<Prisma.AreaWhereInput> = z.object({
   type: z.union([ z.lazy(() => EnumAreaTypeFilterSchema),z.lazy(() => AreaTypeSchema) ]).optional(),
   userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
-  Device: z.lazy(() => DeviceListRelationFilterSchema).optional()
+  devices: z.lazy(() => DeviceListRelationFilterSchema).optional()
 }).strict();
 
 export const AreaOrderByWithRelationInputSchema: z.ZodType<Prisma.AreaOrderByWithRelationInput> = z.object({
@@ -376,7 +648,7 @@ export const AreaOrderByWithRelationInputSchema: z.ZodType<Prisma.AreaOrderByWit
   type: z.lazy(() => SortOrderSchema).optional(),
   userId: z.lazy(() => SortOrderSchema).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
-  Device: z.lazy(() => DeviceOrderByRelationAggregateInputSchema).optional()
+  devices: z.lazy(() => DeviceOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const AreaWhereUniqueInputSchema: z.ZodType<Prisma.AreaWhereUniqueInput> = z.object({
@@ -392,7 +664,7 @@ export const AreaWhereUniqueInputSchema: z.ZodType<Prisma.AreaWhereUniqueInput> 
   type: z.union([ z.lazy(() => EnumAreaTypeFilterSchema),z.lazy(() => AreaTypeSchema) ]).optional(),
   userId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
-  Device: z.lazy(() => DeviceListRelationFilterSchema).optional()
+  devices: z.lazy(() => DeviceListRelationFilterSchema).optional()
 }).strict());
 
 export const AreaOrderByWithAggregationInputSchema: z.ZodType<Prisma.AreaOrderByWithAggregationInput> = z.object({
@@ -419,6 +691,293 @@ export const AreaScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.AreaScal
   userId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
 }).strict();
 
+export const BaseCommandWhereInputSchema: z.ZodType<Prisma.BaseCommandWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => BaseCommandWhereInputSchema),z.lazy(() => BaseCommandWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => BaseCommandWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => BaseCommandWhereInputSchema),z.lazy(() => BaseCommandWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  args: z.lazy(() => JsonFilterSchema).optional(),
+  commands: z.lazy(() => CommandListRelationFilterSchema).optional(),
+  scripts: z.lazy(() => ScriptListRelationFilterSchema).optional()
+}).strict();
+
+export const BaseCommandOrderByWithRelationInputSchema: z.ZodType<Prisma.BaseCommandOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  args: z.lazy(() => SortOrderSchema).optional(),
+  commands: z.lazy(() => CommandOrderByRelationAggregateInputSchema).optional(),
+  scripts: z.lazy(() => ScriptOrderByRelationAggregateInputSchema).optional()
+}).strict();
+
+export const BaseCommandWhereUniqueInputSchema: z.ZodType<Prisma.BaseCommandWhereUniqueInput> = z.union([
+  z.object({
+    id: z.number().int(),
+    name: z.string()
+  }),
+  z.object({
+    id: z.number().int(),
+  }),
+  z.object({
+    name: z.string(),
+  }),
+])
+.and(z.object({
+  id: z.number().int().optional(),
+  name: z.string().optional(),
+  AND: z.union([ z.lazy(() => BaseCommandWhereInputSchema),z.lazy(() => BaseCommandWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => BaseCommandWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => BaseCommandWhereInputSchema),z.lazy(() => BaseCommandWhereInputSchema).array() ]).optional(),
+  args: z.lazy(() => JsonFilterSchema).optional(),
+  commands: z.lazy(() => CommandListRelationFilterSchema).optional(),
+  scripts: z.lazy(() => ScriptListRelationFilterSchema).optional()
+}).strict());
+
+export const BaseCommandOrderByWithAggregationInputSchema: z.ZodType<Prisma.BaseCommandOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  args: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => BaseCommandCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => BaseCommandAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => BaseCommandMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => BaseCommandMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => BaseCommandSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const BaseCommandScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.BaseCommandScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => BaseCommandScalarWhereWithAggregatesInputSchema),z.lazy(() => BaseCommandScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => BaseCommandScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => BaseCommandScalarWhereWithAggregatesInputSchema),z.lazy(() => BaseCommandScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  args: z.lazy(() => JsonWithAggregatesFilterSchema).optional()
+}).strict();
+
+export const CommandWhereInputSchema: z.ZodType<Prisma.CommandWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => CommandWhereInputSchema),z.lazy(() => CommandWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CommandWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CommandWhereInputSchema),z.lazy(() => CommandWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  ts: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  isExecuted: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  status: z.lazy(() => JsonFilterSchema).optional(),
+  params: z.lazy(() => JsonFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  deviceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  device: z.union([ z.lazy(() => DeviceRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+  baseCommand: z.union([ z.lazy(() => BaseCommandRelationFilterSchema),z.lazy(() => BaseCommandWhereInputSchema) ]).optional(),
+}).strict();
+
+export const CommandOrderByWithRelationInputSchema: z.ZodType<Prisma.CommandOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  isExecuted: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  params: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional(),
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
+  device: z.lazy(() => DeviceOrderByWithRelationInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const CommandWhereUniqueInputSchema: z.ZodType<Prisma.CommandWhereUniqueInput> = z.object({
+  id: z.number().int()
+})
+.and(z.object({
+  id: z.number().int().optional(),
+  AND: z.union([ z.lazy(() => CommandWhereInputSchema),z.lazy(() => CommandWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CommandWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CommandWhereInputSchema),z.lazy(() => CommandWhereInputSchema).array() ]).optional(),
+  ts: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  isExecuted: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  status: z.lazy(() => JsonFilterSchema).optional(),
+  params: z.lazy(() => JsonFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  deviceId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  device: z.union([ z.lazy(() => DeviceRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+  baseCommand: z.union([ z.lazy(() => BaseCommandRelationFilterSchema),z.lazy(() => BaseCommandWhereInputSchema) ]).optional(),
+}).strict());
+
+export const CommandOrderByWithAggregationInputSchema: z.ZodType<Prisma.CommandOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  isExecuted: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  params: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => CommandCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => CommandAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => CommandMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => CommandMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => CommandSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const CommandScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.CommandScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => CommandScalarWhereWithAggregatesInputSchema),z.lazy(() => CommandScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CommandScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CommandScalarWhereWithAggregatesInputSchema),z.lazy(() => CommandScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  ts: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  isExecuted: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
+  status: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
+  params: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  deviceId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+}).strict();
+
+export const ScriptWhereInputSchema: z.ZodType<Prisma.ScriptWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => ScriptWhereInputSchema),z.lazy(() => ScriptWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ScriptWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ScriptWhereInputSchema),z.lazy(() => ScriptWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  conditionParams: z.lazy(() => JsonFilterSchema).optional(),
+  commandParams: z.lazy(() => JsonFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  conditionDeviceId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  commandDeviceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  conditionDevice: z.union([ z.lazy(() => DeviceNullableRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional().nullable(),
+  commandDevice: z.union([ z.lazy(() => DeviceRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+  baseCommand: z.union([ z.lazy(() => BaseCommandRelationFilterSchema),z.lazy(() => BaseCommandWhereInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptOrderByWithRelationInputSchema: z.ZodType<Prisma.ScriptOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  conditionParams: z.lazy(() => SortOrderSchema).optional(),
+  commandParams: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  conditionDeviceId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  commandDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional(),
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
+  conditionDevice: z.lazy(() => DeviceOrderByWithRelationInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceOrderByWithRelationInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const ScriptWhereUniqueInputSchema: z.ZodType<Prisma.ScriptWhereUniqueInput> = z.object({
+  id: z.number().int()
+})
+.and(z.object({
+  id: z.number().int().optional(),
+  AND: z.union([ z.lazy(() => ScriptWhereInputSchema),z.lazy(() => ScriptWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ScriptWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ScriptWhereInputSchema),z.lazy(() => ScriptWhereInputSchema).array() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  conditionParams: z.lazy(() => JsonFilterSchema).optional(),
+  commandParams: z.lazy(() => JsonFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  conditionDeviceId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number().int() ]).optional().nullable(),
+  commandDeviceId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+  conditionDevice: z.union([ z.lazy(() => DeviceNullableRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional().nullable(),
+  commandDevice: z.union([ z.lazy(() => DeviceRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+  baseCommand: z.union([ z.lazy(() => BaseCommandRelationFilterSchema),z.lazy(() => BaseCommandWhereInputSchema) ]).optional(),
+}).strict());
+
+export const ScriptOrderByWithAggregationInputSchema: z.ZodType<Prisma.ScriptOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  conditionParams: z.lazy(() => SortOrderSchema).optional(),
+  commandParams: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  conditionDeviceId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  commandDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => ScriptCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => ScriptAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => ScriptMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => ScriptMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => ScriptSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const ScriptScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.ScriptScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => ScriptScalarWhereWithAggregatesInputSchema),z.lazy(() => ScriptScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ScriptScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ScriptScalarWhereWithAggregatesInputSchema),z.lazy(() => ScriptScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  conditionParams: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
+  commandParams: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  conditionDeviceId: z.union([ z.lazy(() => IntNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
+  commandDeviceId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+}).strict();
+
+export const DeviceDataWhereInputSchema: z.ZodType<Prisma.DeviceDataWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => DeviceDataWhereInputSchema),z.lazy(() => DeviceDataWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DeviceDataWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DeviceDataWhereInputSchema),z.lazy(() => DeviceDataWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  ts: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  status: z.lazy(() => JsonFilterSchema).optional(),
+  deviceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  device: z.union([ z.lazy(() => DeviceRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceDataOrderByWithRelationInputSchema: z.ZodType<Prisma.DeviceDataOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  device: z.lazy(() => DeviceOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const DeviceDataWhereUniqueInputSchema: z.ZodType<Prisma.DeviceDataWhereUniqueInput> = z.object({
+  id: z.number().int()
+})
+.and(z.object({
+  id: z.number().int().optional(),
+  AND: z.union([ z.lazy(() => DeviceDataWhereInputSchema),z.lazy(() => DeviceDataWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DeviceDataWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DeviceDataWhereInputSchema),z.lazy(() => DeviceDataWhereInputSchema).array() ]).optional(),
+  ts: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  status: z.lazy(() => JsonFilterSchema).optional(),
+  deviceId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  device: z.union([ z.lazy(() => DeviceRelationFilterSchema),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+}).strict());
+
+export const DeviceDataOrderByWithAggregationInputSchema: z.ZodType<Prisma.DeviceDataOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => DeviceDataCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => DeviceDataAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => DeviceDataMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => DeviceDataMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => DeviceDataSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const DeviceDataScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.DeviceDataScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => DeviceDataScalarWhereWithAggregatesInputSchema),z.lazy(() => DeviceDataScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DeviceDataScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DeviceDataScalarWhereWithAggregatesInputSchema),z.lazy(() => DeviceDataScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  ts: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  status: z.lazy(() => JsonWithAggregatesFilterSchema).optional(),
+  deviceId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+}).strict();
+
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
   username: z.string(),
   passHash: z.string(),
@@ -427,7 +986,9 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   isActive: z.boolean().optional(),
   isAdmin: z.boolean().optional(),
   devices: z.lazy(() => DeviceCreateNestedManyWithoutUserInputSchema).optional(),
-  areas: z.lazy(() => AreaCreateNestedManyWithoutUserInputSchema).optional()
+  areas: z.lazy(() => AreaCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreateInput> = z.object({
@@ -439,7 +1000,9 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   isActive: z.boolean().optional(),
   isAdmin: z.boolean().optional(),
   devices: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  areas: z.lazy(() => AreaUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  areas: z.lazy(() => AreaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
@@ -450,7 +1013,9 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   devices: z.lazy(() => DeviceUpdateManyWithoutUserNestedInputSchema).optional(),
-  areas: z.lazy(() => AreaUpdateManyWithoutUserNestedInputSchema).optional()
+  areas: z.lazy(() => AreaUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdateInput> = z.object({
@@ -462,7 +1027,9 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   devices: z.lazy(() => DeviceUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  areas: z.lazy(() => AreaUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  areas: z.lazy(() => AreaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = z.object({
@@ -501,7 +1068,11 @@ export const DeviceCreateInputSchema: z.ZodType<Prisma.DeviceCreateInput> = z.ob
   uuid: z.string(),
   type: z.lazy(() => DeviceTypeSchema),
   user: z.lazy(() => UserCreateNestedOneWithoutDevicesInputSchema).optional(),
-  area: z.lazy(() => AreaCreateNestedOneWithoutDeviceInputSchema).optional()
+  area: z.lazy(() => AreaCreateNestedOneWithoutDevicesInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataCreateNestedManyWithoutDeviceInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedCreateInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateInput> = z.object({
@@ -512,7 +1083,11 @@ export const DeviceUncheckedCreateInputSchema: z.ZodType<Prisma.DeviceUncheckedC
   uuid: z.string(),
   type: z.lazy(() => DeviceTypeSchema),
   userId: z.number().int().optional().nullable(),
-  areaId: z.number().int().optional().nullable()
+  areaId: z.number().int().optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedCreateNestedManyWithoutDeviceInputSchema).optional()
 }).strict();
 
 export const DeviceUpdateInputSchema: z.ZodType<Prisma.DeviceUpdateInput> = z.object({
@@ -522,7 +1097,11 @@ export const DeviceUpdateInputSchema: z.ZodType<Prisma.DeviceUpdateInput> = z.ob
   uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneWithoutDevicesNestedInputSchema).optional(),
-  area: z.lazy(() => AreaUpdateOneWithoutDeviceNestedInputSchema).optional()
+  area: z.lazy(() => AreaUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUpdateManyWithoutDeviceNestedInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedUpdateInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateInput> = z.object({
@@ -534,6 +1113,10 @@ export const DeviceUncheckedUpdateInputSchema: z.ZodType<Prisma.DeviceUncheckedU
   type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   areaId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional()
 }).strict();
 
 export const DeviceCreateManyInputSchema: z.ZodType<Prisma.DeviceCreateManyInput> = z.object({
@@ -571,7 +1154,7 @@ export const AreaCreateInputSchema: z.ZodType<Prisma.AreaCreateInput> = z.object
   description: z.string(),
   type: z.lazy(() => AreaTypeSchema),
   user: z.lazy(() => UserCreateNestedOneWithoutAreasInputSchema),
-  Device: z.lazy(() => DeviceCreateNestedManyWithoutAreaInputSchema).optional()
+  devices: z.lazy(() => DeviceCreateNestedManyWithoutAreaInputSchema).optional()
 }).strict();
 
 export const AreaUncheckedCreateInputSchema: z.ZodType<Prisma.AreaUncheckedCreateInput> = z.object({
@@ -580,7 +1163,7 @@ export const AreaUncheckedCreateInputSchema: z.ZodType<Prisma.AreaUncheckedCreat
   description: z.string(),
   type: z.lazy(() => AreaTypeSchema),
   userId: z.number().int(),
-  Device: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutAreaInputSchema).optional()
+  devices: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutAreaInputSchema).optional()
 }).strict();
 
 export const AreaUpdateInputSchema: z.ZodType<Prisma.AreaUpdateInput> = z.object({
@@ -588,7 +1171,7 @@ export const AreaUpdateInputSchema: z.ZodType<Prisma.AreaUpdateInput> = z.object
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutAreasNestedInputSchema).optional(),
-  Device: z.lazy(() => DeviceUpdateManyWithoutAreaNestedInputSchema).optional()
+  devices: z.lazy(() => DeviceUpdateManyWithoutAreaNestedInputSchema).optional()
 }).strict();
 
 export const AreaUncheckedUpdateInputSchema: z.ZodType<Prisma.AreaUncheckedUpdateInput> = z.object({
@@ -597,7 +1180,7 @@ export const AreaUncheckedUpdateInputSchema: z.ZodType<Prisma.AreaUncheckedUpdat
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  Device: z.lazy(() => DeviceUncheckedUpdateManyWithoutAreaNestedInputSchema).optional()
+  devices: z.lazy(() => DeviceUncheckedUpdateManyWithoutAreaNestedInputSchema).optional()
 }).strict();
 
 export const AreaCreateManyInputSchema: z.ZodType<Prisma.AreaCreateManyInput> = z.object({
@@ -620,6 +1203,246 @@ export const AreaUncheckedUpdateManyInputSchema: z.ZodType<Prisma.AreaUncheckedU
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const BaseCommandCreateInputSchema: z.ZodType<Prisma.BaseCommandCreateInput> = z.object({
+  name: z.string(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutBaseCommandInputSchema).optional(),
+  scripts: z.lazy(() => ScriptCreateNestedManyWithoutBaseCommandInputSchema).optional()
+}).strict();
+
+export const BaseCommandUncheckedCreateInputSchema: z.ZodType<Prisma.BaseCommandUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutBaseCommandInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutBaseCommandInputSchema).optional()
+}).strict();
+
+export const BaseCommandUpdateInputSchema: z.ZodType<Prisma.BaseCommandUpdateInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutBaseCommandNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUpdateManyWithoutBaseCommandNestedInputSchema).optional()
+}).strict();
+
+export const BaseCommandUncheckedUpdateInputSchema: z.ZodType<Prisma.BaseCommandUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutBaseCommandNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutBaseCommandNestedInputSchema).optional()
+}).strict();
+
+export const BaseCommandCreateManyInputSchema: z.ZodType<Prisma.BaseCommandCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+}).strict();
+
+export const BaseCommandUpdateManyMutationInputSchema: z.ZodType<Prisma.BaseCommandUpdateManyMutationInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+}).strict();
+
+export const BaseCommandUncheckedUpdateManyInputSchema: z.ZodType<Prisma.BaseCommandUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+}).strict();
+
+export const CommandCreateInputSchema: z.ZodType<Prisma.CommandCreateInput> = z.object({
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  user: z.lazy(() => UserCreateNestedOneWithoutCommandsInputSchema),
+  device: z.lazy(() => DeviceCreateNestedOneWithoutCommandsInputSchema),
+  baseCommand: z.lazy(() => BaseCommandCreateNestedOneWithoutCommandsInputSchema)
+}).strict();
+
+export const CommandUncheckedCreateInputSchema: z.ZodType<Prisma.CommandUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  deviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const CommandUpdateInputSchema: z.ZodType<Prisma.CommandUpdateInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutCommandsNestedInputSchema).optional(),
+  device: z.lazy(() => DeviceUpdateOneRequiredWithoutCommandsNestedInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandUpdateOneRequiredWithoutCommandsNestedInputSchema).optional()
+}).strict();
+
+export const CommandUncheckedUpdateInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CommandCreateManyInputSchema: z.ZodType<Prisma.CommandCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  deviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const CommandUpdateManyMutationInputSchema: z.ZodType<Prisma.CommandUpdateManyMutationInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+}).strict();
+
+export const CommandUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptCreateInputSchema: z.ZodType<Prisma.ScriptCreateInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  user: z.lazy(() => UserCreateNestedOneWithoutScriptsInputSchema),
+  conditionDevice: z.lazy(() => DeviceCreateNestedOneWithoutConditionScriptsInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceCreateNestedOneWithoutCommandScriptsInputSchema),
+  baseCommand: z.lazy(() => BaseCommandCreateNestedOneWithoutScriptsInputSchema)
+}).strict();
+
+export const ScriptUncheckedCreateInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  commandDeviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptUpdateInputSchema: z.ZodType<Prisma.ScriptUpdateInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutScriptsNestedInputSchema).optional(),
+  conditionDevice: z.lazy(() => DeviceUpdateOneWithoutConditionScriptsNestedInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceUpdateOneRequiredWithoutCommandScriptsNestedInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandUpdateOneRequiredWithoutScriptsNestedInputSchema).optional()
+}).strict();
+
+export const ScriptUncheckedUpdateInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptCreateManyInputSchema: z.ZodType<Prisma.ScriptCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  commandDeviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptUpdateManyMutationInputSchema: z.ZodType<Prisma.ScriptUpdateManyMutationInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceDataCreateInputSchema: z.ZodType<Prisma.DeviceDataCreateInput> = z.object({
+  ts: z.number().int(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  device: z.lazy(() => DeviceCreateNestedOneWithoutDeviceDataInputSchema)
+}).strict();
+
+export const DeviceDataUncheckedCreateInputSchema: z.ZodType<Prisma.DeviceDataUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  deviceId: z.number().int()
+}).strict();
+
+export const DeviceDataUpdateInputSchema: z.ZodType<Prisma.DeviceDataUpdateInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  device: z.lazy(() => DeviceUpdateOneRequiredWithoutDeviceDataNestedInputSchema).optional()
+}).strict();
+
+export const DeviceDataUncheckedUpdateInputSchema: z.ZodType<Prisma.DeviceDataUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceDataCreateManyInputSchema: z.ZodType<Prisma.DeviceDataCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  deviceId: z.number().int()
+}).strict();
+
+export const DeviceDataUpdateManyMutationInputSchema: z.ZodType<Prisma.DeviceDataUpdateManyMutationInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+}).strict();
+
+export const DeviceDataUncheckedUpdateManyInputSchema: z.ZodType<Prisma.DeviceDataUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
@@ -665,11 +1488,31 @@ export const AreaListRelationFilterSchema: z.ZodType<Prisma.AreaListRelationFilt
   none: z.lazy(() => AreaWhereInputSchema).optional()
 }).strict();
 
+export const CommandListRelationFilterSchema: z.ZodType<Prisma.CommandListRelationFilter> = z.object({
+  every: z.lazy(() => CommandWhereInputSchema).optional(),
+  some: z.lazy(() => CommandWhereInputSchema).optional(),
+  none: z.lazy(() => CommandWhereInputSchema).optional()
+}).strict();
+
+export const ScriptListRelationFilterSchema: z.ZodType<Prisma.ScriptListRelationFilter> = z.object({
+  every: z.lazy(() => ScriptWhereInputSchema).optional(),
+  some: z.lazy(() => ScriptWhereInputSchema).optional(),
+  none: z.lazy(() => ScriptWhereInputSchema).optional()
+}).strict();
+
 export const DeviceOrderByRelationAggregateInputSchema: z.ZodType<Prisma.DeviceOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const AreaOrderByRelationAggregateInputSchema: z.ZodType<Prisma.AreaOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CommandOrderByRelationAggregateInputSchema: z.ZodType<Prisma.CommandOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ScriptOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ScriptOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -783,9 +1626,19 @@ export const AreaNullableRelationFilterSchema: z.ZodType<Prisma.AreaNullableRela
   isNot: z.lazy(() => AreaWhereInputSchema).optional().nullable()
 }).strict();
 
+export const DeviceDataListRelationFilterSchema: z.ZodType<Prisma.DeviceDataListRelationFilter> = z.object({
+  every: z.lazy(() => DeviceDataWhereInputSchema).optional(),
+  some: z.lazy(() => DeviceDataWhereInputSchema).optional(),
+  none: z.lazy(() => DeviceDataWhereInputSchema).optional()
+}).strict();
+
 export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
   sort: z.lazy(() => SortOrderSchema),
   nulls: z.lazy(() => NullsOrderSchema).optional()
+}).strict();
+
+export const DeviceDataOrderByRelationAggregateInputSchema: z.ZodType<Prisma.DeviceDataOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const DeviceCountOrderByAggregateInputSchema: z.ZodType<Prisma.DeviceCountOrderByAggregateInput> = z.object({
@@ -915,6 +1768,204 @@ export const EnumAreaTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumAreaTy
   _max: z.lazy(() => NestedEnumAreaTypeFilterSchema).optional()
 }).strict();
 
+export const JsonFilterSchema: z.ZodType<Prisma.JsonFilter> = z.object({
+  equals: InputJsonValueSchema.optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValueSchema.optional().nullable(),
+  array_starts_with: InputJsonValueSchema.optional().nullable(),
+  array_ends_with: InputJsonValueSchema.optional().nullable(),
+  lt: InputJsonValueSchema.optional(),
+  lte: InputJsonValueSchema.optional(),
+  gt: InputJsonValueSchema.optional(),
+  gte: InputJsonValueSchema.optional(),
+  not: InputJsonValueSchema.optional()
+}).strict();
+
+export const BaseCommandCountOrderByAggregateInputSchema: z.ZodType<Prisma.BaseCommandCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  args: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const BaseCommandAvgOrderByAggregateInputSchema: z.ZodType<Prisma.BaseCommandAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const BaseCommandMaxOrderByAggregateInputSchema: z.ZodType<Prisma.BaseCommandMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const BaseCommandMinOrderByAggregateInputSchema: z.ZodType<Prisma.BaseCommandMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const BaseCommandSumOrderByAggregateInputSchema: z.ZodType<Prisma.BaseCommandSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const JsonWithAggregatesFilterSchema: z.ZodType<Prisma.JsonWithAggregatesFilter> = z.object({
+  equals: InputJsonValueSchema.optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValueSchema.optional().nullable(),
+  array_starts_with: InputJsonValueSchema.optional().nullable(),
+  array_ends_with: InputJsonValueSchema.optional().nullable(),
+  lt: InputJsonValueSchema.optional(),
+  lte: InputJsonValueSchema.optional(),
+  gt: InputJsonValueSchema.optional(),
+  gte: InputJsonValueSchema.optional(),
+  not: InputJsonValueSchema.optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedJsonFilterSchema).optional(),
+  _max: z.lazy(() => NestedJsonFilterSchema).optional()
+}).strict();
+
+export const DeviceRelationFilterSchema: z.ZodType<Prisma.DeviceRelationFilter> = z.object({
+  is: z.lazy(() => DeviceWhereInputSchema).optional(),
+  isNot: z.lazy(() => DeviceWhereInputSchema).optional()
+}).strict();
+
+export const BaseCommandRelationFilterSchema: z.ZodType<Prisma.BaseCommandRelationFilter> = z.object({
+  is: z.lazy(() => BaseCommandWhereInputSchema).optional(),
+  isNot: z.lazy(() => BaseCommandWhereInputSchema).optional()
+}).strict();
+
+export const CommandCountOrderByAggregateInputSchema: z.ZodType<Prisma.CommandCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  isExecuted: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  params: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CommandAvgOrderByAggregateInputSchema: z.ZodType<Prisma.CommandAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CommandMaxOrderByAggregateInputSchema: z.ZodType<Prisma.CommandMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  isExecuted: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CommandMinOrderByAggregateInputSchema: z.ZodType<Prisma.CommandMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  isExecuted: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CommandSumOrderByAggregateInputSchema: z.ZodType<Prisma.CommandSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DeviceNullableRelationFilterSchema: z.ZodType<Prisma.DeviceNullableRelationFilter> = z.object({
+  is: z.lazy(() => DeviceWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => DeviceWhereInputSchema).optional().nullable()
+}).strict();
+
+export const ScriptCountOrderByAggregateInputSchema: z.ZodType<Prisma.ScriptCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  conditionParams: z.lazy(() => SortOrderSchema).optional(),
+  commandParams: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  conditionDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  commandDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ScriptAvgOrderByAggregateInputSchema: z.ZodType<Prisma.ScriptAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  conditionDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  commandDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ScriptMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ScriptMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  conditionDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  commandDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ScriptMinOrderByAggregateInputSchema: z.ZodType<Prisma.ScriptMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  description: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  conditionDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  commandDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ScriptSumOrderByAggregateInputSchema: z.ZodType<Prisma.ScriptSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  conditionDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  commandDeviceId: z.lazy(() => SortOrderSchema).optional(),
+  baseCommandId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DeviceDataCountOrderByAggregateInputSchema: z.ZodType<Prisma.DeviceDataCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  status: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DeviceDataAvgOrderByAggregateInputSchema: z.ZodType<Prisma.DeviceDataAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DeviceDataMaxOrderByAggregateInputSchema: z.ZodType<Prisma.DeviceDataMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DeviceDataMinOrderByAggregateInputSchema: z.ZodType<Prisma.DeviceDataMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DeviceDataSumOrderByAggregateInputSchema: z.ZodType<Prisma.DeviceDataSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  ts: z.lazy(() => SortOrderSchema).optional(),
+  deviceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
 export const DeviceCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.DeviceCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => DeviceCreateWithoutUserInputSchema),z.lazy(() => DeviceCreateWithoutUserInputSchema).array(),z.lazy(() => DeviceUncheckedCreateWithoutUserInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => DeviceCreateOrConnectWithoutUserInputSchema),z.lazy(() => DeviceCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -929,6 +1980,20 @@ export const AreaCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.AreaCr
   connect: z.union([ z.lazy(() => AreaWhereUniqueInputSchema),z.lazy(() => AreaWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const CommandCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.CommandCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutUserInputSchema),z.lazy(() => CommandCreateWithoutUserInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema),z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.ScriptCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutUserInputSchema),z.lazy(() => ScriptCreateWithoutUserInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const DeviceUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => DeviceCreateWithoutUserInputSchema),z.lazy(() => DeviceCreateWithoutUserInputSchema).array(),z.lazy(() => DeviceUncheckedCreateWithoutUserInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => DeviceCreateOrConnectWithoutUserInputSchema),z.lazy(() => DeviceCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -941,6 +2006,20 @@ export const AreaUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Pris
   connectOrCreate: z.union([ z.lazy(() => AreaCreateOrConnectWithoutUserInputSchema),z.lazy(() => AreaCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
   createMany: z.lazy(() => AreaCreateManyUserInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => AreaWhereUniqueInputSchema),z.lazy(() => AreaWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const CommandUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.CommandUncheckedCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutUserInputSchema),z.lazy(() => CommandCreateWithoutUserInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema),z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateNestedManyWithoutUserInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutUserInputSchema),z.lazy(() => ScriptCreateWithoutUserInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyUserInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const StringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.StringFieldUpdateOperationsInput> = z.object({
@@ -987,6 +2066,34 @@ export const AreaUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.AreaUp
   deleteMany: z.union([ z.lazy(() => AreaScalarWhereInputSchema),z.lazy(() => AreaScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const CommandUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.CommandUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutUserInputSchema),z.lazy(() => CommandCreateWithoutUserInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema),z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CommandUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => CommandUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CommandUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => CommandUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CommandUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => CommandUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutUserInputSchema),z.lazy(() => ScriptCreateWithoutUserInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const DeviceUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput> = z.object({
   create: z.union([ z.lazy(() => DeviceCreateWithoutUserInputSchema),z.lazy(() => DeviceCreateWithoutUserInputSchema).array(),z.lazy(() => DeviceUncheckedCreateWithoutUserInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => DeviceCreateOrConnectWithoutUserInputSchema),z.lazy(() => DeviceCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -1015,16 +2122,100 @@ export const AreaUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Pris
   deleteMany: z.union([ z.lazy(() => AreaScalarWhereInputSchema),z.lazy(() => AreaScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const CommandUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutUserInputSchema),z.lazy(() => CommandCreateWithoutUserInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema),z.lazy(() => CommandCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CommandUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => CommandUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CommandUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => CommandUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CommandUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => CommandUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutUserNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutUserInputSchema),z.lazy(() => ScriptCreateWithoutUserInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutUserInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyUserInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const UserCreateNestedOneWithoutDevicesInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutDevicesInput> = z.object({
   create: z.union([ z.lazy(() => UserCreateWithoutDevicesInputSchema),z.lazy(() => UserUncheckedCreateWithoutDevicesInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutDevicesInputSchema).optional(),
   connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
 }).strict();
 
-export const AreaCreateNestedOneWithoutDeviceInputSchema: z.ZodType<Prisma.AreaCreateNestedOneWithoutDeviceInput> = z.object({
-  create: z.union([ z.lazy(() => AreaCreateWithoutDeviceInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDeviceInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => AreaCreateOrConnectWithoutDeviceInputSchema).optional(),
+export const AreaCreateNestedOneWithoutDevicesInputSchema: z.ZodType<Prisma.AreaCreateNestedOneWithoutDevicesInput> = z.object({
+  create: z.union([ z.lazy(() => AreaCreateWithoutDevicesInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDevicesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AreaCreateOrConnectWithoutDevicesInputSchema).optional(),
   connect: z.lazy(() => AreaWhereUniqueInputSchema).optional()
+}).strict();
+
+export const CommandCreateNestedManyWithoutDeviceInputSchema: z.ZodType<Prisma.CommandCreateNestedManyWithoutDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutDeviceInputSchema),z.lazy(() => CommandCreateWithoutDeviceInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptCreateNestedManyWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptCreateNestedManyWithoutConditionDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyConditionDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptCreateNestedManyWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptCreateNestedManyWithoutCommandDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyCommandDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const DeviceDataCreateNestedManyWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataCreateNestedManyWithoutDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema).array(),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DeviceDataCreateManyDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const CommandUncheckedCreateNestedManyWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUncheckedCreateNestedManyWithoutDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutDeviceInputSchema),z.lazy(() => CommandCreateWithoutDeviceInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedCreateNestedManyWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateNestedManyWithoutConditionDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyConditionDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedCreateNestedManyWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateNestedManyWithoutCommandDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyCommandDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const DeviceDataUncheckedCreateNestedManyWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUncheckedCreateNestedManyWithoutDeviceInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema).array(),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DeviceDataCreateManyDeviceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const EnumDeviceTypeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumDeviceTypeFieldUpdateOperationsInput> = z.object({
@@ -1041,14 +2232,70 @@ export const UserUpdateOneWithoutDevicesNestedInputSchema: z.ZodType<Prisma.User
   update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutDevicesInputSchema),z.lazy(() => UserUpdateWithoutDevicesInputSchema),z.lazy(() => UserUncheckedUpdateWithoutDevicesInputSchema) ]).optional(),
 }).strict();
 
-export const AreaUpdateOneWithoutDeviceNestedInputSchema: z.ZodType<Prisma.AreaUpdateOneWithoutDeviceNestedInput> = z.object({
-  create: z.union([ z.lazy(() => AreaCreateWithoutDeviceInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDeviceInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => AreaCreateOrConnectWithoutDeviceInputSchema).optional(),
-  upsert: z.lazy(() => AreaUpsertWithoutDeviceInputSchema).optional(),
+export const AreaUpdateOneWithoutDevicesNestedInputSchema: z.ZodType<Prisma.AreaUpdateOneWithoutDevicesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => AreaCreateWithoutDevicesInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDevicesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AreaCreateOrConnectWithoutDevicesInputSchema).optional(),
+  upsert: z.lazy(() => AreaUpsertWithoutDevicesInputSchema).optional(),
   disconnect: z.union([ z.boolean(),z.lazy(() => AreaWhereInputSchema) ]).optional(),
   delete: z.union([ z.boolean(),z.lazy(() => AreaWhereInputSchema) ]).optional(),
   connect: z.lazy(() => AreaWhereUniqueInputSchema).optional(),
-  update: z.union([ z.lazy(() => AreaUpdateToOneWithWhereWithoutDeviceInputSchema),z.lazy(() => AreaUpdateWithoutDeviceInputSchema),z.lazy(() => AreaUncheckedUpdateWithoutDeviceInputSchema) ]).optional(),
+  update: z.union([ z.lazy(() => AreaUpdateToOneWithWhereWithoutDevicesInputSchema),z.lazy(() => AreaUpdateWithoutDevicesInputSchema),z.lazy(() => AreaUncheckedUpdateWithoutDevicesInputSchema) ]).optional(),
+}).strict();
+
+export const CommandUpdateManyWithoutDeviceNestedInputSchema: z.ZodType<Prisma.CommandUpdateManyWithoutDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutDeviceInputSchema),z.lazy(() => CommandCreateWithoutDeviceInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CommandUpsertWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => CommandUpsertWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CommandUpdateWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => CommandUpdateWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CommandUpdateManyWithWhereWithoutDeviceInputSchema),z.lazy(() => CommandUpdateManyWithWhereWithoutDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUpdateManyWithoutConditionDeviceNestedInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithoutConditionDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutConditionDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyConditionDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutConditionDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutConditionDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUpdateManyWithoutCommandDeviceNestedInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithoutCommandDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutCommandDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyCommandDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutCommandDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutCommandDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const DeviceDataUpdateManyWithoutDeviceNestedInputSchema: z.ZodType<Prisma.DeviceDataUpdateManyWithoutDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema).array(),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => DeviceDataUpsertWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => DeviceDataUpsertWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DeviceDataCreateManyDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => DeviceDataUpdateWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => DeviceDataUpdateWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => DeviceDataUpdateManyWithWhereWithoutDeviceInputSchema),z.lazy(() => DeviceDataUpdateManyWithWhereWithoutDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => DeviceDataScalarWhereInputSchema),z.lazy(() => DeviceDataScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const NullableIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableIntFieldUpdateOperationsInput> = z.object({
@@ -1057,6 +2304,62 @@ export const NullableIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.Nulla
   decrement: z.number().optional(),
   multiply: z.number().optional(),
   divide: z.number().optional()
+}).strict();
+
+export const CommandUncheckedUpdateManyWithoutDeviceNestedInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateManyWithoutDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutDeviceInputSchema),z.lazy(() => CommandCreateWithoutDeviceInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => CommandCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CommandUpsertWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => CommandUpsertWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CommandUpdateWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => CommandUpdateWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CommandUpdateManyWithWhereWithoutDeviceInputSchema),z.lazy(() => CommandUpdateManyWithWhereWithoutDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutConditionDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutConditionDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyConditionDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutConditionDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutConditionDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutCommandDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutCommandDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyCommandDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutCommandDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutCommandDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const DeviceDataUncheckedUpdateManyWithoutDeviceNestedInputSchema: z.ZodType<Prisma.DeviceDataUncheckedUpdateManyWithoutDeviceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema).array(),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema),z.lazy(() => DeviceDataCreateOrConnectWithoutDeviceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => DeviceDataUpsertWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => DeviceDataUpsertWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DeviceDataCreateManyDeviceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => DeviceDataWhereUniqueInputSchema),z.lazy(() => DeviceDataWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => DeviceDataUpdateWithWhereUniqueWithoutDeviceInputSchema),z.lazy(() => DeviceDataUpdateWithWhereUniqueWithoutDeviceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => DeviceDataUpdateManyWithWhereWithoutDeviceInputSchema),z.lazy(() => DeviceDataUpdateManyWithWhereWithoutDeviceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => DeviceDataScalarWhereInputSchema),z.lazy(() => DeviceDataScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const UserCreateNestedOneWithoutAreasInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutAreasInput> = z.object({
@@ -1117,6 +2420,204 @@ export const DeviceUncheckedUpdateManyWithoutAreaNestedInputSchema: z.ZodType<Pr
   update: z.union([ z.lazy(() => DeviceUpdateWithWhereUniqueWithoutAreaInputSchema),z.lazy(() => DeviceUpdateWithWhereUniqueWithoutAreaInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => DeviceUpdateManyWithWhereWithoutAreaInputSchema),z.lazy(() => DeviceUpdateManyWithWhereWithoutAreaInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => DeviceScalarWhereInputSchema),z.lazy(() => DeviceScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const CommandCreateNestedManyWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandCreateNestedManyWithoutBaseCommandInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptCreateNestedManyWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptCreateNestedManyWithoutBaseCommandInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const CommandUncheckedCreateNestedManyWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUncheckedCreateNestedManyWithoutBaseCommandInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedCreateNestedManyWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateNestedManyWithoutBaseCommandInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const CommandUpdateManyWithoutBaseCommandNestedInputSchema: z.ZodType<Prisma.CommandUpdateManyWithoutBaseCommandNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CommandUpsertWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => CommandUpsertWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CommandUpdateWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => CommandUpdateWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CommandUpdateManyWithWhereWithoutBaseCommandInputSchema),z.lazy(() => CommandUpdateManyWithWhereWithoutBaseCommandInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUpdateManyWithoutBaseCommandNestedInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithoutBaseCommandNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutBaseCommandInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutBaseCommandInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const CommandUncheckedUpdateManyWithoutBaseCommandNestedInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateManyWithoutBaseCommandNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CommandCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => CommandCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CommandUpsertWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => CommandUpsertWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CommandCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CommandWhereUniqueInputSchema),z.lazy(() => CommandWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CommandUpdateWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => CommandUpdateWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CommandUpdateManyWithWhereWithoutBaseCommandInputSchema),z.lazy(() => CommandUpdateManyWithWhereWithoutBaseCommandInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutBaseCommandNestedInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutBaseCommandNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema).array(),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema),z.lazy(() => ScriptCreateOrConnectWithoutBaseCommandInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ScriptUpsertWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => ScriptUpsertWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ScriptCreateManyBaseCommandInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ScriptWhereUniqueInputSchema),z.lazy(() => ScriptWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ScriptUpdateWithWhereUniqueWithoutBaseCommandInputSchema),z.lazy(() => ScriptUpdateWithWhereUniqueWithoutBaseCommandInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ScriptUpdateManyWithWhereWithoutBaseCommandInputSchema),z.lazy(() => ScriptUpdateManyWithWhereWithoutBaseCommandInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const UserCreateNestedOneWithoutCommandsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutCommandsInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutCommandsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCommandsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutCommandsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const DeviceCreateNestedOneWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceCreateNestedOneWithoutCommandsInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutCommandsInputSchema).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional()
+}).strict();
+
+export const BaseCommandCreateNestedOneWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandCreateNestedOneWithoutCommandsInput> = z.object({
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutCommandsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutCommandsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => BaseCommandCreateOrConnectWithoutCommandsInputSchema).optional(),
+  connect: z.lazy(() => BaseCommandWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserUpdateOneRequiredWithoutCommandsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutCommandsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutCommandsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCommandsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutCommandsInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutCommandsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutCommandsInputSchema),z.lazy(() => UserUpdateWithoutCommandsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutCommandsInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceUpdateOneRequiredWithoutCommandsNestedInputSchema: z.ZodType<Prisma.DeviceUpdateOneRequiredWithoutCommandsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutCommandsInputSchema).optional(),
+  upsert: z.lazy(() => DeviceUpsertWithoutCommandsInputSchema).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => DeviceUpdateToOneWithWhereWithoutCommandsInputSchema),z.lazy(() => DeviceUpdateWithoutCommandsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutCommandsInputSchema) ]).optional(),
+}).strict();
+
+export const BaseCommandUpdateOneRequiredWithoutCommandsNestedInputSchema: z.ZodType<Prisma.BaseCommandUpdateOneRequiredWithoutCommandsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutCommandsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutCommandsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => BaseCommandCreateOrConnectWithoutCommandsInputSchema).optional(),
+  upsert: z.lazy(() => BaseCommandUpsertWithoutCommandsInputSchema).optional(),
+  connect: z.lazy(() => BaseCommandWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => BaseCommandUpdateToOneWithWhereWithoutCommandsInputSchema),z.lazy(() => BaseCommandUpdateWithoutCommandsInputSchema),z.lazy(() => BaseCommandUncheckedUpdateWithoutCommandsInputSchema) ]).optional(),
+}).strict();
+
+export const UserCreateNestedOneWithoutScriptsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutScriptsInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutScriptsInputSchema),z.lazy(() => UserUncheckedCreateWithoutScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutScriptsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional()
+}).strict();
+
+export const DeviceCreateNestedOneWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceCreateNestedOneWithoutConditionScriptsInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutConditionScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutConditionScriptsInputSchema).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional()
+}).strict();
+
+export const DeviceCreateNestedOneWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceCreateNestedOneWithoutCommandScriptsInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutCommandScriptsInputSchema).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional()
+}).strict();
+
+export const BaseCommandCreateNestedOneWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandCreateNestedOneWithoutScriptsInput> = z.object({
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutScriptsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => BaseCommandCreateOrConnectWithoutScriptsInputSchema).optional(),
+  connect: z.lazy(() => BaseCommandWhereUniqueInputSchema).optional()
+}).strict();
+
+export const UserUpdateOneRequiredWithoutScriptsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutScriptsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutScriptsInputSchema),z.lazy(() => UserUncheckedCreateWithoutScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutScriptsInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutScriptsInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutScriptsInputSchema),z.lazy(() => UserUpdateWithoutScriptsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutScriptsInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceUpdateOneWithoutConditionScriptsNestedInputSchema: z.ZodType<Prisma.DeviceUpdateOneWithoutConditionScriptsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutConditionScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutConditionScriptsInputSchema).optional(),
+  upsert: z.lazy(() => DeviceUpsertWithoutConditionScriptsInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => DeviceWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => DeviceUpdateToOneWithWhereWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUpdateWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutConditionScriptsInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceUpdateOneRequiredWithoutCommandScriptsNestedInputSchema: z.ZodType<Prisma.DeviceUpdateOneRequiredWithoutCommandScriptsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutCommandScriptsInputSchema).optional(),
+  upsert: z.lazy(() => DeviceUpsertWithoutCommandScriptsInputSchema).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => DeviceUpdateToOneWithWhereWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUpdateWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutCommandScriptsInputSchema) ]).optional(),
+}).strict();
+
+export const BaseCommandUpdateOneRequiredWithoutScriptsNestedInputSchema: z.ZodType<Prisma.BaseCommandUpdateOneRequiredWithoutScriptsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutScriptsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutScriptsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => BaseCommandCreateOrConnectWithoutScriptsInputSchema).optional(),
+  upsert: z.lazy(() => BaseCommandUpsertWithoutScriptsInputSchema).optional(),
+  connect: z.lazy(() => BaseCommandWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => BaseCommandUpdateToOneWithWhereWithoutScriptsInputSchema),z.lazy(() => BaseCommandUpdateWithoutScriptsInputSchema),z.lazy(() => BaseCommandUncheckedUpdateWithoutScriptsInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceCreateNestedOneWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceCreateNestedOneWithoutDeviceDataInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutDeviceDataInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutDeviceDataInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutDeviceDataInputSchema).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional()
+}).strict();
+
+export const DeviceUpdateOneRequiredWithoutDeviceDataNestedInputSchema: z.ZodType<Prisma.DeviceUpdateOneRequiredWithoutDeviceDataNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DeviceCreateWithoutDeviceDataInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutDeviceDataInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DeviceCreateOrConnectWithoutDeviceDataInputSchema).optional(),
+  upsert: z.lazy(() => DeviceUpsertWithoutDeviceDataInputSchema).optional(),
+  connect: z.lazy(() => DeviceWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => DeviceUpdateToOneWithWhereWithoutDeviceDataInputSchema),z.lazy(() => DeviceUpdateWithoutDeviceDataInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutDeviceDataInputSchema) ]).optional(),
 }).strict();
 
 export const NestedIntFilterSchema: z.ZodType<Prisma.NestedIntFilter> = z.object({
@@ -1273,13 +2774,33 @@ export const NestedEnumAreaTypeWithAggregatesFilterSchema: z.ZodType<Prisma.Nest
   _max: z.lazy(() => NestedEnumAreaTypeFilterSchema).optional()
 }).strict();
 
+export const NestedJsonFilterSchema: z.ZodType<Prisma.NestedJsonFilter> = z.object({
+  equals: InputJsonValueSchema.optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValueSchema.optional().nullable(),
+  array_starts_with: InputJsonValueSchema.optional().nullable(),
+  array_ends_with: InputJsonValueSchema.optional().nullable(),
+  lt: InputJsonValueSchema.optional(),
+  lte: InputJsonValueSchema.optional(),
+  gt: InputJsonValueSchema.optional(),
+  gte: InputJsonValueSchema.optional(),
+  not: InputJsonValueSchema.optional()
+}).strict();
+
 export const DeviceCreateWithoutUserInputSchema: z.ZodType<Prisma.DeviceCreateWithoutUserInput> = z.object({
   name: z.string(),
   description: z.string(),
   isConnected: z.boolean().optional(),
   uuid: z.string(),
   type: z.lazy(() => DeviceTypeSchema),
-  area: z.lazy(() => AreaCreateNestedOneWithoutDeviceInputSchema).optional()
+  area: z.lazy(() => AreaCreateNestedOneWithoutDevicesInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataCreateNestedManyWithoutDeviceInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateWithoutUserInput> = z.object({
@@ -1289,7 +2810,11 @@ export const DeviceUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.Devic
   isConnected: z.boolean().optional(),
   uuid: z.string(),
   type: z.lazy(() => DeviceTypeSchema),
-  areaId: z.number().int().optional().nullable()
+  areaId: z.number().int().optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedCreateNestedManyWithoutDeviceInputSchema).optional()
 }).strict();
 
 export const DeviceCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.DeviceCreateOrConnectWithoutUserInput> = z.object({
@@ -1306,7 +2831,7 @@ export const AreaCreateWithoutUserInputSchema: z.ZodType<Prisma.AreaCreateWithou
   name: z.string(),
   description: z.string(),
   type: z.lazy(() => AreaTypeSchema),
-  Device: z.lazy(() => DeviceCreateNestedManyWithoutAreaInputSchema).optional()
+  devices: z.lazy(() => DeviceCreateNestedManyWithoutAreaInputSchema).optional()
 }).strict();
 
 export const AreaUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.AreaUncheckedCreateWithoutUserInput> = z.object({
@@ -1314,7 +2839,7 @@ export const AreaUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.AreaUnc
   name: z.string(),
   description: z.string(),
   type: z.lazy(() => AreaTypeSchema),
-  Device: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutAreaInputSchema).optional()
+  devices: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutAreaInputSchema).optional()
 }).strict();
 
 export const AreaCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.AreaCreateOrConnectWithoutUserInput> = z.object({
@@ -1324,6 +2849,66 @@ export const AreaCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.AreaCre
 
 export const AreaCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.AreaCreateManyUserInputEnvelope> = z.object({
   data: z.union([ z.lazy(() => AreaCreateManyUserInputSchema),z.lazy(() => AreaCreateManyUserInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const CommandCreateWithoutUserInputSchema: z.ZodType<Prisma.CommandCreateWithoutUserInput> = z.object({
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  device: z.lazy(() => DeviceCreateNestedOneWithoutCommandsInputSchema),
+  baseCommand: z.lazy(() => BaseCommandCreateNestedOneWithoutCommandsInputSchema)
+}).strict();
+
+export const CommandUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.CommandUncheckedCreateWithoutUserInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  deviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const CommandCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.CommandCreateOrConnectWithoutUserInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => CommandCreateWithoutUserInputSchema),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const CommandCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.CommandCreateManyUserInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => CommandCreateManyUserInputSchema),z.lazy(() => CommandCreateManyUserInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const ScriptCreateWithoutUserInputSchema: z.ZodType<Prisma.ScriptCreateWithoutUserInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  conditionDevice: z.lazy(() => DeviceCreateNestedOneWithoutConditionScriptsInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceCreateNestedOneWithoutCommandScriptsInputSchema),
+  baseCommand: z.lazy(() => BaseCommandCreateNestedOneWithoutScriptsInputSchema)
+}).strict();
+
+export const ScriptUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateWithoutUserInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  commandDeviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptCreateOrConnectWithoutUserInputSchema: z.ZodType<Prisma.ScriptCreateOrConnectWithoutUserInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const ScriptCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.ScriptCreateManyUserInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => ScriptCreateManyUserInputSchema),z.lazy(() => ScriptCreateManyUserInputSchema).array() ]),
   skipDuplicates: z.boolean().optional()
 }).strict();
 
@@ -1384,6 +2969,67 @@ export const AreaScalarWhereInputSchema: z.ZodType<Prisma.AreaScalarWhereInput> 
   userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
 }).strict();
 
+export const CommandUpsertWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.CommandUpsertWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => CommandUpdateWithoutUserInputSchema),z.lazy(() => CommandUncheckedUpdateWithoutUserInputSchema) ]),
+  create: z.union([ z.lazy(() => CommandCreateWithoutUserInputSchema),z.lazy(() => CommandUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const CommandUpdateWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.CommandUpdateWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => CommandUpdateWithoutUserInputSchema),z.lazy(() => CommandUncheckedUpdateWithoutUserInputSchema) ]),
+}).strict();
+
+export const CommandUpdateManyWithWhereWithoutUserInputSchema: z.ZodType<Prisma.CommandUpdateManyWithWhereWithoutUserInput> = z.object({
+  where: z.lazy(() => CommandScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => CommandUpdateManyMutationInputSchema),z.lazy(() => CommandUncheckedUpdateManyWithoutUserInputSchema) ]),
+}).strict();
+
+export const CommandScalarWhereInputSchema: z.ZodType<Prisma.CommandScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CommandScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CommandScalarWhereInputSchema),z.lazy(() => CommandScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  ts: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  isExecuted: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
+  status: z.lazy(() => JsonFilterSchema).optional(),
+  params: z.lazy(() => JsonFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  deviceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+}).strict();
+
+export const ScriptUpsertWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.ScriptUpsertWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ScriptUpdateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutUserInputSchema) ]),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutUserInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.ScriptUpdateWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateWithoutUserInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutUserInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateManyWithWhereWithoutUserInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithWhereWithoutUserInput> = z.object({
+  where: z.lazy(() => ScriptScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateManyMutationInputSchema),z.lazy(() => ScriptUncheckedUpdateManyWithoutUserInputSchema) ]),
+}).strict();
+
+export const ScriptScalarWhereInputSchema: z.ZodType<Prisma.ScriptScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ScriptScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ScriptScalarWhereInputSchema),z.lazy(() => ScriptScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  conditionParams: z.lazy(() => JsonFilterSchema).optional(),
+  commandParams: z.lazy(() => JsonFilterSchema).optional(),
+  userId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  conditionDeviceId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  commandDeviceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  baseCommandId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+}).strict();
+
 export const UserCreateWithoutDevicesInputSchema: z.ZodType<Prisma.UserCreateWithoutDevicesInput> = z.object({
   username: z.string(),
   passHash: z.string(),
@@ -1391,7 +3037,9 @@ export const UserCreateWithoutDevicesInputSchema: z.ZodType<Prisma.UserCreateWit
   createdAt: z.number().int(),
   isActive: z.boolean().optional(),
   isAdmin: z.boolean().optional(),
-  areas: z.lazy(() => AreaCreateNestedManyWithoutUserInputSchema).optional()
+  areas: z.lazy(() => AreaCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutDevicesInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutDevicesInput> = z.object({
@@ -1402,7 +3050,9 @@ export const UserUncheckedCreateWithoutDevicesInputSchema: z.ZodType<Prisma.User
   createdAt: z.number().int(),
   isActive: z.boolean().optional(),
   isAdmin: z.boolean().optional(),
-  areas: z.lazy(() => AreaUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  areas: z.lazy(() => AreaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutDevicesInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutDevicesInput> = z.object({
@@ -1410,14 +3060,14 @@ export const UserCreateOrConnectWithoutDevicesInputSchema: z.ZodType<Prisma.User
   create: z.union([ z.lazy(() => UserCreateWithoutDevicesInputSchema),z.lazy(() => UserUncheckedCreateWithoutDevicesInputSchema) ]),
 }).strict();
 
-export const AreaCreateWithoutDeviceInputSchema: z.ZodType<Prisma.AreaCreateWithoutDeviceInput> = z.object({
+export const AreaCreateWithoutDevicesInputSchema: z.ZodType<Prisma.AreaCreateWithoutDevicesInput> = z.object({
   name: z.string(),
   description: z.string(),
   type: z.lazy(() => AreaTypeSchema),
   user: z.lazy(() => UserCreateNestedOneWithoutAreasInputSchema)
 }).strict();
 
-export const AreaUncheckedCreateWithoutDeviceInputSchema: z.ZodType<Prisma.AreaUncheckedCreateWithoutDeviceInput> = z.object({
+export const AreaUncheckedCreateWithoutDevicesInputSchema: z.ZodType<Prisma.AreaUncheckedCreateWithoutDevicesInput> = z.object({
   id: z.number().int().optional(),
   name: z.string(),
   description: z.string(),
@@ -1425,9 +3075,121 @@ export const AreaUncheckedCreateWithoutDeviceInputSchema: z.ZodType<Prisma.AreaU
   userId: z.number().int()
 }).strict();
 
-export const AreaCreateOrConnectWithoutDeviceInputSchema: z.ZodType<Prisma.AreaCreateOrConnectWithoutDeviceInput> = z.object({
+export const AreaCreateOrConnectWithoutDevicesInputSchema: z.ZodType<Prisma.AreaCreateOrConnectWithoutDevicesInput> = z.object({
   where: z.lazy(() => AreaWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => AreaCreateWithoutDeviceInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDeviceInputSchema) ]),
+  create: z.union([ z.lazy(() => AreaCreateWithoutDevicesInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDevicesInputSchema) ]),
+}).strict();
+
+export const CommandCreateWithoutDeviceInputSchema: z.ZodType<Prisma.CommandCreateWithoutDeviceInput> = z.object({
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  user: z.lazy(() => UserCreateNestedOneWithoutCommandsInputSchema),
+  baseCommand: z.lazy(() => BaseCommandCreateNestedOneWithoutCommandsInputSchema)
+}).strict();
+
+export const CommandUncheckedCreateWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUncheckedCreateWithoutDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const CommandCreateOrConnectWithoutDeviceInputSchema: z.ZodType<Prisma.CommandCreateOrConnectWithoutDeviceInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => CommandCreateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const CommandCreateManyDeviceInputEnvelopeSchema: z.ZodType<Prisma.CommandCreateManyDeviceInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => CommandCreateManyDeviceInputSchema),z.lazy(() => CommandCreateManyDeviceInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const ScriptCreateWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptCreateWithoutConditionDeviceInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  user: z.lazy(() => UserCreateNestedOneWithoutScriptsInputSchema),
+  commandDevice: z.lazy(() => DeviceCreateNestedOneWithoutCommandScriptsInputSchema),
+  baseCommand: z.lazy(() => BaseCommandCreateNestedOneWithoutScriptsInputSchema)
+}).strict();
+
+export const ScriptUncheckedCreateWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateWithoutConditionDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  commandDeviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptCreateOrConnectWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptCreateOrConnectWithoutConditionDeviceInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptCreateManyConditionDeviceInputEnvelopeSchema: z.ZodType<Prisma.ScriptCreateManyConditionDeviceInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => ScriptCreateManyConditionDeviceInputSchema),z.lazy(() => ScriptCreateManyConditionDeviceInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const ScriptCreateWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptCreateWithoutCommandDeviceInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  user: z.lazy(() => UserCreateNestedOneWithoutScriptsInputSchema),
+  conditionDevice: z.lazy(() => DeviceCreateNestedOneWithoutConditionScriptsInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandCreateNestedOneWithoutScriptsInputSchema)
+}).strict();
+
+export const ScriptUncheckedCreateWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateWithoutCommandDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptCreateOrConnectWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptCreateOrConnectWithoutCommandDeviceInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptCreateManyCommandDeviceInputEnvelopeSchema: z.ZodType<Prisma.ScriptCreateManyCommandDeviceInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => ScriptCreateManyCommandDeviceInputSchema),z.lazy(() => ScriptCreateManyCommandDeviceInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const DeviceDataCreateWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataCreateWithoutDeviceInput> = z.object({
+  ts: z.number().int(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+}).strict();
+
+export const DeviceDataUncheckedCreateWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUncheckedCreateWithoutDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+}).strict();
+
+export const DeviceDataCreateOrConnectWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataCreateOrConnectWithoutDeviceInput> = z.object({
+  where: z.lazy(() => DeviceDataWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const DeviceDataCreateManyDeviceInputEnvelopeSchema: z.ZodType<Prisma.DeviceDataCreateManyDeviceInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => DeviceDataCreateManyDeviceInputSchema),z.lazy(() => DeviceDataCreateManyDeviceInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
 }).strict();
 
 export const UserUpsertWithoutDevicesInputSchema: z.ZodType<Prisma.UserUpsertWithoutDevicesInput> = z.object({
@@ -1448,7 +3210,9 @@ export const UserUpdateWithoutDevicesInputSchema: z.ZodType<Prisma.UserUpdateWit
   createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
-  areas: z.lazy(() => AreaUpdateManyWithoutUserNestedInputSchema).optional()
+  areas: z.lazy(() => AreaUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutDevicesInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutDevicesInput> = z.object({
@@ -1459,33 +3223,109 @@ export const UserUncheckedUpdateWithoutDevicesInputSchema: z.ZodType<Prisma.User
   createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
-  areas: z.lazy(() => AreaUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  areas: z.lazy(() => AreaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
-export const AreaUpsertWithoutDeviceInputSchema: z.ZodType<Prisma.AreaUpsertWithoutDeviceInput> = z.object({
-  update: z.union([ z.lazy(() => AreaUpdateWithoutDeviceInputSchema),z.lazy(() => AreaUncheckedUpdateWithoutDeviceInputSchema) ]),
-  create: z.union([ z.lazy(() => AreaCreateWithoutDeviceInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDeviceInputSchema) ]),
+export const AreaUpsertWithoutDevicesInputSchema: z.ZodType<Prisma.AreaUpsertWithoutDevicesInput> = z.object({
+  update: z.union([ z.lazy(() => AreaUpdateWithoutDevicesInputSchema),z.lazy(() => AreaUncheckedUpdateWithoutDevicesInputSchema) ]),
+  create: z.union([ z.lazy(() => AreaCreateWithoutDevicesInputSchema),z.lazy(() => AreaUncheckedCreateWithoutDevicesInputSchema) ]),
   where: z.lazy(() => AreaWhereInputSchema).optional()
 }).strict();
 
-export const AreaUpdateToOneWithWhereWithoutDeviceInputSchema: z.ZodType<Prisma.AreaUpdateToOneWithWhereWithoutDeviceInput> = z.object({
+export const AreaUpdateToOneWithWhereWithoutDevicesInputSchema: z.ZodType<Prisma.AreaUpdateToOneWithWhereWithoutDevicesInput> = z.object({
   where: z.lazy(() => AreaWhereInputSchema).optional(),
-  data: z.union([ z.lazy(() => AreaUpdateWithoutDeviceInputSchema),z.lazy(() => AreaUncheckedUpdateWithoutDeviceInputSchema) ]),
+  data: z.union([ z.lazy(() => AreaUpdateWithoutDevicesInputSchema),z.lazy(() => AreaUncheckedUpdateWithoutDevicesInputSchema) ]),
 }).strict();
 
-export const AreaUpdateWithoutDeviceInputSchema: z.ZodType<Prisma.AreaUpdateWithoutDeviceInput> = z.object({
+export const AreaUpdateWithoutDevicesInputSchema: z.ZodType<Prisma.AreaUpdateWithoutDevicesInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutAreasNestedInputSchema).optional()
 }).strict();
 
-export const AreaUncheckedUpdateWithoutDeviceInputSchema: z.ZodType<Prisma.AreaUncheckedUpdateWithoutDeviceInput> = z.object({
+export const AreaUncheckedUpdateWithoutDevicesInputSchema: z.ZodType<Prisma.AreaUncheckedUpdateWithoutDevicesInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CommandUpsertWithWhereUniqueWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUpsertWithWhereUniqueWithoutDeviceInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => CommandUpdateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedUpdateWithoutDeviceInputSchema) ]),
+  create: z.union([ z.lazy(() => CommandCreateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedCreateWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const CommandUpdateWithWhereUniqueWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUpdateWithWhereUniqueWithoutDeviceInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => CommandUpdateWithoutDeviceInputSchema),z.lazy(() => CommandUncheckedUpdateWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const CommandUpdateManyWithWhereWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUpdateManyWithWhereWithoutDeviceInput> = z.object({
+  where: z.lazy(() => CommandScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => CommandUpdateManyMutationInputSchema),z.lazy(() => CommandUncheckedUpdateManyWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptUpsertWithWhereUniqueWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUpsertWithWhereUniqueWithoutConditionDeviceInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ScriptUpdateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutConditionDeviceInputSchema) ]),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutConditionDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateWithWhereUniqueWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUpdateWithWhereUniqueWithoutConditionDeviceInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateWithoutConditionDeviceInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutConditionDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateManyWithWhereWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithWhereWithoutConditionDeviceInput> = z.object({
+  where: z.lazy(() => ScriptScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateManyMutationInputSchema),z.lazy(() => ScriptUncheckedUpdateManyWithoutConditionDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptUpsertWithWhereUniqueWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUpsertWithWhereUniqueWithoutCommandDeviceInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ScriptUpdateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutCommandDeviceInputSchema) ]),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutCommandDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateWithWhereUniqueWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUpdateWithWhereUniqueWithoutCommandDeviceInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateWithoutCommandDeviceInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutCommandDeviceInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateManyWithWhereWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithWhereWithoutCommandDeviceInput> = z.object({
+  where: z.lazy(() => ScriptScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateManyMutationInputSchema),z.lazy(() => ScriptUncheckedUpdateManyWithoutCommandDeviceInputSchema) ]),
+}).strict();
+
+export const DeviceDataUpsertWithWhereUniqueWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUpsertWithWhereUniqueWithoutDeviceInput> = z.object({
+  where: z.lazy(() => DeviceDataWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => DeviceDataUpdateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedUpdateWithoutDeviceInputSchema) ]),
+  create: z.union([ z.lazy(() => DeviceDataCreateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedCreateWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const DeviceDataUpdateWithWhereUniqueWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUpdateWithWhereUniqueWithoutDeviceInput> = z.object({
+  where: z.lazy(() => DeviceDataWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => DeviceDataUpdateWithoutDeviceInputSchema),z.lazy(() => DeviceDataUncheckedUpdateWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const DeviceDataUpdateManyWithWhereWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUpdateManyWithWhereWithoutDeviceInput> = z.object({
+  where: z.lazy(() => DeviceDataScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => DeviceDataUpdateManyMutationInputSchema),z.lazy(() => DeviceDataUncheckedUpdateManyWithoutDeviceInputSchema) ]),
+}).strict();
+
+export const DeviceDataScalarWhereInputSchema: z.ZodType<Prisma.DeviceDataScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => DeviceDataScalarWhereInputSchema),z.lazy(() => DeviceDataScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DeviceDataScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DeviceDataScalarWhereInputSchema),z.lazy(() => DeviceDataScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  ts: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  status: z.lazy(() => JsonFilterSchema).optional(),
+  deviceId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
 }).strict();
 
 export const UserCreateWithoutAreasInputSchema: z.ZodType<Prisma.UserCreateWithoutAreasInput> = z.object({
@@ -1495,7 +3335,9 @@ export const UserCreateWithoutAreasInputSchema: z.ZodType<Prisma.UserCreateWitho
   createdAt: z.number().int(),
   isActive: z.boolean().optional(),
   isAdmin: z.boolean().optional(),
-  devices: z.lazy(() => DeviceCreateNestedManyWithoutUserInputSchema).optional()
+  devices: z.lazy(() => DeviceCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutAreasInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAreasInput> = z.object({
@@ -1506,7 +3348,9 @@ export const UserUncheckedCreateWithoutAreasInputSchema: z.ZodType<Prisma.UserUn
   createdAt: z.number().int(),
   isActive: z.boolean().optional(),
   isAdmin: z.boolean().optional(),
-  devices: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  devices: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutAreasInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutAreasInput> = z.object({
@@ -1520,7 +3364,11 @@ export const DeviceCreateWithoutAreaInputSchema: z.ZodType<Prisma.DeviceCreateWi
   isConnected: z.boolean().optional(),
   uuid: z.string(),
   type: z.lazy(() => DeviceTypeSchema),
-  user: z.lazy(() => UserCreateNestedOneWithoutDevicesInputSchema).optional()
+  user: z.lazy(() => UserCreateNestedOneWithoutDevicesInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataCreateNestedManyWithoutDeviceInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedCreateWithoutAreaInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateWithoutAreaInput> = z.object({
@@ -1530,7 +3378,11 @@ export const DeviceUncheckedCreateWithoutAreaInputSchema: z.ZodType<Prisma.Devic
   isConnected: z.boolean().optional(),
   uuid: z.string(),
   type: z.lazy(() => DeviceTypeSchema),
-  userId: z.number().int().optional().nullable()
+  userId: z.number().int().optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedCreateNestedManyWithoutDeviceInputSchema).optional()
 }).strict();
 
 export const DeviceCreateOrConnectWithoutAreaInputSchema: z.ZodType<Prisma.DeviceCreateOrConnectWithoutAreaInput> = z.object({
@@ -1561,7 +3413,9 @@ export const UserUpdateWithoutAreasInputSchema: z.ZodType<Prisma.UserUpdateWitho
   createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
-  devices: z.lazy(() => DeviceUpdateManyWithoutUserNestedInputSchema).optional()
+  devices: z.lazy(() => DeviceUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutAreasInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAreasInput> = z.object({
@@ -1572,7 +3426,9 @@ export const UserUncheckedUpdateWithoutAreasInputSchema: z.ZodType<Prisma.UserUn
   createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
-  devices: z.lazy(() => DeviceUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  devices: z.lazy(() => DeviceUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const DeviceUpsertWithWhereUniqueWithoutAreaInputSchema: z.ZodType<Prisma.DeviceUpsertWithWhereUniqueWithoutAreaInput> = z.object({
@@ -1589,6 +3445,594 @@ export const DeviceUpdateWithWhereUniqueWithoutAreaInputSchema: z.ZodType<Prisma
 export const DeviceUpdateManyWithWhereWithoutAreaInputSchema: z.ZodType<Prisma.DeviceUpdateManyWithWhereWithoutAreaInput> = z.object({
   where: z.lazy(() => DeviceScalarWhereInputSchema),
   data: z.union([ z.lazy(() => DeviceUpdateManyMutationInputSchema),z.lazy(() => DeviceUncheckedUpdateManyWithoutAreaInputSchema) ]),
+}).strict();
+
+export const CommandCreateWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandCreateWithoutBaseCommandInput> = z.object({
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  user: z.lazy(() => UserCreateNestedOneWithoutCommandsInputSchema),
+  device: z.lazy(() => DeviceCreateNestedOneWithoutCommandsInputSchema)
+}).strict();
+
+export const CommandUncheckedCreateWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUncheckedCreateWithoutBaseCommandInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  deviceId: z.number().int()
+}).strict();
+
+export const CommandCreateOrConnectWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandCreateOrConnectWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => CommandCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const CommandCreateManyBaseCommandInputEnvelopeSchema: z.ZodType<Prisma.CommandCreateManyBaseCommandInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => CommandCreateManyBaseCommandInputSchema),z.lazy(() => CommandCreateManyBaseCommandInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const ScriptCreateWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptCreateWithoutBaseCommandInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  user: z.lazy(() => UserCreateNestedOneWithoutScriptsInputSchema),
+  conditionDevice: z.lazy(() => DeviceCreateNestedOneWithoutConditionScriptsInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceCreateNestedOneWithoutCommandScriptsInputSchema)
+}).strict();
+
+export const ScriptUncheckedCreateWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUncheckedCreateWithoutBaseCommandInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  commandDeviceId: z.number().int()
+}).strict();
+
+export const ScriptCreateOrConnectWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptCreateOrConnectWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const ScriptCreateManyBaseCommandInputEnvelopeSchema: z.ZodType<Prisma.ScriptCreateManyBaseCommandInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => ScriptCreateManyBaseCommandInputSchema),z.lazy(() => ScriptCreateManyBaseCommandInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const CommandUpsertWithWhereUniqueWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUpsertWithWhereUniqueWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => CommandUpdateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedUpdateWithoutBaseCommandInputSchema) ]),
+  create: z.union([ z.lazy(() => CommandCreateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedCreateWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const CommandUpdateWithWhereUniqueWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUpdateWithWhereUniqueWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => CommandWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => CommandUpdateWithoutBaseCommandInputSchema),z.lazy(() => CommandUncheckedUpdateWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const CommandUpdateManyWithWhereWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUpdateManyWithWhereWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => CommandScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => CommandUpdateManyMutationInputSchema),z.lazy(() => CommandUncheckedUpdateManyWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const ScriptUpsertWithWhereUniqueWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUpsertWithWhereUniqueWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ScriptUpdateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutBaseCommandInputSchema) ]),
+  create: z.union([ z.lazy(() => ScriptCreateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedCreateWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateWithWhereUniqueWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUpdateWithWhereUniqueWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => ScriptWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateWithoutBaseCommandInputSchema),z.lazy(() => ScriptUncheckedUpdateWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const ScriptUpdateManyWithWhereWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUpdateManyWithWhereWithoutBaseCommandInput> = z.object({
+  where: z.lazy(() => ScriptScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ScriptUpdateManyMutationInputSchema),z.lazy(() => ScriptUncheckedUpdateManyWithoutBaseCommandInputSchema) ]),
+}).strict();
+
+export const UserCreateWithoutCommandsInputSchema: z.ZodType<Prisma.UserCreateWithoutCommandsInput> = z.object({
+  username: z.string(),
+  passHash: z.string(),
+  passSalt: z.string(),
+  createdAt: z.number().int(),
+  isActive: z.boolean().optional(),
+  isAdmin: z.boolean().optional(),
+  devices: z.lazy(() => DeviceCreateNestedManyWithoutUserInputSchema).optional(),
+  areas: z.lazy(() => AreaCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutCommandsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutCommandsInput> = z.object({
+  id: z.number().int().optional(),
+  username: z.string(),
+  passHash: z.string(),
+  passSalt: z.string(),
+  createdAt: z.number().int(),
+  isActive: z.boolean().optional(),
+  isAdmin: z.boolean().optional(),
+  devices: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  areas: z.lazy(() => AreaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutCommandsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutCommandsInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutCommandsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCommandsInputSchema) ]),
+}).strict();
+
+export const DeviceCreateWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceCreateWithoutCommandsInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  user: z.lazy(() => UserCreateNestedOneWithoutDevicesInputSchema).optional(),
+  area: z.lazy(() => AreaCreateNestedOneWithoutDevicesInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataCreateNestedManyWithoutDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedCreateWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateWithoutCommandsInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  userId: z.number().int().optional().nullable(),
+  areaId: z.number().int().optional().nullable(),
+  conditionScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedCreateNestedManyWithoutDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceCreateOrConnectWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceCreateOrConnectWithoutCommandsInput> = z.object({
+  where: z.lazy(() => DeviceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandsInputSchema) ]),
+}).strict();
+
+export const BaseCommandCreateWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandCreateWithoutCommandsInput> = z.object({
+  name: z.string(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  scripts: z.lazy(() => ScriptCreateNestedManyWithoutBaseCommandInputSchema).optional()
+}).strict();
+
+export const BaseCommandUncheckedCreateWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandUncheckedCreateWithoutCommandsInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  scripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutBaseCommandInputSchema).optional()
+}).strict();
+
+export const BaseCommandCreateOrConnectWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandCreateOrConnectWithoutCommandsInput> = z.object({
+  where: z.lazy(() => BaseCommandWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutCommandsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutCommandsInputSchema) ]),
+}).strict();
+
+export const UserUpsertWithoutCommandsInputSchema: z.ZodType<Prisma.UserUpsertWithoutCommandsInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutCommandsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutCommandsInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutCommandsInputSchema),z.lazy(() => UserUncheckedCreateWithoutCommandsInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutCommandsInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutCommandsInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutCommandsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutCommandsInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutCommandsInputSchema: z.ZodType<Prisma.UserUpdateWithoutCommandsInput> = z.object({
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passHash: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passSalt: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  devices: z.lazy(() => DeviceUpdateManyWithoutUserNestedInputSchema).optional(),
+  areas: z.lazy(() => AreaUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutCommandsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutCommandsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passHash: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passSalt: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  devices: z.lazy(() => DeviceUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  areas: z.lazy(() => AreaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  scripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const DeviceUpsertWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceUpsertWithoutCommandsInput> = z.object({
+  update: z.union([ z.lazy(() => DeviceUpdateWithoutCommandsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutCommandsInputSchema) ]),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandsInputSchema) ]),
+  where: z.lazy(() => DeviceWhereInputSchema).optional()
+}).strict();
+
+export const DeviceUpdateToOneWithWhereWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceUpdateToOneWithWhereWithoutCommandsInput> = z.object({
+  where: z.lazy(() => DeviceWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => DeviceUpdateWithoutCommandsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutCommandsInputSchema) ]),
+}).strict();
+
+export const DeviceUpdateWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceUpdateWithoutCommandsInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  area: z.lazy(() => AreaUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUpdateManyWithoutDeviceNestedInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedUpdateWithoutCommandsInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateWithoutCommandsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  areaId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  conditionScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional()
+}).strict();
+
+export const BaseCommandUpsertWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandUpsertWithoutCommandsInput> = z.object({
+  update: z.union([ z.lazy(() => BaseCommandUpdateWithoutCommandsInputSchema),z.lazy(() => BaseCommandUncheckedUpdateWithoutCommandsInputSchema) ]),
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutCommandsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutCommandsInputSchema) ]),
+  where: z.lazy(() => BaseCommandWhereInputSchema).optional()
+}).strict();
+
+export const BaseCommandUpdateToOneWithWhereWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandUpdateToOneWithWhereWithoutCommandsInput> = z.object({
+  where: z.lazy(() => BaseCommandWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => BaseCommandUpdateWithoutCommandsInputSchema),z.lazy(() => BaseCommandUncheckedUpdateWithoutCommandsInputSchema) ]),
+}).strict();
+
+export const BaseCommandUpdateWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandUpdateWithoutCommandsInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  scripts: z.lazy(() => ScriptUpdateManyWithoutBaseCommandNestedInputSchema).optional()
+}).strict();
+
+export const BaseCommandUncheckedUpdateWithoutCommandsInputSchema: z.ZodType<Prisma.BaseCommandUncheckedUpdateWithoutCommandsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  scripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutBaseCommandNestedInputSchema).optional()
+}).strict();
+
+export const UserCreateWithoutScriptsInputSchema: z.ZodType<Prisma.UserCreateWithoutScriptsInput> = z.object({
+  username: z.string(),
+  passHash: z.string(),
+  passSalt: z.string(),
+  createdAt: z.number().int(),
+  isActive: z.boolean().optional(),
+  isAdmin: z.boolean().optional(),
+  devices: z.lazy(() => DeviceCreateNestedManyWithoutUserInputSchema).optional(),
+  areas: z.lazy(() => AreaCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutScriptsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutScriptsInput> = z.object({
+  id: z.number().int().optional(),
+  username: z.string(),
+  passHash: z.string(),
+  passSalt: z.string(),
+  createdAt: z.number().int(),
+  isActive: z.boolean().optional(),
+  isAdmin: z.boolean().optional(),
+  devices: z.lazy(() => DeviceUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  areas: z.lazy(() => AreaUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutScriptsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutScriptsInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutScriptsInputSchema),z.lazy(() => UserUncheckedCreateWithoutScriptsInputSchema) ]),
+}).strict();
+
+export const DeviceCreateWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceCreateWithoutConditionScriptsInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  user: z.lazy(() => UserCreateNestedOneWithoutDevicesInputSchema).optional(),
+  area: z.lazy(() => AreaCreateNestedOneWithoutDevicesInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataCreateNestedManyWithoutDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedCreateWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateWithoutConditionScriptsInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  userId: z.number().int().optional().nullable(),
+  areaId: z.number().int().optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutCommandDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedCreateNestedManyWithoutDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceCreateOrConnectWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceCreateOrConnectWithoutConditionScriptsInput> = z.object({
+  where: z.lazy(() => DeviceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutConditionScriptsInputSchema) ]),
+}).strict();
+
+export const DeviceCreateWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceCreateWithoutCommandScriptsInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  user: z.lazy(() => UserCreateNestedOneWithoutDevicesInputSchema).optional(),
+  area: z.lazy(() => AreaCreateNestedOneWithoutDevicesInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataCreateNestedManyWithoutDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedCreateWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateWithoutCommandScriptsInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  userId: z.number().int().optional().nullable(),
+  areaId: z.number().int().optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedCreateNestedManyWithoutDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceCreateOrConnectWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceCreateOrConnectWithoutCommandScriptsInput> = z.object({
+  where: z.lazy(() => DeviceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandScriptsInputSchema) ]),
+}).strict();
+
+export const BaseCommandCreateWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandCreateWithoutScriptsInput> = z.object({
+  name: z.string(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutBaseCommandInputSchema).optional()
+}).strict();
+
+export const BaseCommandUncheckedCreateWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandUncheckedCreateWithoutScriptsInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutBaseCommandInputSchema).optional()
+}).strict();
+
+export const BaseCommandCreateOrConnectWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandCreateOrConnectWithoutScriptsInput> = z.object({
+  where: z.lazy(() => BaseCommandWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutScriptsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutScriptsInputSchema) ]),
+}).strict();
+
+export const UserUpsertWithoutScriptsInputSchema: z.ZodType<Prisma.UserUpsertWithoutScriptsInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutScriptsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutScriptsInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutScriptsInputSchema),z.lazy(() => UserUncheckedCreateWithoutScriptsInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutScriptsInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutScriptsInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutScriptsInputSchema),z.lazy(() => UserUncheckedUpdateWithoutScriptsInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutScriptsInputSchema: z.ZodType<Prisma.UserUpdateWithoutScriptsInput> = z.object({
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passHash: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passSalt: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  devices: z.lazy(() => DeviceUpdateManyWithoutUserNestedInputSchema).optional(),
+  areas: z.lazy(() => AreaUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutScriptsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutScriptsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  username: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passHash: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  passSalt: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isActive: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isAdmin: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  devices: z.lazy(() => DeviceUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  areas: z.lazy(() => AreaUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const DeviceUpsertWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceUpsertWithoutConditionScriptsInput> = z.object({
+  update: z.union([ z.lazy(() => DeviceUpdateWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutConditionScriptsInputSchema) ]),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutConditionScriptsInputSchema) ]),
+  where: z.lazy(() => DeviceWhereInputSchema).optional()
+}).strict();
+
+export const DeviceUpdateToOneWithWhereWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceUpdateToOneWithWhereWithoutConditionScriptsInput> = z.object({
+  where: z.lazy(() => DeviceWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => DeviceUpdateWithoutConditionScriptsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutConditionScriptsInputSchema) ]),
+}).strict();
+
+export const DeviceUpdateWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceUpdateWithoutConditionScriptsInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  area: z.lazy(() => AreaUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUpdateManyWithoutDeviceNestedInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedUpdateWithoutConditionScriptsInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateWithoutConditionScriptsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  areaId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional()
+}).strict();
+
+export const DeviceUpsertWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceUpsertWithoutCommandScriptsInput> = z.object({
+  update: z.union([ z.lazy(() => DeviceUpdateWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutCommandScriptsInputSchema) ]),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutCommandScriptsInputSchema) ]),
+  where: z.lazy(() => DeviceWhereInputSchema).optional()
+}).strict();
+
+export const DeviceUpdateToOneWithWhereWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceUpdateToOneWithWhereWithoutCommandScriptsInput> = z.object({
+  where: z.lazy(() => DeviceWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => DeviceUpdateWithoutCommandScriptsInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutCommandScriptsInputSchema) ]),
+}).strict();
+
+export const DeviceUpdateWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceUpdateWithoutCommandScriptsInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  area: z.lazy(() => AreaUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUpdateManyWithoutDeviceNestedInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedUpdateWithoutCommandScriptsInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateWithoutCommandScriptsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  areaId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional()
+}).strict();
+
+export const BaseCommandUpsertWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandUpsertWithoutScriptsInput> = z.object({
+  update: z.union([ z.lazy(() => BaseCommandUpdateWithoutScriptsInputSchema),z.lazy(() => BaseCommandUncheckedUpdateWithoutScriptsInputSchema) ]),
+  create: z.union([ z.lazy(() => BaseCommandCreateWithoutScriptsInputSchema),z.lazy(() => BaseCommandUncheckedCreateWithoutScriptsInputSchema) ]),
+  where: z.lazy(() => BaseCommandWhereInputSchema).optional()
+}).strict();
+
+export const BaseCommandUpdateToOneWithWhereWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandUpdateToOneWithWhereWithoutScriptsInput> = z.object({
+  where: z.lazy(() => BaseCommandWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => BaseCommandUpdateWithoutScriptsInputSchema),z.lazy(() => BaseCommandUncheckedUpdateWithoutScriptsInputSchema) ]),
+}).strict();
+
+export const BaseCommandUpdateWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandUpdateWithoutScriptsInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutBaseCommandNestedInputSchema).optional()
+}).strict();
+
+export const BaseCommandUncheckedUpdateWithoutScriptsInputSchema: z.ZodType<Prisma.BaseCommandUncheckedUpdateWithoutScriptsInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  args: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutBaseCommandNestedInputSchema).optional()
+}).strict();
+
+export const DeviceCreateWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceCreateWithoutDeviceDataInput> = z.object({
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  user: z.lazy(() => UserCreateNestedOneWithoutDevicesInputSchema).optional(),
+  area: z.lazy(() => AreaCreateNestedOneWithoutDevicesInputSchema).optional(),
+  commands: z.lazy(() => CommandCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptCreateNestedManyWithoutCommandDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedCreateWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceUncheckedCreateWithoutDeviceDataInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  isConnected: z.boolean().optional(),
+  uuid: z.string(),
+  type: z.lazy(() => DeviceTypeSchema),
+  userId: z.number().int().optional().nullable(),
+  areaId: z.number().int().optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedCreateNestedManyWithoutDeviceInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutConditionDeviceInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedCreateNestedManyWithoutCommandDeviceInputSchema).optional()
+}).strict();
+
+export const DeviceCreateOrConnectWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceCreateOrConnectWithoutDeviceDataInput> = z.object({
+  where: z.lazy(() => DeviceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutDeviceDataInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutDeviceDataInputSchema) ]),
+}).strict();
+
+export const DeviceUpsertWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceUpsertWithoutDeviceDataInput> = z.object({
+  update: z.union([ z.lazy(() => DeviceUpdateWithoutDeviceDataInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutDeviceDataInputSchema) ]),
+  create: z.union([ z.lazy(() => DeviceCreateWithoutDeviceDataInputSchema),z.lazy(() => DeviceUncheckedCreateWithoutDeviceDataInputSchema) ]),
+  where: z.lazy(() => DeviceWhereInputSchema).optional()
+}).strict();
+
+export const DeviceUpdateToOneWithWhereWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceUpdateToOneWithWhereWithoutDeviceDataInput> = z.object({
+  where: z.lazy(() => DeviceWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => DeviceUpdateWithoutDeviceDataInputSchema),z.lazy(() => DeviceUncheckedUpdateWithoutDeviceDataInputSchema) ]),
+}).strict();
+
+export const DeviceUpdateWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceUpdateWithoutDeviceDataInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  area: z.lazy(() => AreaUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUpdateManyWithoutCommandDeviceNestedInputSchema).optional()
+}).strict();
+
+export const DeviceUncheckedUpdateWithoutDeviceDataInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateWithoutDeviceDataInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  areaId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInputSchema).optional()
 }).strict();
 
 export const DeviceCreateManyUserInputSchema: z.ZodType<Prisma.DeviceCreateManyUserInput> = z.object({
@@ -1608,13 +4052,38 @@ export const AreaCreateManyUserInputSchema: z.ZodType<Prisma.AreaCreateManyUserI
   type: z.lazy(() => AreaTypeSchema)
 }).strict();
 
+export const CommandCreateManyUserInputSchema: z.ZodType<Prisma.CommandCreateManyUserInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  deviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptCreateManyUserInputSchema: z.ZodType<Prisma.ScriptCreateManyUserInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  commandDeviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
 export const DeviceUpdateWithoutUserInputSchema: z.ZodType<Prisma.DeviceUpdateWithoutUserInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
-  area: z.lazy(() => AreaUpdateOneWithoutDeviceNestedInputSchema).optional()
+  area: z.lazy(() => AreaUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUpdateManyWithoutDeviceNestedInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateWithoutUserInput> = z.object({
@@ -1625,6 +4094,10 @@ export const DeviceUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.Devic
   uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   areaId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateManyWithoutUserInput> = z.object({
@@ -1641,7 +4114,7 @@ export const AreaUpdateWithoutUserInputSchema: z.ZodType<Prisma.AreaUpdateWithou
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
-  Device: z.lazy(() => DeviceUpdateManyWithoutAreaNestedInputSchema).optional()
+  devices: z.lazy(() => DeviceUpdateManyWithoutAreaNestedInputSchema).optional()
 }).strict();
 
 export const AreaUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.AreaUncheckedUpdateWithoutUserInput> = z.object({
@@ -1649,7 +4122,7 @@ export const AreaUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.AreaUnc
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
-  Device: z.lazy(() => DeviceUncheckedUpdateManyWithoutAreaNestedInputSchema).optional()
+  devices: z.lazy(() => DeviceUncheckedUpdateManyWithoutAreaNestedInputSchema).optional()
 }).strict();
 
 export const AreaUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.AreaUncheckedUpdateManyWithoutUserInput> = z.object({
@@ -1657,6 +4130,215 @@ export const AreaUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.Are
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => AreaTypeSchema),z.lazy(() => EnumAreaTypeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CommandUpdateWithoutUserInputSchema: z.ZodType<Prisma.CommandUpdateWithoutUserInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  device: z.lazy(() => DeviceUpdateOneRequiredWithoutCommandsNestedInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandUpdateOneRequiredWithoutCommandsNestedInputSchema).optional()
+}).strict();
+
+export const CommandUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CommandUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateManyWithoutUserInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUpdateWithoutUserInputSchema: z.ZodType<Prisma.ScriptUpdateWithoutUserInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  conditionDevice: z.lazy(() => DeviceUpdateOneWithoutConditionScriptsNestedInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceUpdateOneRequiredWithoutCommandScriptsNestedInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandUpdateOneRequiredWithoutScriptsNestedInputSchema).optional()
+}).strict();
+
+export const ScriptUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutUserInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CommandCreateManyDeviceInputSchema: z.ZodType<Prisma.CommandCreateManyDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptCreateManyConditionDeviceInputSchema: z.ZodType<Prisma.ScriptCreateManyConditionDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  commandDeviceId: z.number().int(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const ScriptCreateManyCommandDeviceInputSchema: z.ZodType<Prisma.ScriptCreateManyCommandDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  baseCommandId: z.number().int()
+}).strict();
+
+export const DeviceDataCreateManyDeviceInputSchema: z.ZodType<Prisma.DeviceDataCreateManyDeviceInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+}).strict();
+
+export const CommandUpdateWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUpdateWithoutDeviceInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutCommandsNestedInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandUpdateOneRequiredWithoutCommandsNestedInputSchema).optional()
+}).strict();
+
+export const CommandUncheckedUpdateWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateWithoutDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CommandUncheckedUpdateManyWithoutDeviceInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateManyWithoutDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUpdateWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUpdateWithoutConditionDeviceInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutScriptsNestedInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceUpdateOneRequiredWithoutCommandScriptsNestedInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandUpdateOneRequiredWithoutScriptsNestedInputSchema).optional()
+}).strict();
+
+export const ScriptUncheckedUpdateWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateWithoutConditionDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutConditionDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutConditionDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUpdateWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUpdateWithoutCommandDeviceInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutScriptsNestedInputSchema).optional(),
+  conditionDevice: z.lazy(() => DeviceUpdateOneWithoutConditionScriptsNestedInputSchema).optional(),
+  baseCommand: z.lazy(() => BaseCommandUpdateOneRequiredWithoutScriptsNestedInputSchema).optional()
+}).strict();
+
+export const ScriptUncheckedUpdateWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateWithoutCommandDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutCommandDeviceInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutCommandDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  baseCommandId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DeviceDataUpdateWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUpdateWithoutDeviceInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+}).strict();
+
+export const DeviceDataUncheckedUpdateWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUncheckedUpdateWithoutDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+}).strict();
+
+export const DeviceDataUncheckedUpdateManyWithoutDeviceInputSchema: z.ZodType<Prisma.DeviceDataUncheckedUpdateManyWithoutDeviceInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
 }).strict();
 
 export const DeviceCreateManyAreaInputSchema: z.ZodType<Prisma.DeviceCreateManyAreaInput> = z.object({
@@ -1675,7 +4357,11 @@ export const DeviceUpdateWithoutAreaInputSchema: z.ZodType<Prisma.DeviceUpdateWi
   isConnected: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
-  user: z.lazy(() => UserUpdateOneWithoutDevicesNestedInputSchema).optional()
+  user: z.lazy(() => UserUpdateOneWithoutDevicesNestedInputSchema).optional(),
+  commands: z.lazy(() => CommandUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUpdateManyWithoutDeviceNestedInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedUpdateWithoutAreaInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateWithoutAreaInput> = z.object({
@@ -1686,6 +4372,10 @@ export const DeviceUncheckedUpdateWithoutAreaInputSchema: z.ZodType<Prisma.Devic
   uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commands: z.lazy(() => CommandUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional(),
+  conditionScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutConditionDeviceNestedInputSchema).optional(),
+  commandScripts: z.lazy(() => ScriptUncheckedUpdateManyWithoutCommandDeviceNestedInputSchema).optional(),
+  deviceData: z.lazy(() => DeviceDataUncheckedUpdateManyWithoutDeviceNestedInputSchema).optional()
 }).strict();
 
 export const DeviceUncheckedUpdateManyWithoutAreaInputSchema: z.ZodType<Prisma.DeviceUncheckedUpdateManyWithoutAreaInput> = z.object({
@@ -1696,6 +4386,88 @@ export const DeviceUncheckedUpdateManyWithoutAreaInputSchema: z.ZodType<Prisma.D
   uuid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   type: z.union([ z.lazy(() => DeviceTypeSchema),z.lazy(() => EnumDeviceTypeFieldUpdateOperationsInputSchema) ]).optional(),
   userId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+}).strict();
+
+export const CommandCreateManyBaseCommandInputSchema: z.ZodType<Prisma.CommandCreateManyBaseCommandInput> = z.object({
+  id: z.number().int().optional(),
+  ts: z.number().int(),
+  isExecuted: z.boolean().optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  deviceId: z.number().int()
+}).strict();
+
+export const ScriptCreateManyBaseCommandInputSchema: z.ZodType<Prisma.ScriptCreateManyBaseCommandInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]),
+  userId: z.number().int(),
+  conditionDeviceId: z.number().int().optional().nullable(),
+  commandDeviceId: z.number().int()
+}).strict();
+
+export const CommandUpdateWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUpdateWithoutBaseCommandInput> = z.object({
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutCommandsNestedInputSchema).optional(),
+  device: z.lazy(() => DeviceUpdateOneRequiredWithoutCommandsNestedInputSchema).optional()
+}).strict();
+
+export const CommandUncheckedUpdateWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateWithoutBaseCommandInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CommandUncheckedUpdateManyWithoutBaseCommandInputSchema: z.ZodType<Prisma.CommandUncheckedUpdateManyWithoutBaseCommandInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  ts: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  isExecuted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  status: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  params: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  deviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUpdateWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUpdateWithoutBaseCommandInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutScriptsNestedInputSchema).optional(),
+  conditionDevice: z.lazy(() => DeviceUpdateOneWithoutConditionScriptsNestedInputSchema).optional(),
+  commandDevice: z.lazy(() => DeviceUpdateOneRequiredWithoutCommandScriptsNestedInputSchema).optional()
+}).strict();
+
+export const ScriptUncheckedUpdateWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateWithoutBaseCommandInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ScriptUncheckedUpdateManyWithoutBaseCommandInputSchema: z.ZodType<Prisma.ScriptUncheckedUpdateManyWithoutBaseCommandInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  commandParams: z.union([ z.lazy(() => JsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  userId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  conditionDeviceId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  commandDeviceId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -1888,6 +4660,254 @@ export const AreaFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.AreaFindUniqueOrT
   where: AreaWhereUniqueInputSchema,
 }).strict() ;
 
+export const BaseCommandFindFirstArgsSchema: z.ZodType<Prisma.BaseCommandFindFirstArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  where: BaseCommandWhereInputSchema.optional(),
+  orderBy: z.union([ BaseCommandOrderByWithRelationInputSchema.array(),BaseCommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: BaseCommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ BaseCommandScalarFieldEnumSchema,BaseCommandScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const BaseCommandFindFirstOrThrowArgsSchema: z.ZodType<Prisma.BaseCommandFindFirstOrThrowArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  where: BaseCommandWhereInputSchema.optional(),
+  orderBy: z.union([ BaseCommandOrderByWithRelationInputSchema.array(),BaseCommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: BaseCommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ BaseCommandScalarFieldEnumSchema,BaseCommandScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const BaseCommandFindManyArgsSchema: z.ZodType<Prisma.BaseCommandFindManyArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  where: BaseCommandWhereInputSchema.optional(),
+  orderBy: z.union([ BaseCommandOrderByWithRelationInputSchema.array(),BaseCommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: BaseCommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ BaseCommandScalarFieldEnumSchema,BaseCommandScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const BaseCommandAggregateArgsSchema: z.ZodType<Prisma.BaseCommandAggregateArgs> = z.object({
+  where: BaseCommandWhereInputSchema.optional(),
+  orderBy: z.union([ BaseCommandOrderByWithRelationInputSchema.array(),BaseCommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: BaseCommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const BaseCommandGroupByArgsSchema: z.ZodType<Prisma.BaseCommandGroupByArgs> = z.object({
+  where: BaseCommandWhereInputSchema.optional(),
+  orderBy: z.union([ BaseCommandOrderByWithAggregationInputSchema.array(),BaseCommandOrderByWithAggregationInputSchema ]).optional(),
+  by: BaseCommandScalarFieldEnumSchema.array(),
+  having: BaseCommandScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const BaseCommandFindUniqueArgsSchema: z.ZodType<Prisma.BaseCommandFindUniqueArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  where: BaseCommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const BaseCommandFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.BaseCommandFindUniqueOrThrowArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  where: BaseCommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const CommandFindFirstArgsSchema: z.ZodType<Prisma.CommandFindFirstArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  where: CommandWhereInputSchema.optional(),
+  orderBy: z.union([ CommandOrderByWithRelationInputSchema.array(),CommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: CommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CommandScalarFieldEnumSchema,CommandScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CommandFindFirstOrThrowArgsSchema: z.ZodType<Prisma.CommandFindFirstOrThrowArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  where: CommandWhereInputSchema.optional(),
+  orderBy: z.union([ CommandOrderByWithRelationInputSchema.array(),CommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: CommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CommandScalarFieldEnumSchema,CommandScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CommandFindManyArgsSchema: z.ZodType<Prisma.CommandFindManyArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  where: CommandWhereInputSchema.optional(),
+  orderBy: z.union([ CommandOrderByWithRelationInputSchema.array(),CommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: CommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CommandScalarFieldEnumSchema,CommandScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CommandAggregateArgsSchema: z.ZodType<Prisma.CommandAggregateArgs> = z.object({
+  where: CommandWhereInputSchema.optional(),
+  orderBy: z.union([ CommandOrderByWithRelationInputSchema.array(),CommandOrderByWithRelationInputSchema ]).optional(),
+  cursor: CommandWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const CommandGroupByArgsSchema: z.ZodType<Prisma.CommandGroupByArgs> = z.object({
+  where: CommandWhereInputSchema.optional(),
+  orderBy: z.union([ CommandOrderByWithAggregationInputSchema.array(),CommandOrderByWithAggregationInputSchema ]).optional(),
+  by: CommandScalarFieldEnumSchema.array(),
+  having: CommandScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const CommandFindUniqueArgsSchema: z.ZodType<Prisma.CommandFindUniqueArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  where: CommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const CommandFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.CommandFindUniqueOrThrowArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  where: CommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const ScriptFindFirstArgsSchema: z.ZodType<Prisma.ScriptFindFirstArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  where: ScriptWhereInputSchema.optional(),
+  orderBy: z.union([ ScriptOrderByWithRelationInputSchema.array(),ScriptOrderByWithRelationInputSchema ]).optional(),
+  cursor: ScriptWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ ScriptScalarFieldEnumSchema,ScriptScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const ScriptFindFirstOrThrowArgsSchema: z.ZodType<Prisma.ScriptFindFirstOrThrowArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  where: ScriptWhereInputSchema.optional(),
+  orderBy: z.union([ ScriptOrderByWithRelationInputSchema.array(),ScriptOrderByWithRelationInputSchema ]).optional(),
+  cursor: ScriptWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ ScriptScalarFieldEnumSchema,ScriptScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const ScriptFindManyArgsSchema: z.ZodType<Prisma.ScriptFindManyArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  where: ScriptWhereInputSchema.optional(),
+  orderBy: z.union([ ScriptOrderByWithRelationInputSchema.array(),ScriptOrderByWithRelationInputSchema ]).optional(),
+  cursor: ScriptWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ ScriptScalarFieldEnumSchema,ScriptScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const ScriptAggregateArgsSchema: z.ZodType<Prisma.ScriptAggregateArgs> = z.object({
+  where: ScriptWhereInputSchema.optional(),
+  orderBy: z.union([ ScriptOrderByWithRelationInputSchema.array(),ScriptOrderByWithRelationInputSchema ]).optional(),
+  cursor: ScriptWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const ScriptGroupByArgsSchema: z.ZodType<Prisma.ScriptGroupByArgs> = z.object({
+  where: ScriptWhereInputSchema.optional(),
+  orderBy: z.union([ ScriptOrderByWithAggregationInputSchema.array(),ScriptOrderByWithAggregationInputSchema ]).optional(),
+  by: ScriptScalarFieldEnumSchema.array(),
+  having: ScriptScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const ScriptFindUniqueArgsSchema: z.ZodType<Prisma.ScriptFindUniqueArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  where: ScriptWhereUniqueInputSchema,
+}).strict() ;
+
+export const ScriptFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.ScriptFindUniqueOrThrowArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  where: ScriptWhereUniqueInputSchema,
+}).strict() ;
+
+export const DeviceDataFindFirstArgsSchema: z.ZodType<Prisma.DeviceDataFindFirstArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  where: DeviceDataWhereInputSchema.optional(),
+  orderBy: z.union([ DeviceDataOrderByWithRelationInputSchema.array(),DeviceDataOrderByWithRelationInputSchema ]).optional(),
+  cursor: DeviceDataWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DeviceDataScalarFieldEnumSchema,DeviceDataScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const DeviceDataFindFirstOrThrowArgsSchema: z.ZodType<Prisma.DeviceDataFindFirstOrThrowArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  where: DeviceDataWhereInputSchema.optional(),
+  orderBy: z.union([ DeviceDataOrderByWithRelationInputSchema.array(),DeviceDataOrderByWithRelationInputSchema ]).optional(),
+  cursor: DeviceDataWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DeviceDataScalarFieldEnumSchema,DeviceDataScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const DeviceDataFindManyArgsSchema: z.ZodType<Prisma.DeviceDataFindManyArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  where: DeviceDataWhereInputSchema.optional(),
+  orderBy: z.union([ DeviceDataOrderByWithRelationInputSchema.array(),DeviceDataOrderByWithRelationInputSchema ]).optional(),
+  cursor: DeviceDataWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DeviceDataScalarFieldEnumSchema,DeviceDataScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const DeviceDataAggregateArgsSchema: z.ZodType<Prisma.DeviceDataAggregateArgs> = z.object({
+  where: DeviceDataWhereInputSchema.optional(),
+  orderBy: z.union([ DeviceDataOrderByWithRelationInputSchema.array(),DeviceDataOrderByWithRelationInputSchema ]).optional(),
+  cursor: DeviceDataWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const DeviceDataGroupByArgsSchema: z.ZodType<Prisma.DeviceDataGroupByArgs> = z.object({
+  where: DeviceDataWhereInputSchema.optional(),
+  orderBy: z.union([ DeviceDataOrderByWithAggregationInputSchema.array(),DeviceDataOrderByWithAggregationInputSchema ]).optional(),
+  by: DeviceDataScalarFieldEnumSchema.array(),
+  having: DeviceDataScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const DeviceDataFindUniqueArgsSchema: z.ZodType<Prisma.DeviceDataFindUniqueArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  where: DeviceDataWhereUniqueInputSchema,
+}).strict() ;
+
+export const DeviceDataFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.DeviceDataFindUniqueOrThrowArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  where: DeviceDataWhereUniqueInputSchema,
+}).strict() ;
+
 export const UserCreateArgsSchema: z.ZodType<Prisma.UserCreateArgs> = z.object({
   select: UserSelectSchema.optional(),
   include: UserIncludeSchema.optional(),
@@ -2009,4 +5029,168 @@ export const AreaUpdateManyArgsSchema: z.ZodType<Prisma.AreaUpdateManyArgs> = z.
 
 export const AreaDeleteManyArgsSchema: z.ZodType<Prisma.AreaDeleteManyArgs> = z.object({
   where: AreaWhereInputSchema.optional(),
+}).strict() ;
+
+export const BaseCommandCreateArgsSchema: z.ZodType<Prisma.BaseCommandCreateArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  data: z.union([ BaseCommandCreateInputSchema,BaseCommandUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const BaseCommandUpsertArgsSchema: z.ZodType<Prisma.BaseCommandUpsertArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  where: BaseCommandWhereUniqueInputSchema,
+  create: z.union([ BaseCommandCreateInputSchema,BaseCommandUncheckedCreateInputSchema ]),
+  update: z.union([ BaseCommandUpdateInputSchema,BaseCommandUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const BaseCommandCreateManyArgsSchema: z.ZodType<Prisma.BaseCommandCreateManyArgs> = z.object({
+  data: z.union([ BaseCommandCreateManyInputSchema,BaseCommandCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const BaseCommandDeleteArgsSchema: z.ZodType<Prisma.BaseCommandDeleteArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  where: BaseCommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const BaseCommandUpdateArgsSchema: z.ZodType<Prisma.BaseCommandUpdateArgs> = z.object({
+  select: BaseCommandSelectSchema.optional(),
+  include: BaseCommandIncludeSchema.optional(),
+  data: z.union([ BaseCommandUpdateInputSchema,BaseCommandUncheckedUpdateInputSchema ]),
+  where: BaseCommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const BaseCommandUpdateManyArgsSchema: z.ZodType<Prisma.BaseCommandUpdateManyArgs> = z.object({
+  data: z.union([ BaseCommandUpdateManyMutationInputSchema,BaseCommandUncheckedUpdateManyInputSchema ]),
+  where: BaseCommandWhereInputSchema.optional(),
+}).strict() ;
+
+export const BaseCommandDeleteManyArgsSchema: z.ZodType<Prisma.BaseCommandDeleteManyArgs> = z.object({
+  where: BaseCommandWhereInputSchema.optional(),
+}).strict() ;
+
+export const CommandCreateArgsSchema: z.ZodType<Prisma.CommandCreateArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  data: z.union([ CommandCreateInputSchema,CommandUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const CommandUpsertArgsSchema: z.ZodType<Prisma.CommandUpsertArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  where: CommandWhereUniqueInputSchema,
+  create: z.union([ CommandCreateInputSchema,CommandUncheckedCreateInputSchema ]),
+  update: z.union([ CommandUpdateInputSchema,CommandUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const CommandCreateManyArgsSchema: z.ZodType<Prisma.CommandCreateManyArgs> = z.object({
+  data: z.union([ CommandCreateManyInputSchema,CommandCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const CommandDeleteArgsSchema: z.ZodType<Prisma.CommandDeleteArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  where: CommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const CommandUpdateArgsSchema: z.ZodType<Prisma.CommandUpdateArgs> = z.object({
+  select: CommandSelectSchema.optional(),
+  include: CommandIncludeSchema.optional(),
+  data: z.union([ CommandUpdateInputSchema,CommandUncheckedUpdateInputSchema ]),
+  where: CommandWhereUniqueInputSchema,
+}).strict() ;
+
+export const CommandUpdateManyArgsSchema: z.ZodType<Prisma.CommandUpdateManyArgs> = z.object({
+  data: z.union([ CommandUpdateManyMutationInputSchema,CommandUncheckedUpdateManyInputSchema ]),
+  where: CommandWhereInputSchema.optional(),
+}).strict() ;
+
+export const CommandDeleteManyArgsSchema: z.ZodType<Prisma.CommandDeleteManyArgs> = z.object({
+  where: CommandWhereInputSchema.optional(),
+}).strict() ;
+
+export const ScriptCreateArgsSchema: z.ZodType<Prisma.ScriptCreateArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  data: z.union([ ScriptCreateInputSchema,ScriptUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const ScriptUpsertArgsSchema: z.ZodType<Prisma.ScriptUpsertArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  where: ScriptWhereUniqueInputSchema,
+  create: z.union([ ScriptCreateInputSchema,ScriptUncheckedCreateInputSchema ]),
+  update: z.union([ ScriptUpdateInputSchema,ScriptUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const ScriptCreateManyArgsSchema: z.ZodType<Prisma.ScriptCreateManyArgs> = z.object({
+  data: z.union([ ScriptCreateManyInputSchema,ScriptCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const ScriptDeleteArgsSchema: z.ZodType<Prisma.ScriptDeleteArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  where: ScriptWhereUniqueInputSchema,
+}).strict() ;
+
+export const ScriptUpdateArgsSchema: z.ZodType<Prisma.ScriptUpdateArgs> = z.object({
+  select: ScriptSelectSchema.optional(),
+  include: ScriptIncludeSchema.optional(),
+  data: z.union([ ScriptUpdateInputSchema,ScriptUncheckedUpdateInputSchema ]),
+  where: ScriptWhereUniqueInputSchema,
+}).strict() ;
+
+export const ScriptUpdateManyArgsSchema: z.ZodType<Prisma.ScriptUpdateManyArgs> = z.object({
+  data: z.union([ ScriptUpdateManyMutationInputSchema,ScriptUncheckedUpdateManyInputSchema ]),
+  where: ScriptWhereInputSchema.optional(),
+}).strict() ;
+
+export const ScriptDeleteManyArgsSchema: z.ZodType<Prisma.ScriptDeleteManyArgs> = z.object({
+  where: ScriptWhereInputSchema.optional(),
+}).strict() ;
+
+export const DeviceDataCreateArgsSchema: z.ZodType<Prisma.DeviceDataCreateArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  data: z.union([ DeviceDataCreateInputSchema,DeviceDataUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const DeviceDataUpsertArgsSchema: z.ZodType<Prisma.DeviceDataUpsertArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  where: DeviceDataWhereUniqueInputSchema,
+  create: z.union([ DeviceDataCreateInputSchema,DeviceDataUncheckedCreateInputSchema ]),
+  update: z.union([ DeviceDataUpdateInputSchema,DeviceDataUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const DeviceDataCreateManyArgsSchema: z.ZodType<Prisma.DeviceDataCreateManyArgs> = z.object({
+  data: z.union([ DeviceDataCreateManyInputSchema,DeviceDataCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const DeviceDataDeleteArgsSchema: z.ZodType<Prisma.DeviceDataDeleteArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  where: DeviceDataWhereUniqueInputSchema,
+}).strict() ;
+
+export const DeviceDataUpdateArgsSchema: z.ZodType<Prisma.DeviceDataUpdateArgs> = z.object({
+  select: DeviceDataSelectSchema.optional(),
+  include: DeviceDataIncludeSchema.optional(),
+  data: z.union([ DeviceDataUpdateInputSchema,DeviceDataUncheckedUpdateInputSchema ]),
+  where: DeviceDataWhereUniqueInputSchema,
+}).strict() ;
+
+export const DeviceDataUpdateManyArgsSchema: z.ZodType<Prisma.DeviceDataUpdateManyArgs> = z.object({
+  data: z.union([ DeviceDataUpdateManyMutationInputSchema,DeviceDataUncheckedUpdateManyInputSchema ]),
+  where: DeviceDataWhereInputSchema.optional(),
+}).strict() ;
+
+export const DeviceDataDeleteManyArgsSchema: z.ZodType<Prisma.DeviceDataDeleteManyArgs> = z.object({
+  where: DeviceDataWhereInputSchema.optional(),
 }).strict() ;

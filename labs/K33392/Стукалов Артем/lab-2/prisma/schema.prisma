@@ -21,8 +21,10 @@ model User {
   isActive  Boolean @default(true)
   isAdmin   Boolean @default(false)
 
-  devices Device[]
-  areas   Area[]
+  devices  Device[]
+  areas    Area[]
+  commands Command[]
+  scripts  Script[]
 }
 
 enum DeviceType {
@@ -41,8 +43,12 @@ model Device {
   user   User? @relation(fields: [userId], references: [id])
   userId Int?
 
-  area   Area? @relation(fields: [areaId], references: [id])
-  areaId Int?
+  area             Area?        @relation(fields: [areaId], references: [id])
+  areaId           Int?
+  commands         Command[]
+  conditionScripts Script[]     @relation("conditionDevice")
+  commandScripts   Script[]     @relation("commandDevice")
+  deviceData       DeviceData[]
 }
 
 enum AreaType {
@@ -55,7 +61,63 @@ model Area {
   description String
   type        AreaType
 
-  user   User     @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
   userId Int
-  Device Device[]
+
+  devices Device[]
+}
+
+model BaseCommand {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  args Json
+
+  commands Command[]
+  scripts  Script[]
+}
+
+model Command {
+  id         Int     @id @default(autoincrement())
+  ts         Int
+  isExecuted Boolean @default(false)
+  status     Json
+  params     Json
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  device   Device @relation(fields: [deviceId], references: [id])
+  deviceId Int
+
+  baseCommand   BaseCommand @relation(fields: [baseCommandId], references: [id])
+  baseCommandId Int
+}
+
+model Script {
+  id              Int    @id @default(autoincrement())
+  name            String
+  description     String
+  conditionParams Json
+  commandParams   Json
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  conditionDevice   Device? @relation("conditionDevice", fields: [conditionDeviceId], references: [id])
+  conditionDeviceId Int?
+
+  commandDevice   Device @relation("commandDevice", fields: [commandDeviceId], references: [id])
+  commandDeviceId Int
+
+  baseCommand   BaseCommand @relation(fields: [baseCommandId], references: [id])
+  baseCommandId Int
+}
+
+model DeviceData {
+  id     Int  @id @default(autoincrement())
+  ts     Int
+  status Json
+
+  device   Device @relation(fields: [deviceId], references: [id])
+  deviceId Int
 }
