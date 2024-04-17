@@ -1,9 +1,10 @@
 import { Sequelize } from "sequelize-typescript";
-import User from "../models/User";
 import Item from "../models/Item";
 import ShoppingCartItem from "../models/ShoppingCartItem";
 import Tag from "../models/Tag";
 import ItemTag from "../models/ItemTag";
+import RefreshToken from "../models/RefreshToken";
+import User from "../models/User";
 
 const db_file = 'db.sqlite'
 const username = 'root'
@@ -19,7 +20,7 @@ const sequelize = new Sequelize({
     logging: console.log
 })
 
-sequelize.addModels([User, Item, ShoppingCartItem, Tag, ItemTag])
+sequelize.addModels([User, Item, ShoppingCartItem, Tag, ItemTag, RefreshToken])
 
 sequelize.sync()
 
