@@ -3,9 +3,7 @@ import { createToken } from "../utility/createToken";
 import User from "../models/User"
 import UserService from "../services/user"
 import { isCorrectPassword } from "../utility/passwordCheck";
-import { config } from "dotenv";
 
-config()
 
 class UserController {
     private userService: UserService; // lazy

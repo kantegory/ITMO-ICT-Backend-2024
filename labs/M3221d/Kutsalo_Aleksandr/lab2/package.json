@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsx src/index.ts",
+    "start": "npx tsx -r dotenv/config src/index.ts",
     "build": "npx tsc",
     "eslint": "npx eslint . --ext .ts",
     "nodemon": "npx nodemon start"

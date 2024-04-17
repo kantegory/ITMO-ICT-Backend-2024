@@ -4,12 +4,10 @@ import mainRouter from "./routers/router"
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import path from 'path'
-import { config } from 'dotenv'
 
 const app = express()
 
 sequelize
-config()
 
 const port = process.env.PORT
 

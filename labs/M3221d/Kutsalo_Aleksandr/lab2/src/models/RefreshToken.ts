@@ -1,9 +1,6 @@
 import { AllowNull, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, Model, Table } from "sequelize-typescript";
 import User from "./User";
-import { config } from "dotenv";
 import { randomUUID } from "crypto";
-
-config()
 
 @Table
 class RefreshToken extends Model {

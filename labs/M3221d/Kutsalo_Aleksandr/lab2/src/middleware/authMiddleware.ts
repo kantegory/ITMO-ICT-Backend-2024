@@ -1,9 +1,7 @@
-import { config } from 'dotenv'
 import jwt from 'jsonwebtoken'
 import verifyRefreshToken from '../utility/verifyRefreshToken'
 import destroyTokens from '../utility/destroyTokens'
 import makeTokens from '../utility/makeTokens'
-config()
 
 const requireAuth = async (req: any, res: any, next: any) => {
     try {
