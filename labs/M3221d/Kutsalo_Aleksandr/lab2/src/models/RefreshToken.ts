@@ -1,6 +1,7 @@
 import { AllowNull, BeforeCreate, BeforeUpdate, BelongsTo, Column, DataType, Default, Model, Table } from "sequelize-typescript";
 import User from "./User";
 import { config } from "dotenv";
+import { randomUUID } from "crypto";
 
 config()
 
@@ -23,8 +24,13 @@ class RefreshToken extends Model {
 
     @BeforeUpdate
     @BeforeCreate
-    static generateData(instance: RefreshToken) {
+    static generateDate(instance: RefreshToken) {
         instance.expirationDate = new Date(Date.now() + Number(process.env.REFRESH_TOKEN_AGE_MS))
+    }
+
+    @BeforeUpdate
+    static setNewToken(instance: RefreshToken) {
+        instance.token = randomUUID()
     }
 }
 
