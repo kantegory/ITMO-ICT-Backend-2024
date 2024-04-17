@@ -26,6 +26,9 @@ export class Sale extends Model {
   declare startsAt: Date
 
   @Column
+  declare percentage: number
+
+  @Column
   declare endsAt: Date | null
 
   @ForeignKey(() => Product)
