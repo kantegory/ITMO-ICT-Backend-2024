@@ -26,7 +26,7 @@ export class TeapotMapper implements Mapper<Teapot, TeapotModel> {
         return new TeapotModel({
             id: entity.id,
             name: entity.name,
-            profile: this.profileMapper.toModel(entity.linkedProfile),
+            profileId: entity.linkedProfile.id,
             temperature: entity.temperature,
             capacity: entity.capacity,
             waterSupply: entity.waterSupply,

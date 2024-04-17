@@ -1,7 +1,7 @@
 import {Column, DataType, Model, PrimaryKey, Table, Unique} from "sequelize-typescript";
 import {AccountRole, AccountStatus} from "../../../domain/replicas/Account";
 
-@Table
+@Table({tableName: 'Accounts'})
 export class AccountModel extends Model {
     @PrimaryKey
     @Column(DataType.UUID)

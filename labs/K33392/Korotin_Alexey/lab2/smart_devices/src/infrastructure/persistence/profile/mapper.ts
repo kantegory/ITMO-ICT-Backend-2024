@@ -2,6 +2,7 @@ import {Mapper} from "../mapper";
 import {Profile} from "../../../domain/profile";
 import {ProfileModel} from "./index";
 import AccountMapper from "../account/mapper";
+import sequelize from "../db";
 
 export class ProfileMapper implements Mapper<Profile, ProfileModel> {
 
@@ -12,11 +13,11 @@ export class ProfileMapper implements Mapper<Profile, ProfileModel> {
     }
 
     public toModel(entity: Profile): ProfileModel {
-        return new ProfileModel({
+        return sequelize.models.ProfileModel.build({
             id: entity.id,
             name: entity.name,
             location: entity.location,
             userId: entity.user.id
-        });
+        }) as ProfileModel;
     }
 }

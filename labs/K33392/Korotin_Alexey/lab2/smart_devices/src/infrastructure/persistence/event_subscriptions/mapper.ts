@@ -3,6 +3,7 @@ import {EventSubscription} from "../../../domain/subscriptions";
 import {EventSubscriptionModel} from "./index";
 import {LoggingTeapotSubscription} from "../../../domain/devices/teapot/Subscription";
 import {TeapotEventType} from "../../../domain/devices/teapot";
+import sequelize from "../db";
 
 
 export class EventSubscriptionMapper implements Mapper<EventSubscription<any>, EventSubscriptionModel> {
@@ -19,7 +20,7 @@ export class EventSubscriptionMapper implements Mapper<EventSubscription<any>, E
     }
 
     public toModel(entity: EventSubscription<any>): EventSubscriptionModel {
-        return new EventSubscriptionModel({
+        return sequelize.getRepository(EventSubscriptionModel).build({
             id: entity.id,
             discriminatorValue: entity.discriminator,
             eventType: entity.eventType

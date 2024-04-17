@@ -1,6 +1,6 @@
 version: '3.10'
 services:
-  auth-db:
+  app-db:
     image: postgres:latest
     ports:
       - "5432:5432"
