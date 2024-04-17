@@ -6,6 +6,8 @@ import {
   AutoIncrement,
   Column,
   ForeignKey,
+  HasOne,
+  BelongsTo,
 } from 'sequelize-typescript'
 import { Product } from './product.js'
 
@@ -29,5 +31,8 @@ export class Sale extends Model {
   @ForeignKey(() => Product)
   @Column
   declare productID: number
+
+  @BelongsTo(() => Product)
+  declare product: Product
 }
 
