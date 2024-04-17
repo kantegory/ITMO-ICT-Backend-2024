@@ -27,6 +27,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
             // res.status(403).send("Authorization is required for this page")
         } else {
             res.status(400).send(err.message)
+            return
         }
     }
     // Refresh token time
@@ -40,6 +41,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
             if (!isLegit) {
                 destroyTokens(res) // why not
                 res.status(403).send("Authorization is required for this page")
+                return
             } else {
                 // JWT doesn't exist, but Refresh Token exists and is valid. So now we make new ones
                 res.locals.uId = userId
@@ -48,6 +50,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
             }
         } else {
             res.status(403).send("Authorization is required for this page")
+            return
         }
     } catch (err) {
         if (err.name == "TypeError") {
@@ -55,6 +58,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
         } else {
             res.status(400).send(err.message)
         }
+        return
     }
  
  }

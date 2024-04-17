@@ -22,7 +22,7 @@ class ShopController {
     addItem = async (request: Request, response: Response) => {
         try {
             const item: Item | Error = await this.shopService.addItem(request.body)
-            
+
             response.status(200).json({'response': "success", 'itemId': item.id})
             return
         } catch (error) {
@@ -62,8 +62,8 @@ class ShopController {
 
     addToShoppingCart = async (request: Request, response: Response) => {
         try {
-            await this.shopService.addToCart(Number(request.params.id), response.locals.uId, request.body.quantity)
-            response.status(200).json({'response': "success"})
+            const cartItem = await this.shopService.addToCart(Number(request.params.id), response.locals.uId, request.body.quantity)
+            response.status(200).json({'response': "success", cartItem})
         } catch (error) {
             console.log(error)
             response.status(400).json({"response": "error", "error_message": error.message})

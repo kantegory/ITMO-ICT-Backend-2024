@@ -72,15 +72,25 @@ class ShopService {
 
     async addToCart(itemId: number, userId: number, quantity: number): Promise<ShoppingCartItem> {
         const item = await this.getById(itemId)
+        const shoppingCartItem = await this.shoppingCartItemRepository.findOne({where: {userId: userId, itemId: itemId}})
+        if (shoppingCartItem) {
+            quantity += shoppingCartItem.quantity
+        }
         if (item.quantity < quantity) {
             throw Error(`Not enough items: ${item.quantity} left, ${quantity} is required`)
         }
-        const shoppingCartItem = await this.shoppingCartItemRepository.create({
-            'userId': userId,
-            'itemId': itemId,
-            'quantity': quantity
-        })
-        return shoppingCartItem.toJSON()
+        if (shoppingCartItem) {
+            shoppingCartItem.quantity = quantity
+            await shoppingCartItem.save()
+            return shoppingCartItem.toJSON()
+        } else {
+            const newShoppingCartItem = await this.shoppingCartItemRepository.create({
+                userId: userId, 
+                itemId: itemId, 
+                quantity: quantity
+            })
+            return newShoppingCartItem.toJSON()
+        }
     }
 
     async getShoppingCartContents(userId: number): Promise<Item[]> {
