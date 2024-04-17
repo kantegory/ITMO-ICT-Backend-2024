@@ -3,6 +3,8 @@ import { createToken } from "../utility/createToken";
 import User from "../models/User"
 import UserService from "../services/user"
 import { isCorrectPassword } from "../utility/passwordCheck";
+import makeTokens from "../utility/makeTokens";
+import destroyTokens from "../utility/destroyTokens";
 
 
 class UserController {
@@ -26,11 +28,10 @@ class UserController {
         try {
             const user: User | ValidationError | NotUniqueError = await this.userService.createUser(request.body)
             
-            const token = createToken(user.id)
-            response.cookie('jwt', token, {httpOnly: true, maxAge: Number(process.env.TOKEN_AGE_MS)})
+            response.locals.uId = user.id
+            await makeTokens(response)
             
             response.status(200).json({'response': "success", 'userId': user.id})
-            console.log(token)
             return
         } catch (error) {
             response.status(400).json({'response': 'error', 'error_message': error.message})
@@ -45,8 +46,8 @@ class UserController {
             if (!isCorrectPassword(request.body.password, user.password)) {
                 throw Error("Passwords don't match")
             }
-            const token = createToken(user.id)
-            response.cookie('jwt', token, {httpOnly: true, maxAge: Number(process.env.TOKEN_AGE_MS)})
+            response.locals.uId = user.id
+            await makeTokens(response)
             response.status(200).json({'response': "Success", 'userId': user.id})
         } catch (error) {
             response.status(405).json({'error': error.message})
@@ -58,7 +59,7 @@ class UserController {
     }
 
     logout = async (request: any, response: any) => {
-        response.cookie('jwt', '', { maxAge: 1 })
+        await destroyTokens(response)
         response.status(200).json({'response': "Success", 'content': 'Cleaned current authorization'})
     }
 
