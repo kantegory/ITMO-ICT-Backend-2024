@@ -11,8 +11,8 @@ export class TeamService {
         this.participantRepository = new ParticipantRepository();
     }
 
-    async patch(id: number, team: Team): Promise<Team | null> {
-        const updated_team = await this.teamRepository.patch(id, team);
+    async patch(team: Team): Promise<Team | null> {
+        const updated_team = await this.teamRepository.patch(team.id, team);
         return updated_team;
     }
 
