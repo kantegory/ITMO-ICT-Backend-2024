@@ -8,12 +8,12 @@ const userRouter = Router();
 
 userRouter
   .route('/:id')
-  .get(userController.get_user)
-  .patch(userController.patch_user);
+  .get(userController.get_user) // any
+  .patch(userController.patch_user); // user itself
 
 userRouter
   .route('/:id/hackathons')
-  .get(userController.get_hackathons_by_user);
+  .get(userController.get_hackathons_by_user); // user himself
 
 userRouter
   .route('/:id/hackathons/active')

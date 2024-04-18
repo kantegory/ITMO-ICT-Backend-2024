@@ -7,8 +7,8 @@ const solutionRouter = Router();
 
 solutionRouter
   .route('/:id')
-  .get(solutionController.get_solution)
-  .patch(solutionController.patch_solution);
+  .get(solutionController.get_solution) // team_leader for team on this hack, curator, jury, admin
+  .patch(solutionController.patch_solution); // team_leader for team on this hack
 
 
 export default solutionRouter;

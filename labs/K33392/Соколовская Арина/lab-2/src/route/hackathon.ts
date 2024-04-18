@@ -8,19 +8,23 @@ const hackathonRouter = Router();
 
 hackathonRouter
   .route('/:id')
-  .get(hackathonController.get_hackathon);
+  .get(hackathonController.get_hackathon); // any
 
 hackathonRouter
   .route('/:id/register')
-  .post(hackathonController.post_hackathon_team);
+  .post(hackathonController.post_hackathon_team); // authenticated, not curator, not jury
 
 hackathonRouter
   .route('/:id/task')
-  .get(hackathonController.get_hackathon_task)
-  .patch(hackathonController.patch_hackathon_task);
+  .get(hackathonController.get_hackathon_task) // team_leader for team on this hack, curator, admin, jury
+  .patch(hackathonController.patch_hackathon_task); // curator, admin
 
 hackathonRouter
   .route('/:id/solution')
-  .post(hackathonController.post_hackathon_solution);
+  .post(hackathonController.post_hackathon_solution); // team_leader for team on this hack
+
+hackathonRouter
+  .route('/')
+  .get(hackathonController.get_hackathons); // any
 
 export default hackathonRouter;

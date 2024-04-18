@@ -7,11 +7,11 @@ const gradingRouter = Router();
 
 gradingRouter
   .route('/:hackathon_id')
-  .post(gradingController.post_grading)
-  .get(gradingController.get_gradings);
+  .post(gradingController.post_grading) // jury only
+  .get(gradingController.get_gradings); // jury only
 
 gradingRouter
   .route('/:hackathon_id/sorted')
-  .get(gradingController.get_sorted_gradings);
+  .get(gradingController.get_sorted_gradings); // jury only
 
 export default gradingRouter;

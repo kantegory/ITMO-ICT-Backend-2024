@@ -7,16 +7,16 @@ const adminRouter = Router();
 
 adminRouter
   .route('/hackathon')
-  .post(adminController.post_hackathon);
+  .post(adminController.post_hackathon); // admin only
 
 adminRouter
   .route('/curator/:user_id')
-  .post(adminController.post_curator)
-  .delete(adminController.delete_curator);
+  .post(adminController.post_curator) // admin only
+  .delete(adminController.delete_curator); // admin only
 
 adminRouter
   .route('/jury/:user_id')
-  .post(adminController.post_jury)
-  .delete(adminController.delete_jury);
+  .post(adminController.post_jury) // admin only
+  .delete(adminController.delete_jury); // admin only
 
 export default adminRouter;

@@ -16,7 +16,7 @@ router.use('/users', userRouter);
 router.use('/admin', adminRouter);
 router.use('/auth', authRouter);
 router.use('/gradings', gradingRouter);
-router.use('/hackatons', hackathonRouter);
+router.use('/hackathons', hackathonRouter);
 router.use('/solutions', solutionRouter);
 router.use('/teams', teamRouter);
 

@@ -6,6 +6,17 @@ import { Solution } from "../model/solution";
 
 const hackathonService = new HackathonService();
 
+exports.get_hackathons = async (req: Request, res: Response) => {
+    try {
+        const hackathons = await hackathonService.findAll();
+        if (hackathons != null) res.send(hackathons);
+    } catch(e) {
+        if (e instanceof Error) {
+            res.send({ error: e.message });
+        }  
+    }
+}
+
 exports.get_hackathon = async (req: Request, res: Response) => {
     try {
         const hackathon = await hackathonService.findById(req.body.id)
