@@ -46,8 +46,8 @@ export class HackathonService {
         return new_team;
     }
 
-    async patch(id: number, hackathon: Hackathon): Promise<Hackathon | null> {
-        const new_hackathon = await this.hackathonRepository.patch(id, hackathon);
+    async patch(hackathon: Hackathon): Promise<Hackathon | null> {
+        const new_hackathon = await this.hackathonRepository.patch(hackathon.id, hackathon);
         return new_hackathon;
     }
 }

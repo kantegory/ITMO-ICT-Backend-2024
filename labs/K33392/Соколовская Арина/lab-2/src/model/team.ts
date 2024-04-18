@@ -1,6 +1,5 @@
 import { Table, Model, AutoIncrement, Column, PrimaryKey, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { User } from "./user";
-import { Hackathon } from "./task";
 
 export @Table
 class Team extends Model {
@@ -9,8 +8,8 @@ class Team extends Model {
     @Column
     id!: number;
 
-    @ForeignKey(() => User) 
     @Column
+    @ForeignKey(() => User) 
     leader_id!: number;
 
     @Column
@@ -19,7 +18,6 @@ class Team extends Model {
     @Column
     description?: string;
 
-    @ForeignKey(() => Hackathon)
     @Column
     task_id!: number;
 
@@ -30,12 +28,10 @@ class Team extends Model {
 export @Table
 class Participant extends Model {
     @PrimaryKey
-    @ForeignKey(() => User)
     @Column
     user_id!: number;
 
     @PrimaryKey
-    @ForeignKey(() => Team)
     @Column
     team_id!: number;
 }
