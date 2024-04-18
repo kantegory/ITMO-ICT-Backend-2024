@@ -15,7 +15,7 @@ export class UserRepository {
     async patch(id: number, user: User): Promise<User>{
         let db_user = await this.repository.findByPk(id);
         db_user = user;
-        await db_user.save();
+        await db_user.save(); 
         return db_user;
     }
 

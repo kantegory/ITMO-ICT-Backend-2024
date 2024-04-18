@@ -1,4 +1,5 @@
-import { Table, Model, Column, PrimaryKey } from 'sequelize-typescript';
+import { Table, Model, Column, PrimaryKey, ForeignKey } from 'sequelize-typescript';
+import { Jury } from './user';
 
 
 @Table
@@ -35,6 +36,7 @@ export class Link extends Model {
     @Column
     description?: string;
 
+    @ForeignKey(() => Hackathon)
     @Column
     task_id!: number;
 }
@@ -48,6 +50,7 @@ export class File extends Model {
     @Column
     name!: string;
 
+    @ForeignKey(() => Hackathon)
     @Column
     task_id!: number;
 }
@@ -55,10 +58,12 @@ export class File extends Model {
 @Table
 export class HackathonJury extends Model {
     @PrimaryKey
+    @ForeignKey(() => Hackathon)
     @Column
     hackathon_id!: number;
 
     @PrimaryKey
+    @ForeignKey(() => Jury)
     @Column
     jury_id!: number;
 }

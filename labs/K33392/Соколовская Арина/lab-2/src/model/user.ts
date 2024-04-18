@@ -1,5 +1,6 @@
 import { Table, Model, AutoIncrement, PrimaryKey, Unique, BeforeCreate, BeforeUpdate, Column, BelongsTo, HasMany, ForeignKey } from "sequelize-typescript";
 import bcrypt from "bcrypt";
+import { Hackathon } from "./task";
 
 export @Table
 class User extends Model {
@@ -42,8 +43,8 @@ class Jury extends Model {
     @Column
     id!: number;
 
-    @Column
     @ForeignKey(() => User) 
+    @Column
     user_id!: number;
 
     @BelongsTo(() => User)
@@ -57,9 +58,11 @@ class Curator extends Model {
     @Column
     id!: number;
     
+    @ForeignKey(() => Hackathon)
     @Column
     task_id!: number;
 
+    @ForeignKey(() => User)
     @Column
     user_id!: number;
 }
