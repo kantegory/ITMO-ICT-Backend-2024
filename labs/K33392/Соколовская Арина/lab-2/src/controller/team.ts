@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { TeamService } from "../service/team";
-import { Team } from "../model/team";
+import { Participant, Team } from "../model/team";
 
 const teamService = new TeamService();
 
@@ -16,5 +16,12 @@ exports.patch_team = async (req: Request, res: Response) => {
 };
 
 exports.post_participant = async (req: Request, res: Response) => {
-    res.send("NOT IMPLEMENTED");
+    try {
+        const participant = await teamService.postParticipant(req.body as Participant)
+        if (participant != null) res.send(participant.toJSON);
+    } catch (e) {
+        if (e instanceof Error) {
+            res.send({ error: e.message });
+        }
+    }
 };
