@@ -139,7 +139,8 @@
 
 ## 2.2 Тестирование, документация
 
-[Презентация](https://docs.google.com/presentation/d/1VDH4LND0R4vn0WBGt96XdJfZEH3GxEESnGS0X3KPT9Q/edit?usp=sharing)
+[Презентация](https://docs.google.com/presentation/d/1VDH4LND0R4vn0WBGt96XdJfZEH3GxEESnGS0X3KPT9Q/edit?usp=sharing)  
+[Пример, который делали на паре](https://github.com/kantegory/mentoring/tree/master/24_postman_example)
 
 **ДЗ4** (срок: 25.04.2024)
 
@@ -147,7 +148,7 @@
 
 **ДЗ5** (срок 25.04.2024)
 
-Тестирование API из ЛР2 средствами Postman
+Тестирование API из ЛР2 средствами Postman (написать 2-3 теста для конкретных эндпоинтов + 1 общий тест для всех эндпоинтов)
 
 # 3. DI, IoC, Развёртывание, микросервисы, CI/CD
 
