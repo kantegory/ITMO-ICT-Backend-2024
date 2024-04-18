@@ -13,7 +13,11 @@ export class CuratorRepository {
         return new_curator;
     }
 
-    // async delete(id: number): Promise<Curator | null> {
-
-    // }
+    async delete(id: number) {
+        this.repository.destroy({
+            where: {
+                id: id,
+            },
+        });
+    }
 }

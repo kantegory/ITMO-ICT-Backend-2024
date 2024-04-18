@@ -9,4 +9,9 @@ export class GradingRepository {
         const new_grading = await this.repository.create(grading.toJSON());
         return new_grading;
     }
+
+    async get_gradings(hackathon_id: number): Promise<Grading[]> {
+        const gradings = await this.repository.findAll();
+        return gradings;
+    }
 }
