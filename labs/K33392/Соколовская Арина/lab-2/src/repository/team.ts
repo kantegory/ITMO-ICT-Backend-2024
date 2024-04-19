@@ -16,7 +16,7 @@ export class TeamRepository {
     }
 
     async post(team: Team): Promise<Team | null> {
-        const new_team = this.repository.create(team.toJSON());
+        const new_team = this.repository.create(JSON.parse(JSON.stringify(team)));
         return new_team;
     }
 

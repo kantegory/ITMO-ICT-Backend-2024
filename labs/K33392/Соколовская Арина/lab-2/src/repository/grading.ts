@@ -6,7 +6,7 @@ export class GradingRepository {
     private repository = sequelize.getRepository(Grading);
 
     async post(grading: Grading): Promise<Grading | null> {
-        const new_grading = await this.repository.create(grading.toJSON());
+        const new_grading = await this.repository.create(JSON.parse(JSON.stringify(grading)));
         return new_grading;
     }
 

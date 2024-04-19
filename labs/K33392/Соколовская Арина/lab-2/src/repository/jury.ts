@@ -9,7 +9,7 @@ export class JuryRepository {
     private repository = sequelize.getRepository(Jury);
 
     async post(jury: Jury): Promise<Jury | null> {
-        const new_jury = await this.repository.create(jury.toJSON());
+        const new_jury = await this.repository.create(JSON.parse(JSON.stringify(jury)));
         return new_jury;
     }
 

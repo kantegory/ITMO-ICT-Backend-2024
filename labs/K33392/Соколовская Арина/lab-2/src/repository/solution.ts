@@ -19,7 +19,7 @@ export class SolutionRepository {
     }
 
     async post(solutin: Solution): Promise<Solution | null> {
-        const new_solution = await this.repository.create(solutin.toJSON());
+        const new_solution = await this.repository.create(JSON.parse(JSON.stringify(solutin)));
         return new_solution;
     }
 }

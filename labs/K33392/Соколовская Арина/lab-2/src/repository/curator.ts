@@ -9,7 +9,7 @@ export class CuratorRepository {
     private repository = sequelize.getRepository(Curator);
 
     async post(curator: Curator): Promise<Curator | null> {
-        const new_curator = await this.repository.create(curator.toJSON());
+        const new_curator = await this.repository.create(JSON.parse(JSON.stringify(curator)));
         return new_curator;
     }
 

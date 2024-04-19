@@ -10,6 +10,8 @@ export class AuthService {
     }
 
     async post_user(user: User): Promise<User> {
-        return this.userRepository.create(user);
+        const new_user = this.userRepository.create(user);
+        console.log(new_user);
+        return new_user;
     }
 }

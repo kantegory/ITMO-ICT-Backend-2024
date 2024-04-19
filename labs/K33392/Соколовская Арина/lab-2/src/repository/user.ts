@@ -20,10 +20,7 @@ export class UserRepository {
     }
 
     async create(user: User): Promise<User>{
-        let db_user = await this.repository.findByPk(user.id);
-        if (db_user != null) throw new UserAlreadyExists();
-        db_user = user;
-        await db_user.save();
-        return db_user;
+        const new_user = await this.repository.create(JSON.parse(JSON.stringify(user)));
+        return new_user;
     }
 }

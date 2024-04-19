@@ -11,7 +11,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.use('', homeRouter);
+router.use('/', homeRouter);
 router.use('/users', userRouter);
 router.use('/admin', adminRouter);
 router.use('/auth', authRouter);

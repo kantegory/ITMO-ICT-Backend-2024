@@ -34,7 +34,7 @@ export class HackathonRepository {
     }
 
     async post(hackathon: Hackathon): Promise<Hackathon | null> {
-        const new_hackathon = await this.repository.create(hackathon.toJSON());
+        const new_hackathon = await this.repository.create(JSON.parse(JSON.stringify(hackathon)));
         return new_hackathon;
     }
 

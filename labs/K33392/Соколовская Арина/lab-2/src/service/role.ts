@@ -8,8 +8,9 @@ export class RoleService {
         this.roleRepository = new RoleRepository();
     }
 
-    async post(role: Role): Promise<Role | null> {
+    async post(role: Role): Promise<Role> {
         const new_role = await this.roleRepository.post(role);
+        if (new_role == null) throw new Error("Invalid role")
         return new_role;
     }
 }
