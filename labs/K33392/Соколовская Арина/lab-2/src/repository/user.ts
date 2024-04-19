@@ -12,6 +12,15 @@ export class UserRepository {
         return user;
     }
 
+    async findByEmail(email: string): Promise<User | null> {
+        const user = await this.repository.findOne({
+            where: {
+                email: email,
+            }
+        })
+        return user;
+    } 
+
     async patch(id: number, user: User): Promise<User>{
         let db_user = await this.repository.findByPk(id);
         db_user = user;

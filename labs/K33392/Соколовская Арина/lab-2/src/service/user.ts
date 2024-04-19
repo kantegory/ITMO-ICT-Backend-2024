@@ -35,6 +35,11 @@ export class UserService {
         return user;
     }
 
+    async findByEmail(email: string): Promise<User | null> {
+        const user = await this.userRepository.findByEmail(email);
+        return user;
+    }
+
     async patch(user: User): Promise<User> {
         const updeted_user = await this.userRepository.patch(user.id, user);
         return updeted_user;

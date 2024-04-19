@@ -10,4 +10,9 @@ export class RoleRepository {
         const new_role = await this.repository.create(JSON.parse(JSON.stringify(role)));
         return new_role;
     }
+
+    async findById(id: string) {
+        const role = await this.repository.findByPk(id);
+        return role;
+    }
 }

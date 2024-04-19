@@ -13,4 +13,9 @@ export class RoleService {
         if (new_role == null) throw new Error("Invalid role")
         return new_role;
     }
+
+    async findById(id: string): Promise<Role | null> {
+        const role = await this.roleRepository.findById(id);
+        return role;
+    }
 }
