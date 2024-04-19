@@ -10,7 +10,9 @@ export class AuthService {
     }
 
     async post_user(user: User): Promise<User> {
-        user.role_name = 'user';
+        if (!user.role_name) {
+            user.role_name = 'user';
+        }
         const new_user = this.userRepository.create(user);
         console.log(new_user);
         return new_user;

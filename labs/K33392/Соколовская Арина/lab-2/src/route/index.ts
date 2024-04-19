@@ -8,6 +8,7 @@ import teamRouter from "./team";
 import userRouter from "./user";
 import { Router } from "express";
 
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = Router();
 

@@ -4,6 +4,7 @@
 import { Router, Request, Response } from 'express';
 
 const hackathonController = require("../controller/hackathon"); 
+const authMiddleware = require("../middleware/authMiddleware");
 const hackathonRouter = Router();
 
 hackathonRouter
@@ -12,7 +13,7 @@ hackathonRouter
 
 hackathonRouter
   .route('/:id/register')
-  .post(hackathonController.post_hackathon_team); // authenticated, not curator, not jury
+  .post(authMiddleware, hackathonController.post_hackathon_team); // authenticated, not curator, not jury
 
 hackathonRouter
   .route('/:id/task')
@@ -25,6 +26,6 @@ hackathonRouter
 
 hackathonRouter
   .route('/')
-  .get(hackathonController.get_hackathons); // any
+  .get(authMiddleware, hackathonController.get_hackathons); // any
 
 export default hackathonRouter;

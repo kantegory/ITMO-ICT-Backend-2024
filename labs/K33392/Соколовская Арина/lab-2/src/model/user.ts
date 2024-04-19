@@ -34,8 +34,8 @@ class User extends Model {
     @Column
     role_name!: string;
 
-    @BelongsTo(() => Role)
-    role!: Role;
+    // @BelongsTo(() => Role)
+    // role!: Role;
 
     @BeforeCreate
     @BeforeUpdate
