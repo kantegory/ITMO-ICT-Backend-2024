@@ -19,8 +19,8 @@ exports.get_hackathons = async (req: Request, res: Response) => {
 
 exports.get_hackathon = async (req: Request, res: Response) => {
     try {
-        const hackathon = await hackathonService.findById(req.body.id)
-        if (hackathon != null) res.send(hackathon.toJSON);
+        const hackathon = await hackathonService.findById(Number(req.params.id))
+        if (hackathon != null) res.send(JSON.stringify(hackathon));
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });
@@ -41,8 +41,8 @@ exports.post_hackathon_team = async (req: Request, res: Response) => {
 
 exports.get_hackathon_task = async (req: Request, res: Response) => {
     try {
-        const task = await hackathonService.findTaskById(req.body.id)
-        if (task != null) res.send(task.toJSON);
+        const task = await hackathonService.findTaskById(Number(req.params.id))
+        if (task != null) res.send(JSON.stringify(task));
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });

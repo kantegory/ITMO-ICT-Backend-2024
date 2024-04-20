@@ -18,9 +18,9 @@ module.exports = async function (req: Request, res: Response, next: any) {
         
         const parsed = jwt.verify(token, process.env.secret_key as string);
         const user_id = (parsed as User).id;
-        const hackathon_id = Number(req.params.id);
-        const team = await teamRepository.findByLead(hackathon_id, user_id);
-        if (!team) {
+        const request_user_id = Number(req.params.id);
+        
+        if (user_id !== request_user_id) {
             return res.status(403).json({message: "Access Denied"});
         }
         next();

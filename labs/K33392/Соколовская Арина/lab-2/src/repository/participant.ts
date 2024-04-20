@@ -18,4 +18,14 @@ export class ParticipantRepository {
 
         return new_participant;
     }
+
+    async findByParams(user_id: number, hackathon_id: number): Promise<Participant | null> {
+        const participant = await this.repository.findOne({
+            where: {
+                user_id: user_id,
+                task_id: hackathon_id,
+            }
+        })
+        return participant;
+    }
 }

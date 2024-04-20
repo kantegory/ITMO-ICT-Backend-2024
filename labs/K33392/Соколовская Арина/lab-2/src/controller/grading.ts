@@ -18,7 +18,7 @@ exports.post_grading = async (req: Request, res: Response) => {
 
 exports.get_gradings = async (req: Request, res: Response) => {
     try {
-        const gradings = await gradingService.get_gradings(req.body.id)
+        const gradings = await gradingService.get_gradings(Number(req.params.id))
         if (gradings != null) res.send(gradings);
     } catch (e) {
         if (e instanceof Error) {

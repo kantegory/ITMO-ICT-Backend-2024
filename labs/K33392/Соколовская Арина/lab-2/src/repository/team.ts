@@ -6,6 +6,11 @@ import sequelize from '../config/db';
 export class TeamRepository {
     private repository = sequelize.getRepository(Team);
 
+    async findByPk(id: number): Promise<Team | null> {
+        const team = await this.repository.findByPk(id);
+        return team;
+    }
+
     async findByPks(ids: number[]): Promise<Team[] | null> {
         const teams = await this.repository.findAll({
             where: {

@@ -20,7 +20,7 @@ exports.post_hackathon = async (req: Request, res: Response) => {
 
 exports.post_curator = async (req: Request, res: Response) => {
     try {
-        const curator = await adminService.post_curator(req.body as Curator)
+        const curator = await adminService.post_curator(req.body as Curator);
         if (curator != null) res.send(JSON.stringify(curator));
     } catch (e) {
         if (e instanceof Error) {
@@ -31,7 +31,7 @@ exports.post_curator = async (req: Request, res: Response) => {
 
 exports.delete_curator = async (req: Request, res: Response) => {
     try {
-        await adminService.delete_curator(req.body.id)
+        await adminService.delete_curator(Number(req.params.id));
         res.send({massage : "Curator deleted successfully!"});
     } catch (e) {
         if (e instanceof Error) {
@@ -42,7 +42,7 @@ exports.delete_curator = async (req: Request, res: Response) => {
 
 exports.post_jury = async (req: Request, res: Response) => {
     try {
-        const jury = await adminService.post_jury(req.body as Jury)
+        const jury = await adminService.post_jury(req.body as Jury, Number(req.params.id));
         if (jury != null) res.send(JSON.stringify(jury));
     } catch (e) {
         if (e instanceof Error) {
@@ -53,7 +53,7 @@ exports.post_jury = async (req: Request, res: Response) => {
 
 exports.delete_jury = async (req: Request, res: Response) => {
     try {
-        await adminService.delete_jury(req.body.id)
+        await adminService.delete_jury(Number(req.params.id));
         res.send({massage : "Jury deleted successfully!"});
     } catch (e) {
         if (e instanceof Error) {

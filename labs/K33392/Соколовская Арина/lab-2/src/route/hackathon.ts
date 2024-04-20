@@ -15,7 +15,7 @@ hackathonRouter
 
 hackathonRouter
   .route('/:id/register')
-  .post(authMiddleware, hackathonController.post_hackathon_team); // authenticated, not curator, not jury
+  .post(authMiddleware, hackathonController.post_hackathon_team); // authenticated
 
 hackathonRouter
   .route('/:id/task')

@@ -8,6 +8,16 @@ import { Curator } from '../model/user';
 export class CuratorRepository {
     private repository = sequelize.getRepository(Curator);
 
+    async findByParams(user_id: number, hackathon_id: number): Promise<Curator | null> {
+        const curator = this.repository.findOne({
+            where: {
+                user_id: user_id,
+                task_id: hackathon_id,
+            }
+        });
+        return curator;
+    }
+
     async post(curator: Curator): Promise<Curator | null> {
         const new_curator = await this.repository.create(JSON.parse(JSON.stringify(curator)));
         return new_curator;

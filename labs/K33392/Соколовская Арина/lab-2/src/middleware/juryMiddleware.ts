@@ -1,9 +1,9 @@
 import { Request, Response } from "express"
 import jwt from "jsonwebtoken"
-import { User } from "../model/user"
-import { TeamRepository } from "../repository/team"
+import { User } from "../model/user";
+import { HackathonJuryRepository } from "../repository/hackathonJury";
 
-const teamRepository = new TeamRepository();
+const hackathonJuryRepository = new HackathonJuryRepository();
 
 module.exports = async function (req: Request, res: Response, next: any) {
     try {
@@ -18,9 +18,13 @@ module.exports = async function (req: Request, res: Response, next: any) {
         
         const parsed = jwt.verify(token, process.env.secret_key as string);
         const user_id = (parsed as User).id;
-        const hackathon_id = Number(req.params.id);
-        const team = await teamRepository.findByLead(hackathon_id, user_id);
-        if (!team) {
+        let hackathon_id = Number(req.params.id);
+        if (!hackathon_id) {
+            hackathon_id = Number(req.params.hackathon_id);
+        }
+
+        const taskJury = await hackathonJuryRepository.findByPks(hackathon_id, user_id);
+        if (!taskJury) {
             return res.status(403).json({message: "Access Denied"});
         }
         next();
