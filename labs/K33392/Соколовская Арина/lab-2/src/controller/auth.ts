@@ -27,7 +27,7 @@ exports.register_user = async (req: Request, res: Response) => {
             return res.status(400).json({message: `User with email ${email} already exists`});
         }
         const new_user = await authService.post_user(req.body as User);
-        res.send(new_user.toJSON());
+        res.send(JSON.stringify(new_user));
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });

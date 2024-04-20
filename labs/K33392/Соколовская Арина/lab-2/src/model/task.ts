@@ -1,10 +1,11 @@
-import { Table, Model, Column, PrimaryKey, ForeignKey } from 'sequelize-typescript';
+import { Table, Model, Column, PrimaryKey, ForeignKey, AutoIncrement } from 'sequelize-typescript';
 import { Jury } from './user';
 
 
 @Table
 export class Hackathon extends Model {
     @PrimaryKey
+    @AutoIncrement
     @Column
     id!: number;
 
@@ -27,6 +28,7 @@ export class Hackathon extends Model {
 @Table
 export class Link extends Model {
     @PrimaryKey
+    @AutoIncrement
     @Column
     id!: number;
 
@@ -44,6 +46,7 @@ export class Link extends Model {
 @Table
 export class File extends Model {
     @PrimaryKey
+    @AutoIncrement
     @Column
     id!: number;
 

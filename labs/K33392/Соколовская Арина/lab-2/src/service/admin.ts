@@ -11,8 +11,6 @@ export class AdminService {
     private juryRepository: JuryRepository;
     private hackathonRepository: HackathonRepository;
 
-
-
     constructor() {
         this.curatorRepository = new CuratorRepository();
         this.juryRepository = new JuryRepository();
@@ -20,9 +18,8 @@ export class AdminService {
         this.hackathonRepository = new HackathonRepository();
     }
 
-    
     async post_hackathon(hackathon: Hackathon): Promise<Hackathon | null> {
-        const new_hackathon = await this.hackathonRepository.post(hackathon.toJSON());
+        const new_hackathon = await this.hackathonRepository.post(hackathon);
         return new_hackathon;
     }
 

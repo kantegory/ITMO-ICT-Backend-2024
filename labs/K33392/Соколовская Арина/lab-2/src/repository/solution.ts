@@ -18,8 +18,10 @@ export class SolutionRepository {
         return db_solution;
     }
 
-    async post(solutin: Solution): Promise<Solution | null> {
-        const new_solution = await this.repository.create(JSON.parse(JSON.stringify(solutin)));
+    async post(solution: Solution): Promise<Solution | null> {
+        console.log(JSON.parse(JSON.stringify(solution)));
+        const new_solution = await this.repository.create(JSON.parse(JSON.stringify(solution)));
+        // console.log(new_solution);
         return new_solution;
     }
 }

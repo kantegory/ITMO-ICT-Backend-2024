@@ -9,8 +9,8 @@ const adminService = new AdminService();
 
 exports.post_hackathon = async (req: Request, res: Response) => {
     try {
-        const hackathon = await adminService.post_hackathon(req.body as Hackathon)
-        if (hackathon != null) res.send(hackathon.toJSON);
+        const hackathon = await adminService.post_hackathon(req.body as Hackathon);
+        if (hackathon != null) res.send(JSON.stringify(hackathon));
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });
@@ -21,7 +21,7 @@ exports.post_hackathon = async (req: Request, res: Response) => {
 exports.post_curator = async (req: Request, res: Response) => {
     try {
         const curator = await adminService.post_curator(req.body as Curator)
-        if (curator != null) res.send(curator.toJSON);
+        if (curator != null) res.send(JSON.stringify(curator));
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });
@@ -43,7 +43,7 @@ exports.delete_curator = async (req: Request, res: Response) => {
 exports.post_jury = async (req: Request, res: Response) => {
     try {
         const jury = await adminService.post_jury(req.body as Jury)
-        if (jury != null) res.send(jury.toJSON);
+        if (jury != null) res.send(JSON.stringify(jury));
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });

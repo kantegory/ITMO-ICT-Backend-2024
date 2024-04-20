@@ -1,10 +1,11 @@
-import { Table, Model, Column, PrimaryKey, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { Table, Model, Column, PrimaryKey, BelongsTo, ForeignKey, AutoIncrement } from "sequelize-typescript";
 import { Team } from "./team";
 import { Jury } from "./user";
 
 @Table
 export class Solution extends Model {
     @PrimaryKey
+    @AutoIncrement
     @Column
     id!: number;
 
@@ -26,6 +27,7 @@ export class Solution extends Model {
 @Table
 export class Grading extends Model {
     @PrimaryKey
+    @AutoIncrement
     @Column
     id!: number;
 

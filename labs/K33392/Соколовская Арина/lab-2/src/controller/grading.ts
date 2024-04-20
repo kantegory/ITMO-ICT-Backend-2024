@@ -8,7 +8,7 @@ const gradingService = new GradingService();
 exports.post_grading = async (req: Request, res: Response) => {
     try {
         const grading = await gradingService.post(req.body as Grading)
-        if (grading != null) res.send(grading.toJSON);
+        if (grading != null) res.send(JSON.stringify(grading));
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });

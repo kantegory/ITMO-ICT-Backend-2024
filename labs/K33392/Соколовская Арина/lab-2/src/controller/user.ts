@@ -12,7 +12,7 @@ exports.get_user = async (req: Request, res: Response) => {
         .status(404)
         .send({ error: 'User with the specified id not found' })
     } else {
-        res.send(user.toJSON());
+        res.send(JSON.stringify(user));
     }
 };
 
@@ -24,7 +24,7 @@ exports.patch_user = async (req: Request, res: Response) => {
         .status(400)
         .send({ error: 'User was not updated' })
     } else {
-        res.send(updated_user.toJSON());
+        res.send(JSON.stringify(updated_user));
     }
 };
 

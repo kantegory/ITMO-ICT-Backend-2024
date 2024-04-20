@@ -13,7 +13,7 @@ export class AuthService {
         if (!user.role_name) {
             user.role_name = 'user';
         }
-        const new_user = this.userRepository.create(user);
+        const new_user = await this.userRepository.create(user);
         console.log(new_user);
         return new_user;
     }

@@ -26,4 +26,14 @@ export class TeamRepository {
         await db_team.save();
         return db_team;
     }
+
+    async findByLead(hackathon_id: number, lead_id: number): Promise<Team | null> {
+        const team = this.repository.findOne({
+            where: {
+                leader_id: lead_id,
+                task_id: hackathon_id,
+            }
+        })
+        return team;
+    }
 }
