@@ -1,18 +1,16 @@
-all: node_modules migrate start
-.PHONY: all migrate seed start clean
-
-node_modules: package.json
-	npm install
-
-migrate: node_modules
-	npx sequelize-cli db:migrate --config src/config/database.js
+.DEFAULT_GOAL := init
 
 
-seed: node_modules
-	npx sequelize-cli db:seed:all
+init:
+	npm i
 
-start: 
-	npm run dev 
+build:
+	npm run build
 
-clean:
-	rm -rf node_modules db.sqlite
+migrate:
+	npm run migrate
+
+run:
+	npm start
+
+.PHONY: init build migrate run
