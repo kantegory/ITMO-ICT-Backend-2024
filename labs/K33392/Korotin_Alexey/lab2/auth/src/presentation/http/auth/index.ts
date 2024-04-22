@@ -32,8 +32,12 @@ router.use('/protected', jwtAuthMiddleware);
  *              properties:
  *                  email:
  *                      type: string
+ *                      format: email
  *                  password:
  *                      type: string
+ *              example:
+ *                  email: string@gov.co.uk
+ *                  password: qwerty
  */
 
 /**

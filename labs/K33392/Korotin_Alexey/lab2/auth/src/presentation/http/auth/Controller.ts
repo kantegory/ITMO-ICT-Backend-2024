@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import {encodeSession, PartialSession} from "../../../application/services/JWT";
 import {InvalidEmailException} from "../../../domain/account/EmailAddress";
 import {validationResult} from 'express-validator';
+
 export default class AuthController {
 
     public constructor(private repository: AccountRepository,
@@ -64,7 +65,7 @@ export default class AuthController {
             const result = encodeSession(session);
             return res.status(201).json(result);
 
-        }  catch (e: any) {
+        } catch (e: any) {
             if (e instanceof InvalidEmailException) {
                 return res.status(400).json({message: "Email is invalid"});
             }
