@@ -49,6 +49,9 @@ const profileController = new ProfileController(new ProfileRepository(), new Pro
  *
  */
 profileRouter.route('').post(profileController.post);
+profileRouter.route('').get(profileController.findAll);
 profileRouter.route('/:id').get(profileController.get);
+profileRouter.route('/:id').put(profileController.put);
+profileRouter.route('/:id').delete(profileController.delete);
 
 export default profileRouter;

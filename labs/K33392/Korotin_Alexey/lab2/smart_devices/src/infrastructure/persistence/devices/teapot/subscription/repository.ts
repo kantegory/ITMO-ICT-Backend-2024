@@ -24,4 +24,17 @@ export class TeapotSubscriptionRepository {
 
         return Promise.resolve(this.subMapper.toEntity(teapotSub.subscription));
     }
+
+    public async findAllByTeapotId(teapotId: string): Promise<EventSubscriptionModel[]> {
+        const models = await this.teapotSubscriptionRepo.findAll({
+            where:
+                {
+                    teapotId: teapotId
+                }, include: {all: true}
+        });
+
+        const eventSubs = models.map(async m => await m.reload().then(ts => ts.subscription));
+
+        return Promise.all(eventSubs);
+    }
 }

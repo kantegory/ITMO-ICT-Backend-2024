@@ -5,6 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "start": "npx tsc && node --env-file ./.env build/index.js",
+    "build": "npx tsc",
+    "runApp": "node --env-file ./.env build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alexey Korotin",
@@ -25,6 +27,8 @@
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.6",
     "@types/uuid": "^9.0.8",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -36,7 +40,8 @@
     "reflect-metadata": "^0.2.1",
     "sequelize": "^6.37.1",
     "sequelize-typescript": "^2.1.6",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.1"
   }
-
 }
