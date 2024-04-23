@@ -6,6 +6,7 @@ export interface Session {
     email: string;
     role: AccountRole;
     status: AccountStatus;
+    iss: string;
     iat: number;
     exp: number;
 }
