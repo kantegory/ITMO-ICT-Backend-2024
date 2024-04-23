@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import routes from "./presentation/http";
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from "swagger-jsdoc";
 
 
 const DEFAULT_HOST = "localhost";
@@ -27,7 +28,11 @@ const swaggerOptions: swaggerJsDoc.Options = {
             version: '1.0.0-BETA',
             contact: {
                 name: "Alexey Korotin K33392"
-            },
+            }
+        },
+        externalDocs: {
+            description: "swagger.json",
+            url: '/swagger.json'
         },
         servers: [
             {
@@ -42,5 +47,9 @@ const swaggerOptions: swaggerJsDoc.Options = {
 const docs = swaggerJsDoc(swaggerOptions);
 
 app.use('/swagger-ui', swaggerUi.serve, swaggerUi.setup(docs));
+app.get('/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(docs);
+});
 
 app.listen(appPort, appHost, () => console.log(`Application have started listening ${appHost} at port ${appPort}`));

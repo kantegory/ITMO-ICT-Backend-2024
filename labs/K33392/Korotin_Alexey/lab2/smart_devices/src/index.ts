@@ -27,6 +27,10 @@ const swaggerOptions: swaggerJsDoc.Options = {
                 name: "Alexey Korotin K33392"
             },
         },
+        externalDocs: {
+            description: "swagger.json",
+            url: '/swagger.json'
+        },
         schemes: ['http'],
         servers: [
             {
@@ -56,5 +60,8 @@ const swaggerOptions: swaggerJsDoc.Options = {
 const docs = swaggerJsDoc(swaggerOptions);
 
 app.use('/swagger-ui', swaggerUi.serve, swaggerUi.setup(docs));
-
+app.get('/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(docs);
+});
 app.listen(appPort, appHost, () => console.log(`Application have started listening ${appHost} at port ${appPort}`));
