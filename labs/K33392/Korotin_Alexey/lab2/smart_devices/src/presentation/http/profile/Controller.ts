@@ -11,6 +11,31 @@ export default class ProfileController {
                            = new ProfileFactory()) {
     }
 
+    /**
+     * @swagger
+     * /v1/profiles:
+     *      post:
+     *          tags: [Profile]
+     *          summary: Create profile
+     *          requestBody:
+     *              required: true
+     *              description: Profile information
+     *              content:
+     *                  application/json:
+     *                      schema:
+     *                          $ref: '#components/schemas/CreateProfileRequest'
+     *          responses:
+     *              201:
+     *                  description: Profile created successfully
+     *                  content:
+     *                      application/json:
+     *                          schema:
+     *                              $ref: '#components/schemas/ProfileResponse'
+     *              400:
+     *                   description: Bad request
+     *              401:
+     *                  description: Not Authorized
+     */
     public post = async (req: Request, res: Response) => {
         const attributes: ProfileCreateAttributes = {
             name: req.body.name,
@@ -19,10 +44,45 @@ export default class ProfileController {
         };
         let entity = this.factory.create(attributes);
         entity = await this.profileRepo.save(entity);
-
-        return res.status(201).json(entity);
+        const response = {
+            id: entity.id,
+            name: entity.name,
+            location: entity.location,
+            userId: entity.user.id
+        }
+        return res.status(201).json(response);
     }
 
+    /**
+     * @swagger
+     * /v1/profiles/{id}:
+     *      get:
+     *          tags: [Profile]
+     *          summary: Find profile by id
+     *          parameters:
+     *              - name: id
+     *                in: path
+     *                description: Profile id to find
+     *                required: true
+     *                schema:
+     *                  type: string
+     *                  format: uuid
+     *          responses:
+     *              200:
+     *                  description: Profile found
+     *                  content:
+     *                      application/json:
+     *                          schema:
+     *                              $ref: '#components/schemas/ProfileResponse'
+     *              400:
+     *                   description: Bad request
+     *              401:
+     *                  description: Not Authorized
+     *              403:
+     *                  description: Forbidden
+     *              404:
+     *                  description: Not found
+     */
     public get = async (req: Request, res: Response) => {
         const id = req.params['id'];
         const entity = await this.profileRepo.findById(id).catch((e) => {
@@ -34,6 +94,17 @@ export default class ProfileController {
             return res;
         }
 
-        return res.status(200).json(entity);
+        if (!entity.user.equals(res.locals.user)) {
+            return res.status(403).send();
+        }
+
+        const response = {
+            id: entity.id,
+            name: entity.name,
+            location: entity.location,
+            userId: entity.user.id
+        }
+
+        return res.status(200).json(response);
     }
 }
