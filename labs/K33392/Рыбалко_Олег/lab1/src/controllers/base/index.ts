@@ -14,7 +14,7 @@ export class BaseController<T extends Model> {
       }
       res.status(200).json(data)
     } catch (error) {
-      console.error('Error:', error)
+      console.log('Error:', error)
       res.status(500).json({ error: 'Internal Server Error' })
     }
   }
@@ -23,7 +23,7 @@ export class BaseController<T extends Model> {
     try {
       res.status(201).send(await this.service.create(req.body))
     } catch (error) {
-      console.error('Error:', error)
+      console.log('Error:', error)
       res.status(500).json({ error: 'Internal Server Error' })
     }
   }
@@ -36,7 +36,7 @@ export class BaseController<T extends Model> {
       )
       res.status(200).json(updatedData)
     } catch (error) {
-      console.error('Error:', error)
+      console.log('Error:', error)
       res.status(500).json({ error: 'Internal Server Error' })
     }
   }
@@ -50,7 +50,7 @@ export class BaseController<T extends Model> {
       }
       res.status(204).send()
     } catch (error) {
-      console.error('Error:', error)
+      console.log('Error:', error)
       res.status(500).json({ error: 'Internal Server Error' })
     }
   }

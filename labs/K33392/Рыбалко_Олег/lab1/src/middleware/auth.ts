@@ -19,7 +19,7 @@ export const authMiddlware = (req: Request, res: Response, next: any) => {
     req['user'] = jwt.verify(token, process.env.SECRET_KEY)
     next()
   } catch (e) {
-    res.status(500).send({ error: 'Internal Server Error' })
+    res.sendStatus(401)
   }
 }
 

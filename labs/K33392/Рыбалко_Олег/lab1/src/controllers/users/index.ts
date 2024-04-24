@@ -92,7 +92,7 @@ export class UsersController extends BaseController<User> {
       if (pwdHash === dbUser.passwordHash) {
         return res.send({
           token: jwt.sign(
-            { sub: body.email, exp: Math.floor(Date.now() / 1000 + 60 * 10) },
+            { sub: body.email, exp: Math.floor(Date.now() / 1000 + 60 * 100) },
             process.env.SECRET_KEY
           ),
         })
