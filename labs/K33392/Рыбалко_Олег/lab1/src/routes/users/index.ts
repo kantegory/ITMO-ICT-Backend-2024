@@ -4,11 +4,11 @@ import { UsersController } from '../../controllers/users/index.js'
 const router = Router({})
 const controller = new UsersController()
 
-router.get('/:id', controller.get)
+router.get('/:pk', controller.get)
 router.post('/', controller.post)
 router.post('/auth', controller.auth)
-router.put('/:id', controller.put)
-router.delete('/:id', controller.delete)
+router.put('/:pk', controller.put)
+router.delete('/:pk', controller.delete)
 
 export default router
 

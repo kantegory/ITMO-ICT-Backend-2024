@@ -18,7 +18,7 @@ export class UsersController extends BaseController<User> {
 
   get = async (req: Request, res: Response) => {
     try {
-      const data = await this.service.findByPk(+req.params.pk)
+      const data = await this.service.findByPk(parseFloat(req.params.pk))
       if (!data) {
         res.status(404).json({ error: 'Resource not found' })
         return
