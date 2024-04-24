@@ -9,7 +9,7 @@ const router = express.Router();
 
 const controller = new AuthController(new AccountRepository(new AccountFactory()));
 
-router.use('/protected', jwtAuthMiddleware);
+router.use('/me', jwtAuthMiddleware);
 
 /**
  * @swagger
@@ -48,10 +48,10 @@ router.use('/protected', jwtAuthMiddleware);
  */
 router.route("/login").post(body('email').notEmpty(), body('password').notEmpty(), controller.login);
 router.route("/register").post(body('email').notEmpty(), body('password').notEmpty(), controller.register);
-router.route('/protected').get((req, res) => {
+router.route('/me').get((req, res) => {
     const session: Session = res.locals.session;
 
-    res.status(200).json({ message: `Your sub is ${session.sub}` });
+    res.status(200).json(session);
 })
 
 export default router;
