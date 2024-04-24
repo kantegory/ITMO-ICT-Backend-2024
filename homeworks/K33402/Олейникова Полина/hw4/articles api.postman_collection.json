@@ -69,7 +69,167 @@
 						},
 						"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - get with params",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles?title=str&level=SIMPLE&offset=0&limit=2&specializationId=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "str"
+										},
+										{
+											"key": "level",
+											"value": "SIMPLE"
+										},
+										{
+											"key": "offset",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "2"
+										},
+										{
+											"key": "specializationId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1043"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"413-FSlcAOcyw85gAAvpq33Ix85HfNE\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:28:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"title\": \"string\",\n        \"content\": \"string\",\n        \"tags\": \"string, string2\",\n        \"level\": \"SIMPLE\",\n        \"status\": \"NOT_CONSIDER\",\n        \"userId\": 2,\n        \"specializationId\": 1,\n        \"createdAt\": \"2024-04-24T19:38:02.173Z\",\n        \"updatedAt\": \"2024-04-24T19:38:02.173Z\",\n        \"specialization\": {\n            \"id\": 1,\n            \"name\": \"Прикладная информатика\",\n            \"createdAt\": \"2024-04-24T18:13:43.814Z\",\n            \"updatedAt\": \"2024-04-24T18:13:43.814Z\"\n        },\n        \"user\": {\n            \"id\": 2,\n            \"name\": \"Polina2\",\n            \"email\": \"email2\",\n            \"role\": \"USER\",\n            \"createdAt\": \"2024-04-24T18:48:12.594Z\",\n            \"updatedAt\": \"2024-04-24T18:48:12.594Z\"\n        }\n    },\n    {\n        \"id\": 4,\n        \"title\": \"string2\",\n        \"content\": \"string2\",\n        \"tags\": \"string, string2\",\n        \"level\": \"SIMPLE\",\n        \"status\": \"NOT_CONSIDER\",\n        \"userId\": 2,\n        \"specializationId\": 1,\n        \"createdAt\": \"2024-04-24T21:14:57.097Z\",\n        \"updatedAt\": \"2024-04-24T21:14:57.097Z\",\n        \"specialization\": {\n            \"id\": 1,\n            \"name\": \"Прикладная информатика\",\n            \"createdAt\": \"2024-04-24T18:13:43.814Z\",\n            \"updatedAt\": \"2024-04-24T18:13:43.814Z\"\n        },\n        \"user\": {\n            \"id\": 2,\n            \"name\": \"Polina2\",\n            \"email\": \"email2\",\n            \"role\": \"USER\",\n            \"createdAt\": \"2024-04-24T18:48:12.594Z\",\n            \"updatedAt\": \"2024-04-24T18:48:12.594Z\"\n        }\n    }\n]"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "str",
+											"disabled": true
+										},
+										{
+											"key": "level",
+											"value": "SIMPLE",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "0",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "specializationId",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:29:13 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						}
+					]
 				},
 				{
 					"name": "get article",
@@ -116,7 +276,194 @@
 						},
 						"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "400 - not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c-Dgr4nZ0LTo//8dsqP2rbavASLzs\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:26:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Error: Not Found\"\n}"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:27:05 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						},
+						{
+							"name": "200 - get",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "956"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3bc-av/HdgIEc7Dl7XVAQ85wl7zYpHA\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:27:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"title\": \"string\",\n    \"content\": \"string\",\n    \"tags\": \"string, string2\",\n    \"level\": \"SIMPLE\",\n    \"status\": \"NOT_CONSIDER\",\n    \"userId\": 2,\n    \"specializationId\": 1,\n    \"createdAt\": \"2024-04-24T19:38:02.173Z\",\n    \"updatedAt\": \"2024-04-24T19:38:02.173Z\",\n    \"comments\": [\n        {\n            \"id\": 5,\n            \"content\": \"Comment Прикладная информатика\",\n            \"userId\": 2,\n            \"articleId\": 1,\n            \"createdAt\": \"2024-04-24T19:38:45.721Z\",\n            \"updatedAt\": \"2024-04-24T19:38:45.721Z\"\n        }\n    ],\n    \"specialization\": {\n        \"id\": 1,\n        \"name\": \"Прикладная информатика\",\n        \"createdAt\": \"2024-04-24T18:13:43.814Z\",\n        \"updatedAt\": \"2024-04-24T18:13:43.814Z\"\n    },\n    \"user\": {\n        \"id\": 2,\n        \"name\": \"Polina2\",\n        \"email\": \"email2\",\n        \"role\": \"USER\",\n        \"createdAt\": \"2024-04-24T18:48:12.594Z\",\n        \"updatedAt\": \"2024-04-24T18:48:12.594Z\"\n    },\n    \"likes\": [\n        {\n            \"id\": 5,\n            \"userId\": 2,\n            \"articleId\": 1,\n            \"createdAt\": \"2024-04-24T19:38:50.647Z\",\n            \"updatedAt\": \"2024-04-24T19:38:50.647Z\"\n        }\n    ],\n    \"favorites\": [\n        {\n            \"id\": 7,\n            \"userId\": 2,\n            \"articleId\": 1,\n            \"createdAt\": \"2024-04-24T19:38:52.955Z\",\n            \"updatedAt\": \"2024-04-24T19:38:52.955Z\"\n        }\n    ]\n}"
+						}
+					]
 				},
 				{
 					"name": "update article",
@@ -138,7 +485,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEzOTgyNDA4LCJleHAiOjE3MTQxNTUyMDh9.OOSfZyehI5YQ74iqVptYL8CAAizDUmRp5UMN6XOn-tc",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4",
 									"type": "string"
 								}
 							]
@@ -172,7 +519,221 @@
 						},
 						"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - updated",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"string\",\r\n    \"content\": \"string\",\r\n    \"tags\": \"string, string1\",\r\n    \"level\": \"SIMPLE\",\r\n    \"specializationId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "216"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"d8-h262NN9AqCq22sMgDqgCw1HKzoE\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:36:29 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"title\": \"string\",\n    \"content\": \"string\",\n    \"tags\": \"string, string1\",\n    \"level\": \"SIMPLE\",\n    \"status\": \"ACCEPTED\",\n    \"userId\": 2,\n    \"specializationId\": 1,\n    \"createdAt\": \"2024-04-24T19:38:02.173Z\",\n    \"updatedAt\": \"2024-04-24T21:36:29.848Z\"\n}"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"string\",\r\n    \"content\": \"string\",\r\n    \"tags\": \"string, string1\",\r\n    \"level\": \"SIMPLE\",\r\n    \"specializationId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:36:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						},
+						{
+							"name": "400 - not found",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"string\",\r\n    \"content\": \"string\",\r\n    \"tags\": \"string, string1\",\r\n    \"level\": \"SIMPLE\",\r\n    \"specializationId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"24-bkF/4vszwOP5+os02juqXNsiiQM\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:37:02 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Error: Article not found\"\n}"
+						}
+					]
 				},
 				{
 					"name": "update article status",
@@ -194,7 +755,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEzOTgyNDA4LCJleHAiOjE3MTQxNTUyMDh9.OOSfZyehI5YQ74iqVptYL8CAAizDUmRp5UMN6XOn-tc",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4",
 									"type": "string"
 								}
 							]
@@ -229,7 +790,224 @@
 						},
 						"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "400 - no rights",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\":\"ACCEPTED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles/:id/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"24-4ojDKNFfMTXFg6Akx5GfaCxq3xY\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:32:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Error: Not enough rights\"\n}"
+						},
+						{
+							"name": "200 - accepted",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\":\"ACCEPTED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles/:id/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "216"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"d8-ckzPrmlfNXuf9Sxgwwo2gaBRpcU\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:35:04 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"title\": \"string\",\n    \"content\": \"string\",\n    \"tags\": \"string, string2\",\n    \"level\": \"SIMPLE\",\n    \"status\": \"ACCEPTED\",\n    \"userId\": 2,\n    \"specializationId\": 1,\n    \"createdAt\": \"2024-04-24T19:38:02.173Z\",\n    \"updatedAt\": \"2024-04-24T21:35:04.019Z\"\n}"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\":\"ACCEPTED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles/:id/status",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:35:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						}
+					]
 				},
 				{
 					"name": "delete article",
@@ -251,7 +1029,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEzOTgyNDA4LCJleHAiOjE3MTQxNTUyMDh9.OOSfZyehI5YQ74iqVptYL8CAAizDUmRp5UMN6XOn-tc",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzEzOTg3MDc3LCJleHAiOjE3MTQxNTk4Nzd9.ksbbWCEYvX3PC-Z48r40YU-hdHj74ns8ov_fJ_AYCeE",
 									"type": "string"
 								}
 							]
@@ -259,18 +1037,211 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/articles/1",
+							"raw": "{{base_url}}/articles/:id",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"articles",
-								"1"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
 							]
 						},
 						"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "400 - not found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"24-bkF/4vszwOP5+os02juqXNsiiQM\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:31:24 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Error: Article not found\"\n}"
+						},
+						{
+							"name": "200 - deleted",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "45"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2d-HdrjYvADFFREzwbJ/Gvf4V5zY2Q\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:31:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Article have successful deleted\"\n}"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:35:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						}
+					]
 				},
 				{
 					"name": "create article",
@@ -301,7 +1272,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"string\",\r\n    \"content\": \"string\",\r\n    \"tags\": \"string, string2\",\r\n    \"level\": \"SIMPLE\",\r\n    \"specializationId\": 1\r\n}",
+							"raw": "{\r\n    \"title\": \"string2\",\r\n    \"content\": \"string2\",\r\n    \"tags\": \"string, string2\",\r\n    \"level\": \"SIMPLE\",\r\n    \"specializationId\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -319,7 +1290,136 @@
 						},
 						"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"string2\",\r\n    \"content\": \"string2\",\r\n    \"tags\": \"string, string2\",\r\n    \"level\": \"SIMPLE\",\r\n    \"specializationId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "222"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"de-PQAU0bFbAxlr3xugAV+VKJbRlXk\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:29:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"NOT_CONSIDER\",\n    \"id\": 5,\n    \"title\": \"string2\",\n    \"content\": \"string2\",\n    \"tags\": \"string, string2\",\n    \"level\": \"SIMPLE\",\n    \"specializationId\": 1,\n    \"userId\": 2,\n    \"updatedAt\": \"2024-04-24T21:29:58.830Z\",\n    \"createdAt\": \"2024-04-24T21:29:58.830Z\"\n}"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"string2\",\r\n    \"content\": \"string2\",\r\n    \"tags\": \"string, string2\",\r\n    \"level\": \"SIMPLE\",\r\n    \"specializationId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/articles",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:30:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						}
+					]
 				},
 				{
 					"name": "get comments",
@@ -329,7 +1429,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEzOTgyNDA4LCJleHAiOjE3MTQxNTUyMDh9.OOSfZyehI5YQ74iqVptYL8CAAizDUmRp5UMN6XOn-tc",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4",
 									"type": "string"
 								}
 							]
@@ -354,7 +1454,134 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - get",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "319"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"13f-BW66U04BgDLyYYEdlK9Ce23MQrY\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:37:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 5,\n        \"content\": \"Comment Прикладная информатика\",\n        \"userId\": 2,\n        \"articleId\": 1,\n        \"createdAt\": \"2024-04-24T19:38:45.721Z\",\n        \"updatedAt\": \"2024-04-24T19:38:45.721Z\",\n        \"user\": {\n            \"id\": 2,\n            \"name\": \"Polina2\",\n            \"email\": \"email2\",\n            \"role\": \"USER\",\n            \"createdAt\": \"2024-04-24T18:48:12.594Z\",\n            \"updatedAt\": \"2024-04-24T18:48:12.594Z\"\n        }\n    }\n]"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:38:01 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						}
+					]
 				},
 				{
 					"name": "add favorite",
@@ -364,7 +1591,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzEzOTg3MDc3LCJleHAiOjE3MTQxNTk4Nzd9.ksbbWCEYvX3PC-Z48r40YU-hdHj74ns8ov_fJ_AYCeE",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4",
 									"type": "string"
 								}
 							]
@@ -389,7 +1616,197 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"favorites"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "46"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2e-N9bLVYGdrNyBfTR+ZBzzH/SZuGQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:39:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Favorite have successful created\"\n}"
+						},
+						{
+							"name": "400 - not found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"favorites"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "197"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"c5-KhSq/r/OR6OmicUZ/PMvmoI02YY\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:40:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"SequelizeForeignKeyConstraintError: INSERT или UPDATE в таблице \\\"Favorites\\\" нарушает ограничение внешнего ключа \\\"Favorites_articleId_fkey\\\"\"\n}"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"favorites"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:40:36 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						}
+					]
 				},
 				{
 					"name": "delete favorite",
@@ -399,7 +1816,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEzOTgyNDA4LCJleHAiOjE3MTQxNTUyMDh9.OOSfZyehI5YQ74iqVptYL8CAAizDUmRp5UMN6XOn-tc",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4",
 									"type": "string"
 								}
 							]
@@ -424,7 +1841,197 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"favorites"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:41:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						},
+						{
+							"name": "400 - not found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"favorites"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "37"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"25-womzQB/MGr7y8Fy8KafChoOZ0v4\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:41:19 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Error: Favorite not found\"\n}"
+						},
+						{
+							"name": "200 - deleted",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"favorites"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "46"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2e-TL50U6aUmecoir0Ou/y3v7vRcSs\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:45:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Favorite have successful deleted\"\n}"
+						}
+					]
 				},
 				{
 					"name": "add like",
@@ -434,7 +2041,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzEzOTg3MDc3LCJleHAiOjE3MTQxNTk4Nzd9.ksbbWCEYvX3PC-Z48r40YU-hdHj74ns8ov_fJ_AYCeE",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4",
 									"type": "string"
 								}
 							]
@@ -459,7 +2066,197 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/likes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"likes"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2a-p4ZTVEbpsjNX/VN7Ys+5IVivq4M\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:45:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Like have successful created\"\n}"
+						},
+						{
+							"name": "401 - auth",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/likes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"likes"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:46:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						},
+						{
+							"name": "400 - not found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/likes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"likes"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "100"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "189"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"bd-iSOqfzJws+L61HdycaMc45qY9BA\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:46:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"SequelizeForeignKeyConstraintError: INSERT или UPDATE в таблице \\\"Likes\\\" нарушает ограничение внешнего ключа \\\"Likes_articleId_fkey\\\"\"\n}"
+						}
+					]
 				},
 				{
 					"name": "delete like",
@@ -469,7 +2266,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEzOTgyNDA4LCJleHAiOjE3MTQxNTUyMDh9.OOSfZyehI5YQ74iqVptYL8CAAizDUmRp5UMN6XOn-tc",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4",
 									"type": "string"
 								}
 							]
@@ -494,7 +2291,197 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "401  - auth",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/likes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"likes"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "7"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1f-crg7ovEEHb9AqDObckZob3ngQr8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:47:13 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Please authenticate\"\n}"
+						},
+						{
+							"name": "400 - not found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/likes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"likes"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21-6hFkoJJeWSqZPEbTpjFwiYoWGjM\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:47:31 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Error: Like not found\"\n}"
+						},
+						{
+							"name": "200 - deleted",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/articles/:id/likes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"articles",
+										":id",
+										"likes"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2a-0qvP45gX0Fwh/K08CjxwH3XBvMU\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:47:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Like have successful deleted\"\n}"
+						}
+					]
 				}
 			]
 		},
@@ -522,7 +2509,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\":\"email2\",\r\n    \"password\":\"password2\"\r\n}",
+							"raw": "{\r\n    \"email\":\"email1\",\r\n    \"password\":\"password1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -540,7 +2527,72 @@
 						},
 						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"email1\",\r\n    \"password\":\"password1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "203"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"cb-85rHsIeB19rAE1IgDgQ5wKQwC4M\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:34:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"refreshToken\": \"307ec632-d429-4316-93ed-e92042e4b3ff\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzEzOTk0NDg3LCJleHAiOjE3MTQxNjcyODd9.Q6KsX2L8srMNKS_LnRoYK7mJQmWtM5274CidscV6Pc4\"\n}"
+						}
+					]
 				},
 				{
 					"name": "register",
@@ -579,7 +2631,72 @@
 						},
 						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
 					},
-					"response": []
+					"response": [
+						{
+							"name": "200 - register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"Polina\",\n    \"email\":\"email\",\n    \"password\":\"password\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"register"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "9"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"9-hVv0cNJophUD7CGn+ZqXp8tVGo0\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 24 Apr 2024 21:48:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 11\n}"
+						}
+					]
 				}
 			]
 		},
