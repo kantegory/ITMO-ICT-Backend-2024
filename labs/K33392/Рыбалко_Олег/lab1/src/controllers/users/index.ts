@@ -52,10 +52,17 @@ export class UsersController extends BaseController<User> {
 
   put = async (req: Request, res: Response) => {
     try {
-      const updatedData = await this.service.updateByPk(
-        +req.params.pk,
-        req.body
-      )
+      const body = req.body as UserCreate
+
+      const updatedData = await this.service.updateByPk(+req.params.pk, {
+        firstName: body.firstName,
+        lastName: body.lastName,
+        email: body.email,
+        passwordHash: crypto
+          .createHash('sha256')
+          .update(body.password)
+          .digest('hex'),
+      })
       res.status(200).json(updatedData)
     } catch (error) {
       console.error('Error:', error)
