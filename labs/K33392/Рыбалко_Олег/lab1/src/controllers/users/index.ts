@@ -2,12 +2,14 @@ import { User } from '../../models/user.js'
 import { Request, Response } from 'express'
 import { IService } from '../../services/base/index.js'
 import { UsersService } from '../../services/users/index.js'
-import { UserCreate } from './models.js'
+import { UserCreate, Auth } from './models.js'
 import crypto from 'crypto'
 import { BaseController } from '../base/index.js'
+import process from 'process'
+import jwt from 'jsonwebtoken'
 
 export class UsersController extends BaseController<User> {
-  protected service: IService<User>
+  protected service: UsersService
 
   constructor() {
     super()
@@ -72,6 +74,34 @@ export class UsersController extends BaseController<User> {
     } catch (error) {
       console.error('Error:', error)
       res.status(500).json({ error: 'Internal Server Error' })
+    }
+  }
+
+  auth = async (req: Request, res: Response) => {
+    try {
+      const body = req.body as Auth
+      if (body.email === undefined || body.password === undefined)
+        return res.sendStatus(400)
+      const dbUser = await this.service.findByEmail(body.email)
+
+      const pwdHash = crypto
+        .createHash('sha256')
+        .update(body.password)
+        .digest('hex')
+
+      if (pwdHash === dbUser.passwordHash) {
+        return res.send({
+          token: jwt.sign(
+            { sub: body.email, exp: Math.floor(Date.now() / 1000 + 60 * 10) },
+            process.env.SECRET_KEY
+          ),
+        })
+      } else {
+        return res.status(401).send()
+      }
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({ error: 'Internal Server Error' })
     }
   }
 }

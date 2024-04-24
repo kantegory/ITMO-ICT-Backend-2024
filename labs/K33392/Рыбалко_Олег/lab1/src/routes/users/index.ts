@@ -6,6 +6,7 @@ const controller = new UsersController()
 
 router.get('/:id', controller.get)
 router.post('/', controller.post)
+router.post('/auth', controller.auth)
 router.put('/:id', controller.put)
 router.delete('/:id', controller.delete)
 

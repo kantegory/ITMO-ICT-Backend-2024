@@ -5,3 +5,7 @@ export interface UserCreate {
   password: string
 }
 
+export interface Auth {
+  email: string
+  password: string
+}
