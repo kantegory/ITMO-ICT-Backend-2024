@@ -12,6 +12,7 @@ export const execute = {
   response: {
     200: CommandModelSchema,
   },
+  description: 'Пример документации swagger',
   security: [
     {
       Bearer: [],

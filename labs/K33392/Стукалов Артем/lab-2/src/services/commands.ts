@@ -24,6 +24,8 @@ export async function executeCommand(
       ts: Math.floor(Date.now() / 1000),
     },
   })
-  logger.info('EXECUTE command', command)
+  logger.info(
+    `EXECUTE command: ${command.id} ${command.deviceId} ${command.status} ${command.userId}`,
+  )
   return command
 }

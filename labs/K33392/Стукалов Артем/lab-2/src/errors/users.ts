@@ -1,4 +1,4 @@
-import { NotFoundError } from 'errors/base'
+import { BaseError, NotFoundError } from 'errors/base'
 
 export class UserNotFound extends NotFoundError {
   constructor() {
@@ -7,9 +7,9 @@ export class UserNotFound extends NotFoundError {
   }
 }
 
-export class WrongPassword extends NotFoundError {
-  constructor() {
-    super('Wrong password')
+export class WrongPassword extends BaseError {
+  constructor(message = 'Wrong password') {
+    super(401, message)
     this.name = WrongPassword.name
   }
 }
