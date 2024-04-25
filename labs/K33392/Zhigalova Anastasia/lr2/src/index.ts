@@ -22,6 +22,7 @@ app.use('/promotions', authenticateToken, promotionRoutes);
 app.use('/users', userRoute);
 
 
+
 app.listen(PORT, () => {
   Sequelize
   console.log(`Server is running on port ${PORT}`);

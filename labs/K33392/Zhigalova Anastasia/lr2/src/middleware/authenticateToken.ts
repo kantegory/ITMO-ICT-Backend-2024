@@ -16,7 +16,7 @@ if (!authHeader.startsWith('Bearer')) return res.sendStatus(401);
  
     
    
-    jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    jwt.verify(token, secretKey, (err, user) => {
       if (err) {
         console.error(err);
         return res.status(403).send("Access Denied: Invalid Token");
