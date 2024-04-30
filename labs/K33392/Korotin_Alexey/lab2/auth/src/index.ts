@@ -36,9 +36,13 @@ const swaggerOptions: swaggerJsDoc.Options = {
         },
         servers: [
             {
+                url: `http://${DEFAULT_HOST}:${appPort}/v1`
+            },
+            {
                 url: `http://${appHost}:${appPort}/v1`
             }
-        ]
+        ],
+        basePath: '/v1'
 
     },
     apis: ['**/presentation/http/*/*.ts']

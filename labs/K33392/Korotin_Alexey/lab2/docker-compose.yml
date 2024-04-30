@@ -8,3 +8,44 @@ services:
       POSTGRES_DB: auth
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./volumes/app-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  auth-service:
+    pull_policy: build
+    build:
+      context: auth/
+      dockerfile: Dockerfile
+    environment:
+      datasource.host: app-db
+      datasource.port: 5432
+      app.host: auth-service
+      app.port: 1234
+    ports:
+      - "1234:1234"
+    depends_on:
+      app-db:
+        condition: service_healthy
+
+  smart-devices-service:
+    pull_policy: build
+    build:
+      context: smart_devices/
+      dockerfile: Dockerfile
+    environment:
+      datasource.host: app-db
+      datasource.port: 5432
+      app.host: smart-devices-service
+      app.port: 12345
+    ports:
+      - "12345:12345"
+    depends_on:
+      auth-service:
+        condition: service_started
+      app-db:
+        condition: service_healthy
+
