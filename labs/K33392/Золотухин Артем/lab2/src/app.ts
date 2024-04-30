@@ -94,7 +94,6 @@ async function main() {
       },
       servers: [],
     },
-    transform: jsonSchemaTransform,
   })
 
   app.register(fastifySwaggerUI, {
