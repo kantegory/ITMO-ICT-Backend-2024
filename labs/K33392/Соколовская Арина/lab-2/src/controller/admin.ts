@@ -18,6 +18,18 @@ exports.post_hackathon = async (req: Request, res: Response) => {
     }
 };
 
+exports.get_curator = async (req: Request, res: Response) => {
+    try {
+        const curator = await adminService.get_curator(Number(req.params.user_id));
+        if (curator) res.send(JSON.stringify(curator));
+        else res.status(404).send({ message: 'Curator not found' })
+    } catch(e) {
+        if (e instanceof Error) {
+            res.send({ error: e.message });
+        }
+    }
+}
+
 exports.post_curator = async (req: Request, res: Response) => {
     try {
         const curator = await adminService.post_curator(req.body as Curator);
@@ -31,7 +43,7 @@ exports.post_curator = async (req: Request, res: Response) => {
 
 exports.delete_curator = async (req: Request, res: Response) => {
     try {
-        await adminService.delete_curator(Number(req.params.id));
+        await adminService.delete_curator(Number(req.params.user_id));
         res.send({massage : "Curator deleted successfully!"});
     } catch (e) {
         if (e instanceof Error) {

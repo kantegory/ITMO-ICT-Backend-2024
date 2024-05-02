@@ -13,8 +13,8 @@ dotenv.config()
 const authService = new AuthService();
 const userService = new UserService();
 
-const generateAcessToken = (id: number, role_name: string) => {
-    const payload = { id, role_name };
+const generateAcessToken = (id: number, role_name: string, email: string) => {
+    const payload = { id, role_name, email };
     return jwt.sign(payload, process.env.secret_key as string, { expiresIn: "24h" });
 
 }
@@ -48,8 +48,8 @@ exports.login_user = async (req: Request, res: Response) => {
             return res.status(400).json({message: 'Incorrect password'});
         }
         
-        const token = generateAcessToken(user.id, user.role_name);
-        return res.json(token);
+        const token = generateAcessToken(user.id, user.role_name, user.email);
+        return res.status(200).send({token: token});
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });

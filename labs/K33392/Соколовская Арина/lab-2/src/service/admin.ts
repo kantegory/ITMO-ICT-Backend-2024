@@ -26,6 +26,10 @@ export class AdminService {
         return new_hackathon;
     }
 
+    async get_curator(id: number): Promise<Curator | null> {
+        return await this.curatorRepository.findByPk(id);
+    }
+
     async post_user(user: User): Promise<User> {
         return await this.userRepository.create(user);
     }

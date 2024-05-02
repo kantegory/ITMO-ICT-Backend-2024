@@ -14,7 +14,8 @@ adminRouter
 adminRouter
   .route('/curator/:user_id')
   .post(roleMiddleware(['admin']), adminController.post_curator) // admin only
-  .delete(roleMiddleware(['admin']), adminController.delete_curator); // admin only
+  .delete(roleMiddleware(['admin']), adminController.delete_curator) // admin only
+  .get(roleMiddleware(['admin']), adminController.get_curator);
 
 adminRouter
   .route('/jury/:user_id')

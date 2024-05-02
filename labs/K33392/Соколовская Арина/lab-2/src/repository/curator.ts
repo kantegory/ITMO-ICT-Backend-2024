@@ -9,12 +9,17 @@ export class CuratorRepository {
     private repository = sequelize.getRepository(Curator);
 
     async findByParams(user_id: number, hackathon_id: number): Promise<Curator | null> {
-        const curator = this.repository.findOne({
+        const curator = await this.repository.findOne({
             where: {
                 user_id: user_id,
                 task_id: hackathon_id,
             }
         });
+        return curator;
+    }
+
+    async findByPk(id: number): Promise<Curator | null> {
+        const curator = await this.repository.findByPk(id);
         return curator;
     }
 
