@@ -25,10 +25,12 @@ class ProfileService {
 
      
       return {
-        id: profile.id,
-        userId: profile.userId,
-        location: profile.location,
-        bio: profile.bio,
+        profile: {
+          id: profile.id,
+          userId: profile.userId,
+          location: profile.location,
+          bio: profile.bio,
+        },
         userName: user.name,
         userEmail: user.email
       };
@@ -52,12 +54,18 @@ class ProfileService {
       return null;
     }
 
-    
     return {
-      profile,
+      profile: {
+        id: profile.id,
+        userId: profile.userId,
+        location: profile.location,
+        bio: profile.bio,
+      },
+      
       userName: user.name,
       userEmail: user.email
     };
+
   }
 
 }

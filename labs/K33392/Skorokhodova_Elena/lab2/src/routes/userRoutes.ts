@@ -30,7 +30,7 @@ router.get("/user/:userId/books", UserBookController.getUserBooks);
 router.post("/exchange/request",ExchangeRequestController.createExchangeRequest);
 router.delete("/exchange/:id",ExchangeRequestController.deleteExchangeRequest); 
 router.get('/exchange/user/:userId', ExchangeRequestController.getUserExchangeRequests); // получение заявок на обмен для конкретного пользователя
-router.patch('/exchange/:id/confirm', ExchangeRequestController.confirmExchangeRequest);
+// router.patch('/exchange/:id/confirm', ExchangeRequestController.confirmExchangeRequest);
 
 
 export { router as userRoutes };

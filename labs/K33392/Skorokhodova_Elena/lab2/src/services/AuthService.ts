@@ -1,40 +1,59 @@
-import { User } from '../models/User';
-import bcrypt from 'bcrypt';
-import { createUser, getUserByEmail } from '../repositories/UserRepository';
-import { ProfileService } from './ProfileService';
+import { User } from "../models/User";
+import jwt from "jsonwebtoken";
+
+const secretKey = "Yf59FGyG";
 
 class AuthService {
-  public static async register(name: string, email: string, password: string): Promise<User> {
-   
-    const existingUser = await getUserByEmail(email);
-    if (existingUser) {
-      throw new Error('User with this email already exists');
+  static async registerUser(
+    name: string,
+    email: string,
+    password: string
+  ): Promise<string> {
+    try {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        throw new Error("User with this email already exists");
+      }
+
+      const newUser = await User.create({
+        name,
+        email,
+        password,
+      });
+
+      const token = jwt.sign({ userId: newUser.id }, secretKey, {
+        expiresIn: "1h",
+      });
+
+      return token;
+    } catch (error) {
+      console.error("Error registering user:", error);
+      throw new Error("Error registering user");
     }
-
-   
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-   
-    const newUser = await createUser(name, email, hashedPassword);
-    await ProfileService.createOrUpdateProfile(newUser.id, '', '');
-    return newUser;
   }
 
-  public static async login(email: string, password: string): Promise<User | null> {
-    
-    const user = await getUserByEmail(email);
-    if (!user) {
-      return null; 
-    }
+  static async loginUser(email: string, password: string): Promise<string> {
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        throw new Error("Invalid email");
+      }
 
-    
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return null; 
-    }
+      const passwordMatch = await user.checkPassword(password);
+      console.log("passwordMatch:", passwordMatch);
+      if (!passwordMatch) {
+        throw new Error("Invalid password");
+      }
 
-    
-    return user;
+      const token = jwt.sign({ userId: user.id }, secretKey, {
+        expiresIn: "1h",
+      });
+
+      return token;
+    } catch (error) {
+      console.error("Error logging in:", error);
+      throw new Error("Error logging in");
+    }
   }
 }
 

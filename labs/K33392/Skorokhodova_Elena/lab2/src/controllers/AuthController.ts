@@ -1,31 +1,32 @@
-import { Request, Response } from 'express';
-import { AuthService } from '../services/AuthService';
+import { Request, Response } from "express";
+import { AuthService } from "../services/AuthService";
 
 class AuthController {
-  public static async register(req: Request, res: Response): Promise<void> {
-    const { name, email, password } = req.body;
+  static async register(req: Request, res: Response): Promise<void> {
     try {
-      const user = await AuthService.register(name, email, password);
-      res.status(201).json(user);
+      const { name, email, password } = req.body;
+      const token = await AuthService.registerUser(name, email, password);
+      res.status(201).json({ token });
     } catch (error) {
-      console.error('Error registering user:', error);
-      res.status(500).send('Error registering user');
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(400).json({ error: "An unknown error occurred" });
+      }
     }
   }
 
-  public static async login(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body;
+  static async login(req: Request, res: Response): Promise<void> {
     try {
-      const user = await AuthService.login(email, password);
-      if (!user) {
-        res.status(401).send('Invalid email or password');
-        return;
-      }
-
-      res.status(200).json(user);
+      const { email, password } = req.body;
+      const token = await AuthService.loginUser(email, password);
+      res.status(200).json({ token });
     } catch (error) {
-      console.error('Error logging in:', error);
-      res.status(500).send('Error logging in');
+      if (error instanceof Error) {
+        res.status(401).json({ error: error.message });
+      } else {
+        res.status(401).json({ error: "An unknown error occurred" });
+      }
     }
   }
 }
