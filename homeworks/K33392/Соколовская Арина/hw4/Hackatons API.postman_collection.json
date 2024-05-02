@@ -1,0 +1,573 @@
+{
+	"info": {
+		"_postman_id": "1792a42d-98c2-4af7-a362-f81b8e7f1f1d",
+		"name": "Hackatons API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33665963"
+	},
+	"item": [
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "Добавление нового хакатона",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/admin/hackathon",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"admin",
+								"hackathon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление роли куратора",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/admin/сurator/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"admin",
+								"сurator",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление куратора",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/admin/curator/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"admin",
+								"curator",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление роли жюри",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/admin/jury/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"admin",
+								"jury",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление роли жюри",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/admin/jury/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"admin",
+								"jury",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Авторизация пользователя",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/auth/login",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Регистрация нового пользователя",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/auth/register",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание новой роли",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/auth/role",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"auth",
+								"role"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "grading",
+			"item": [
+				{
+					"name": "Добавление оценки",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/gradings/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"gradings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Просмотр оценок",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/gradings/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"gradings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Просмотр отсортированных оценок",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/gradings/1/sorted",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"gradings",
+								"1",
+								"sorted"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "hackathon",
+			"item": [
+				{
+					"name": "Просмотр описания хакатона",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/hackathons/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"hackathons",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Регистрация на хакатон",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/hackathons/1/register",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"hackathons",
+								"1",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Просмотр задачи хакатона",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/hackathons/1/task",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"hackathons",
+								"1",
+								"task"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение задачи хакатона",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/hackathons/1/task",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"hackathons",
+								"1",
+								"task"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление решения задачи",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/hackathons/1/solution",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"hackathons",
+								"1",
+								"solution"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Просмотр всех хакатонов",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/hackathons",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"hackathons"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "home",
+			"item": [
+				{
+					"name": "Просмотр активных хакатонов",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "solution",
+			"item": [
+				{
+					"name": "Просмотре отправленного решения",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/solutions/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"solutions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение отправленного решения",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/solutions/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"solutions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "team",
+			"item": [
+				{
+					"name": "Изменение информации о команде",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/teams/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"teams",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление участника команды",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/teams/1/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"teams",
+								"1",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Просмотр информации о пользователе",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/users/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение информации о пользователе",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/users/1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Просмотр хакатонов пользователя",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/users/1/hackathons",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"hackathons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Просмотр активных хакатонов пользователя",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/users/1/hackatons/active",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"hackatons",
+								"active"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZV9uYW1lIjoidXNlciIsImlhdCI6MTcxNDY0MTMyOSwiZXhwIjoxNzE0NzI3NzI5fQ.5xH_DnR0a1n9jURM1YbVQCWjCjXCvTg4R5n6S54bB9U",
+			"type": "string"
+		}
+	]
+}
