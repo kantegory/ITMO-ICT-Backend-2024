@@ -18,12 +18,10 @@ router.use('/me', jwtAuthMiddleware);
  *          JWT:
  *              type: object
  *              properties:
- *                  token:
+ *                  accessToken:
  *                      type: string
- *                  issued:
- *                      type: number
- *                  expires:
- *                      type: number
+ *                  refreshToken:
+ *                      type: string
  *          Credentials:
  *              type: object
  *              required:
@@ -48,6 +46,7 @@ router.use('/me', jwtAuthMiddleware);
  */
 router.route("/login").post(body('email').notEmpty(), body('password').notEmpty(), controller.login);
 router.route("/register").post(body('email').notEmpty(), body('password').notEmpty(), controller.register);
+router.route("/refresh").post(body('token').notEmpty(), controller.refresh);
 router.route('/me').get((req, res) => {
     const session: Session = res.locals.session;
 

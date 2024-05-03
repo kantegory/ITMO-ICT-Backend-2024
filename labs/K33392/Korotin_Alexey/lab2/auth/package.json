@@ -40,6 +40,7 @@
     "inversify": "^6.0.2",
     "inversify-binding-decorators": "^4.0.0",
     "jwt-simple": "^0.5.6",
+    "kafkajs": "^2.2.4",
     "pg": "^8.11.5",
     "reflect-metadata": "^0.2.1",
     "sequelize": "^6.37.1",

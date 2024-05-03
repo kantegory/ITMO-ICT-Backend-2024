@@ -1,6 +1,5 @@
 import {AccountRole, AccountStatus} from "../../../domain/replicas/Account";
 import {decode, TAlgorithm} from "jwt-simple";
-import {type} from "node:os";
 
 export interface Session {
     sub: string;

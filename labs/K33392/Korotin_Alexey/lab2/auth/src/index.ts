@@ -4,7 +4,8 @@ import bodyParser from 'body-parser';
 import routes from "./presentation/http";
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc from "swagger-jsdoc";
+import {bootstrapKafka} from "./application/services/kafka";
+import {log} from "node:util";
 
 
 const DEFAULT_HOST = "localhost";
@@ -56,4 +57,8 @@ app.get('/swagger.json', (req, res) => {
     res.send(docs);
 });
 
-app.listen(appPort, appHost, () => console.log(`Application have started listening ${appHost} at port ${appPort}`));
+app.listen(appPort, appHost,
+    async () => {
+        console.log(`Application have started listening ${appHost} at port ${appPort}`);
+        await bootstrapKafka().then(() => console.log("Kafka producer bootstrap completed"));
+    });

@@ -1,5 +1,4 @@
 import {decode, encode, TAlgorithm} from "jwt-simple";
-import {Session} from "./JWT";
 
 export interface RefreshToken {
     typ: "Refresh",
