@@ -1,5 +1,6 @@
 import {decode, encode, TAlgorithm} from "jwt-simple";
 import {AccountRole, AccountStatus} from "../../domain/account/Account";
+import {encodeRefresh} from "./RefreshToken";
 
 export interface Session {
     sub: string;
@@ -14,9 +15,8 @@ export interface Session {
 export type PartialSession = Omit<Session, "iss" | "iat" | "exp">;
 
 export interface EncodeResult {
-    token: string;
-    expires: number;
-    issued: number;
+    accessToken: string;
+    refreshToken: string;
 }
 
 export type DecodeResult =
@@ -34,7 +34,7 @@ export type DecodeResult =
 export type ExpirationStatus = "expired" | "active";
 
 const SECRET = process.env["app.secret"] ?? "";
-const TOKEN_DURATION_MINUTES = Number(process.env["app.token.durationMinutes"]) ?? 15;
+const TOKEN_DURATION_MINUTES = Number(process.env["app.token.access.durationMinutes"]) ?? 15;
 const TOKEN_ISSUER_CLAIM = process.env['app.token.issuer'] ?? "Unknown";
 export function encodeSession(partialSession: PartialSession): EncodeResult {
     // Always use HS512 to sign the token
@@ -51,10 +51,11 @@ export function encodeSession(partialSession: PartialSession): EncodeResult {
         exp: Math.floor(expires / 1000)
     };
 
+
+
     return {
-        token: encode(session, SECRET, algorithm),
-        issued: issued,
-        expires: expires
+        accessToken: encode(session, SECRET, algorithm),
+        refreshToken: encodeRefresh(session.sub)
     };
 }
 export function decodeSession(tokenString: string): DecodeResult {
