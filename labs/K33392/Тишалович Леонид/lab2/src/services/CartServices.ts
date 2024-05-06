@@ -3,24 +3,25 @@ import Cart from "../models/Cart";
 import { Repository } from "sequelize-typescript";
 
 export default class CartService {
-  private static cartRepository: Repository<Cart>;
+  private cartRepository: Repository<Cart>;
 
-  static initialize(sequelizeInstance: Sequelize): void {
-    CartService.cartRepository = sequelizeInstance.getRepository(Cart);
+  constructor(sequelizeInstance: Sequelize) {
+    this.cartRepository = sequelizeInstance.getRepository(Cart);
   }
-  static async getAllCarts() {
+
+  async getAllCarts() {
     return this.cartRepository.findAll();
   }
 
-  static async getCartById(id: number) {
+  async getCartById(id: number) {
     return this.cartRepository.findByPk(id);
   }
 
-  static async createCart(cartData: any) {
+  async createCart(cartData: any) {
     return this.cartRepository.create(cartData);
   }
 
-  static async updateCart(id: number, cartData: any) {
+  async updateCart(id: number, cartData: any) {
     const cart = await this.cartRepository.findByPk(id);
     if (!cart) {
       throw new Error("cart not found");
@@ -29,7 +30,7 @@ export default class CartService {
     return cart;
   }
 
-  static async deleteCart(id: number) {
+  async deleteCart(id: number) {
     const cart = await this.cartRepository.findByPk(id);
     if (!cart) {
       throw new Error("Cart not found");

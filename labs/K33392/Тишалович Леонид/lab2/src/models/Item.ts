@@ -7,6 +7,7 @@ import {
   BelongsTo,
 } from "sequelize-typescript";
 import { Brand } from "./Brand";
+import { Cart } from "./Cart";
 
 @Table
 export class Item extends Model<Item> {
@@ -31,6 +32,13 @@ export class Item extends Model<Item> {
 
   @Column
   rating!: number;
+
+  @ForeignKey(() => Cart)
+  @Column
+  cartId!: number;
+
+  @BelongsTo(() => Cart)
+  cart!: Cart;
 }
 
 export default Item;

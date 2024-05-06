@@ -3,30 +3,31 @@ import User from "../models/User";
 import { Repository } from "sequelize-typescript";
 
 export default class UserService {
-  private static userRepository: Repository<User>;
+  private userRepository: Repository<User>;
 
-  static initialize(sequelizeInstance: Sequelize): void {
-    UserService.userRepository = sequelizeInstance.getRepository(User);
+  constructor(sequelizeInstance: Sequelize) {
+    this.userRepository = sequelizeInstance.getRepository(User);
   }
-  static async getAllUsers() {
+
+  async getAllUsers() {
     return this.userRepository.findAll();
   }
 
-  static async getUserById(id: number) {
+  async getUserById(id: number) {
     return this.userRepository.findByPk(id);
   }
 
-  static async getUserByEmail(email: string) {
+  async getUserByEmail(email: string) {
     return this.userRepository.findOne({
       where: { email: email },
     });
   }
 
-  static async createUser(userData: any) {
+  async createUser(userData: any) {
     return this.userRepository.create(userData);
   }
 
-  static async updateUser(id: number, userData: any) {
+  async updateUser(id: number, userData: any) {
     const user = await this.userRepository.findByPk(id);
     if (!user) {
       throw new Error("User not found");
@@ -35,7 +36,7 @@ export default class UserService {
     return user;
   }
 
-  static async deleteUser(id: number) {
+  async deleteUser(id: number) {
     const user = await this.userRepository.findByPk(id);
     if (!user) {
       throw new Error("User not found");

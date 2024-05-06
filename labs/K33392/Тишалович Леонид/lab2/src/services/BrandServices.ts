@@ -3,24 +3,25 @@ import Brand from "../models/Brand";
 import { Repository } from "sequelize-typescript";
 
 export default class BrandService {
-  private static brandRepository: Repository<Brand>;
+  private brandRepository: Repository<Brand>;
 
-  static initialize(sequelizeInstance: Sequelize): void {
-    BrandService.brandRepository = sequelizeInstance.getRepository(Brand);
+  constructor(sequelizeInstance: Sequelize) {
+    this.brandRepository = sequelizeInstance.getRepository(Brand);
   }
-  static async getAllBrands() {
+
+  async getAllBrands() {
     return this.brandRepository.findAll();
   }
 
-  static async getBrandById(id: number) {
+  async getBrandById(id: number) {
     return this.brandRepository.findByPk(id);
   }
 
-  static async createBrand(brandData: any) {
+  async createBrand(brandData: any) {
     return this.brandRepository.create(brandData);
   }
 
-  static async updateBrand(id: number, brandData: any) {
+  async updateBrand(id: number, brandData: any) {
     const brand = await this.brandRepository.findByPk(id);
     if (!brand) {
       throw new Error("Brand not found");
@@ -29,7 +30,7 @@ export default class BrandService {
     return brand;
   }
 
-  static async deleteBrand(id: number) {
+  async deleteBrand(id: number) {
     const brand = await this.brandRepository.findByPk(id);
     if (!brand) {
       throw new Error("Brand not found");

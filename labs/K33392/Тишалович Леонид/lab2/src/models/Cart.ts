@@ -28,8 +28,8 @@ export class Cart extends Model<Cart> {
   @BelongsTo(() => User)
   user!: User;
 
-  @BelongsTo(() => Item)
-  item!: Item;
+  @HasMany(() => Item)
+  items!: Item[];
 }
 
 export default Cart;
