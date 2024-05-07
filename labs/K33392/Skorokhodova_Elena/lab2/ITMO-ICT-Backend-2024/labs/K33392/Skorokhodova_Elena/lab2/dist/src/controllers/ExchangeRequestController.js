@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExchangeRequestController = void 0;
-const ExchangeRequestService_1 = require("../services/ExchangeRequestService");
+const ExchangeRequestRepository_1 = require("../repositories/ExchangeRequestRepository");
 class ExchangeRequestController {
     static createExchangeRequest(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { userId, exchangeWithUserId, bookId, bookTitle } = req.body;
             try {
-                yield ExchangeRequestService_1.ExchangeRequestService.createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle);
+                yield ExchangeRequestRepository_1.ExchangeRequestRepository.createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle);
                 res.status(201).send('Exchange request created successfully');
             }
             catch (error) {
@@ -29,7 +29,7 @@ class ExchangeRequestController {
         return __awaiter(this, void 0, void 0, function* () {
             const requestId = parseInt(req.params.id);
             try {
-                const success = yield ExchangeRequestService_1.ExchangeRequestService.deleteExchangeRequest(requestId);
+                const success = yield ExchangeRequestRepository_1.ExchangeRequestRepository.deleteExchangeRequest(requestId);
                 if (success) {
                     res.status(204).send();
                 }
@@ -47,7 +47,7 @@ class ExchangeRequestController {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = parseInt(req.params.userId);
             try {
-                const exchangeRequests = yield ExchangeRequestService_1.ExchangeRequestService.getUserExchangeRequests(userId);
+                const exchangeRequests = yield ExchangeRequestRepository_1.ExchangeRequestRepository.getUserExchangeRequests(userId);
                 res.json(exchangeRequests);
             }
             catch (error) {
@@ -60,7 +60,7 @@ class ExchangeRequestController {
         return __awaiter(this, void 0, void 0, function* () {
             const requestId = parseInt(req.params.id);
             try {
-                const success = yield ExchangeRequestService_1.ExchangeRequestService.confirmExchangeRequest(requestId);
+                const success = yield ExchangeRequestRepository_1.ExchangeRequestRepository.confirmExchangeRequest(requestId);
                 if (success) {
                     res.status(200).send('Exchange request confirmed successfully');
                 }

@@ -1,5 +1,5 @@
-import { Model, DataTypes } from "sequelize";
-import { sequelize } from "../config/database";
+import { Model, DataTypes } from 'sequelize';
+import { sequelize } from '../config/database';
 
 class ExchangeRequest extends Model {
   public id!: number;
@@ -8,8 +8,6 @@ class ExchangeRequest extends Model {
   public bookId!: number;
   public bookTitle!: string;
   public status!: string;
-
-
 }
 
 ExchangeRequest.init(
@@ -38,12 +36,12 @@ ExchangeRequest.init(
     status: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "pending",
+      defaultValue: 'pending',
     },
   },
   {
     sequelize,
-    modelName: "ExchangeRequest",
+    modelName: 'ExchangeRequest',
   }
 );
 

@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
-
-import { ExchangeRequestService } from '../services/ExchangeRequestService';
+import { ExchangeRequestRepository } from '../repositories/ExchangeRequestRepository';
 
 class ExchangeRequestController {
   public static async createExchangeRequest(req: Request, res: Response): Promise<void> {
     const { userId, exchangeWithUserId, bookId, bookTitle } = req.body;
     try {
-      await ExchangeRequestService.createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle);
+      await ExchangeRequestRepository.createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle);
       res.status(201).send('Exchange request created successfully');
     } catch (error) {
       console.error('Error creating exchange request:', error);
@@ -17,7 +16,7 @@ class ExchangeRequestController {
   public static async deleteExchangeRequest(req: Request, res: Response): Promise<void> {
     const requestId = parseInt(req.params.id);
     try {
-      const success = await ExchangeRequestService.deleteExchangeRequest(requestId);
+      const success = await ExchangeRequestRepository.deleteExchangeRequest(requestId);
       if (success) {
         res.status(204).send();
       } else {
@@ -32,7 +31,7 @@ class ExchangeRequestController {
   public static async getUserExchangeRequests(req: Request, res: Response): Promise<void> {
     const userId = parseInt(req.params.userId);
     try {
-      const exchangeRequests = await ExchangeRequestService.getUserExchangeRequests(userId);
+      const exchangeRequests = await ExchangeRequestRepository.getUserExchangeRequests(userId);
       res.json(exchangeRequests);
     } catch (error) {
       console.error('Error fetching exchange requests:', error);
@@ -43,7 +42,7 @@ class ExchangeRequestController {
   public static async confirmExchangeRequest(req: Request, res: Response): Promise<void> {
     const requestId = parseInt(req.params.id);
     try {
-      const success = await ExchangeRequestService.confirmExchangeRequest(requestId);
+      const success = await ExchangeRequestRepository.confirmExchangeRequest(requestId);
       if (success) {
         res.status(200).send('Exchange request confirmed successfully');
       } else {
@@ -54,7 +53,6 @@ class ExchangeRequestController {
       res.status(500).send('Error confirming exchange request');
     }
   }
-
 }
 
 export { ExchangeRequestController };

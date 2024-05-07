@@ -9,48 +9,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExchangeRequestService = void 0;
-const ExchangeRequestRepository_1 = require("../repositories/ExchangeRequestRepository");
-class ExchangeRequestService {
+exports.ExchangeRequestRepository = void 0;
+const ExchangeRequest_1 = require("../models/ExchangeRequest");
+class ExchangeRequestRepository {
     static createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield ExchangeRequestRepository_1.ExchangeRequestRepository.createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle);
+                yield ExchangeRequest_1.ExchangeRequest.create({ userId, exchangeWithUserId, bookId, bookTitle });
             }
             catch (error) {
-                throw new Error('Error creating exchange request');
+                throw new Error('Ошибка при создании запроса на обмен');
             }
         });
     }
     static deleteExchangeRequest(requestId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield ExchangeRequestRepository_1.ExchangeRequestRepository.deleteExchangeRequest(requestId);
+                const deletedCount = yield ExchangeRequest_1.ExchangeRequest.destroy({ where: { id: requestId } });
+                return deletedCount > 0;
             }
             catch (error) {
-                throw new Error('Error deleting exchange request');
+                throw new Error('Ошибка при удалении запроса на обмен');
             }
         });
     }
     static getUserExchangeRequests(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield ExchangeRequestRepository_1.ExchangeRequestRepository.getUserExchangeRequests(userId);
+                const exchangeRequests = yield ExchangeRequest_1.ExchangeRequest.findAll({ where: { userId } });
+                return exchangeRequests;
             }
             catch (error) {
-                throw new Error('Error fetching exchange requests');
+                throw new Error('Ошибка при получении запросов на обмен');
             }
         });
     }
     static confirmExchangeRequest(requestId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield ExchangeRequestRepository_1.ExchangeRequestRepository.confirmExchangeRequest(requestId);
+                const [updatedCount] = yield ExchangeRequest_1.ExchangeRequest.update({ status: 'confirmed' }, { where: { id: requestId } });
+                return updatedCount > 0;
             }
             catch (error) {
-                throw new Error('Error confirming exchange request');
+                throw new Error('Ошибка при подтверждении запроса на обмен');
             }
         });
     }
 }
-exports.ExchangeRequestService = ExchangeRequestService;
+exports.ExchangeRequestRepository = ExchangeRequestRepository;

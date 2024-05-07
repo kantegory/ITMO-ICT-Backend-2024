@@ -31,9 +31,9 @@ ExchangeRequest.init({
     status: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
-        defaultValue: "pending",
+        defaultValue: 'pending',
     },
 }, {
     sequelize: database_1.sequelize,
-    modelName: "ExchangeRequest",
+    modelName: 'ExchangeRequest',
 });
