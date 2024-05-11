@@ -14,9 +14,13 @@ class UserController extends BaseController {
         ApiResponse.payload(response, transform(users, new UserTransformer()))
     }
 
-    find = async (request: express.Request, response: express.Response) => {
-        const user: User = await FindUserUseCase.run(Number(request.params.id))
-        ApiResponse.payload(response, transform(user, new UserTransformer()))
+    find = async (request: express.Request, response: express.Response, next: NextFunction) => {
+        try {
+            const user: User = await FindUserUseCase.run(Number(request.params.id))
+            ApiResponse.payload(response, transform(user, new UserTransformer()))
+        } catch (e: any) {
+            next(e)
+        }
     }
 
     destroy = async (request: express.Request, response: express.Response, next: NextFunction) => {

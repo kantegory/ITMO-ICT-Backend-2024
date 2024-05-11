@@ -33,7 +33,7 @@ for (let router of routers) {
 }
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (err instanceof ValidationError) {
-        ApiResponse.errors(res, err.errors)
+        ApiResponse.errors(res, err.errors, 422)
         return
     } else if (err instanceof NotFoundError) {
         ApiResponse.notFound(res, err.message)
