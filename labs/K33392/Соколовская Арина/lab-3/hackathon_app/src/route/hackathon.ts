@@ -16,8 +16,8 @@ hackathonRouter
 
 hackathonRouter
   .route('/:id/task')
-  .get(hackathonController.get_hackathon_task) // team_leader for team on this hack, curator, admin, jury
-  .patch(hackathonController.patch_hackathon_task); // curator, admin
+  .get(roleMiddleware(['jury', 'curator', 'admin']), hackathonController.get_hackathon_task) // team_leader for team on this hack, curator, admin, jury
+  .patch(roleMiddleware(['curator', 'admin']), hackathonController.patch_hackathon_task); // curator, admin
 
 hackathonRouter
   .route('/:id/solution')

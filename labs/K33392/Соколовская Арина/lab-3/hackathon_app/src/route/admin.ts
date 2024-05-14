@@ -4,10 +4,10 @@ import { Router } from 'express';
 
 const adminController = require("../controller/admin");
 const adminRouter = Router();
-
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 adminRouter
   .route('/hackathon')
-  .post(adminController.post_hackathon); // admin only
+  .post(roleMiddleware(['admin']), adminController.post_hackathon); // admin only
 
 export default adminRouter;

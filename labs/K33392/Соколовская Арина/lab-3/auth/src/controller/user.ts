@@ -32,6 +32,6 @@ exports.patch_user = async (req: Request, res: Response) => {
 
 exports.get_user_by_token = function (token: string) {
     const parsed = jwt.verify(token, process.env.secret_key as string);
-    const user = (parsed as User);
-    return user;
+    const user_role = (parsed as User).role_name;
+    return user_role;
 };
