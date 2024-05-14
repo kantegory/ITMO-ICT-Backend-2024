@@ -13,21 +13,18 @@ const AuthController_1 = require("../controllers/AuthController");
 const BookController_1 = require("../controllers/BookController");
 const router = express_1.default.Router();
 exports.userRoutes = router;
-router.post("/register", AuthController_1.AuthController.register); //работает
+router.post("/register", AuthController_1.AuthController.register);
 router.post("/login", AuthController_1.AuthController.login);
-router.post('/users/:userId/profile', ProfileController_1.ProfileController.createOrUpdateProfile); //работает
-router.get('/users/:userId/getprofile', ProfileController_1.ProfileController.getProfileByUserId); //работает
-router.post("/users", UserController_1.UserController.createUser); //работает
-router.get("/users/:id", UserController_1.UserController.getUserById); //работает
-router.delete("/users/:id", UserController_1.UserController.deleteUser); //работает
-router.post('/books', BookController_1.BookController.createBook); //работает
-router.get('/available-books', BookController_1.BookController.getAllBooks); //работает
-router.post("/user/:userId/book", UserBookController_1.UserBookController.addUserBook); //работает
-router.delete("/user/book/:id", UserBookController_1.UserBookController.deleteUserBook); //работает
-router.get("/user/:userId/books", UserBookController_1.UserBookController.getUserBooks); //работает
+router.post('/users/:userId/profile', ProfileController_1.ProfileController.createOrUpdateProfile);
+router.get('/users/:userId/getprofile', ProfileController_1.ProfileController.getProfileByUserId);
+router.post("/users", UserController_1.UserController.createUser);
+router.get("/users/:id", UserController_1.UserController.getUserById);
+router.delete("/users/:id", UserController_1.UserController.deleteUser);
+router.post('/books', BookController_1.BookController.createBook);
+router.get('/available-books', BookController_1.BookController.getAllBooks);
+router.post("/user/:userId/book", UserBookController_1.UserBookController.addUserBook);
+router.delete("/user/book/:id", UserBookController_1.UserBookController.deleteUserBook);
+router.get("/user/:userId/books", UserBookController_1.UserBookController.getUserBooks);
 router.post("/exchange/request", ExchangeRequestController_1.ExchangeRequestController.createExchangeRequest);
 router.delete("/exchange/:id", ExchangeRequestController_1.ExchangeRequestController.deleteExchangeRequest);
-// Получение заявок на обмен для конкретного пользователя
-router.get('/exchange/user/:userId', ExchangeRequestController_1.ExchangeRequestController.getUserExchangeRequests);
-// Подтверждение заявки на обмен
-router.patch('/exchange/:id/confirm', ExchangeRequestController_1.ExchangeRequestController.confirmExchangeRequest);
+router.get('/exchange/user/:userId', ExchangeRequestController_1.ExchangeRequestController.getUserExchangeRequests); // получение заявок на обмен для конкретного пользователя

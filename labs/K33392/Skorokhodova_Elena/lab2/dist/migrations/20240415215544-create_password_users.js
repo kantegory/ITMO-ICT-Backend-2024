@@ -10,16 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 module.exports = {
     up: (queryInterface, Sequelize) => __awaiter(void 0, void 0, void 0, function* () {
-        // Добавляем поле password без ограничения NOT NULL
         yield queryInterface.addColumn('Users', 'password', {
             type: Sequelize.STRING,
-            allowNull: true // Разрешаем значение NULL
+            allowNull: true
         });
-        // Обновляем существующие записи, устанавливая значение password
         yield queryInterface.sequelize.query('UPDATE "Users" SET "password" = "someDefaultValue" WHERE "password" IS NULL');
     }),
     down: (queryInterface, Sequelize) => __awaiter(void 0, void 0, void 0, function* () {
-        // Удаляем поле password
         yield queryInterface.removeColumn('Users', 'password');
     })
 };

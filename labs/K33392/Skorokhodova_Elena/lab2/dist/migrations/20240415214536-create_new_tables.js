@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 module.exports = {
     up: (queryInterface, Sequelize) => __awaiter(void 0, void 0, void 0, function* () {
-        // Создаем таблицу для модели Book
         yield queryInterface.createTable('Books', {
             id: {
                 type: Sequelize.INTEGER,
@@ -37,7 +36,6 @@ module.exports = {
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
             }
         });
-        // Создаем таблицу для модели ExchangeRequest
         yield queryInterface.createTable('ExchangeRequests', {
             id: {
                 type: Sequelize.INTEGER,
@@ -64,7 +62,6 @@ module.exports = {
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
             }
         });
-        // Создаем таблицу для модели Profile
         yield queryInterface.createTable('Profiles', {
             id: {
                 type: Sequelize.INTEGER,
@@ -96,7 +93,6 @@ module.exports = {
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
             }
         });
-        // Создаем таблицу для модели UserBook
         yield queryInterface.createTable('UserBooks', {
             id: {
                 type: Sequelize.INTEGER,
@@ -125,13 +121,9 @@ module.exports = {
         });
     }),
     down: (queryInterface, Sequelize) => __awaiter(void 0, void 0, void 0, function* () {
-        // Удаляем таблицу для модели Book
         yield queryInterface.dropTable('Books');
-        // Удаляем таблицу для модели ExchangeRequest
         yield queryInterface.dropTable('ExchangeRequests');
-        // Удаляем таблицу для модели Profile
         yield queryInterface.dropTable('Profiles');
-        // Удаляем таблицу для модели UserBook
         yield queryInterface.dropTable('UserBooks');
     })
 };

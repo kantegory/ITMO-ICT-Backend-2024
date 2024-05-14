@@ -22,5 +22,5 @@ Book.init({
     },
 }, {
     sequelize: database_1.sequelize,
-    modelName: 'Book',
+    modelName: "Book",
 });

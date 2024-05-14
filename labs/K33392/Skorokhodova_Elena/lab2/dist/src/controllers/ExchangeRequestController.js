@@ -10,14 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExchangeRequestController = void 0;
-const ExchangeRequestService_1 = require("../services/ExchangeRequestService");
+const ExchangeRequestRepository_1 = require("../repositories/ExchangeRequestRepository");
 class ExchangeRequestController {
     static createExchangeRequest(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { userId, bookId } = req.body;
+            const { userId, exchangeWithUserId, bookId, bookTitle } = req.body;
             try {
-                const request = yield ExchangeRequestService_1.ExchangeRequestService.createExchangeRequest(userId, bookId);
-                res.status(201).json(request);
+                yield ExchangeRequestRepository_1.ExchangeRequestRepository.createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle);
+                res.status(201).send('Exchange request created successfully');
             }
             catch (error) {
                 console.error('Error creating exchange request:', error);
@@ -29,7 +29,7 @@ class ExchangeRequestController {
         return __awaiter(this, void 0, void 0, function* () {
             const requestId = parseInt(req.params.id);
             try {
-                const success = yield ExchangeRequestService_1.ExchangeRequestService.deleteExchangeRequest(requestId);
+                const success = yield ExchangeRequestRepository_1.ExchangeRequestRepository.deleteExchangeRequest(requestId);
                 if (success) {
                     res.status(204).send();
                 }
@@ -47,12 +47,12 @@ class ExchangeRequestController {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = parseInt(req.params.userId);
             try {
-                const requests = yield ExchangeRequestService_1.ExchangeRequestService.getUserExchangeRequests(userId);
-                res.json(requests);
+                const exchangeRequests = yield ExchangeRequestRepository_1.ExchangeRequestRepository.getUserExchangeRequests(userId);
+                res.json(exchangeRequests);
             }
             catch (error) {
-                console.error('Error getting user exchange requests:', error);
-                res.status(500).send('Error getting user exchange requests');
+                console.error('Error fetching exchange requests:', error);
+                res.status(500).send('Error fetching exchange requests');
             }
         });
     }
@@ -60,9 +60,9 @@ class ExchangeRequestController {
         return __awaiter(this, void 0, void 0, function* () {
             const requestId = parseInt(req.params.id);
             try {
-                const success = yield ExchangeRequestService_1.ExchangeRequestService.confirmExchangeRequest(requestId);
+                const success = yield ExchangeRequestRepository_1.ExchangeRequestRepository.confirmExchangeRequest(requestId);
                 if (success) {
-                    res.status(200).send('Exchange request confirmed');
+                    res.status(200).send('Exchange request confirmed successfully');
                 }
                 else {
                     res.status(404).send('Exchange request not found');

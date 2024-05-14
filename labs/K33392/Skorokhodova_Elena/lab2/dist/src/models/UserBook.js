@@ -23,6 +23,6 @@ UserBook.init({
     },
 }, {
     sequelize: database_1.sequelize,
-    modelName: 'UserBook',
+    modelName: "UserBook",
 });
-UserBook.belongsTo(Book_1.Book, { foreignKey: 'bookId', as: 'book' });
+UserBook.belongsTo(Book_1.Book, { foreignKey: "bookId", as: "book" });

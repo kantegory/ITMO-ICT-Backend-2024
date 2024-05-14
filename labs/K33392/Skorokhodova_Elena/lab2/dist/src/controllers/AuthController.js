@@ -14,31 +14,35 @@ const AuthService_1 = require("../services/AuthService");
 class AuthController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { name, email, password } = req.body;
             try {
-                const user = yield AuthService_1.AuthService.register(name, email, password);
-                res.status(201).json(user);
+                const { name, email, password } = req.body;
+                const token = yield AuthService_1.AuthService.registerUser(name, email, password);
+                res.status(201).json({ token });
             }
             catch (error) {
-                console.error('Error registering user:', error);
-                res.status(500).send('Error registering user');
+                if (error instanceof Error) {
+                    res.status(400).json({ error: error.message });
+                }
+                else {
+                    res.status(400).json({ error: "An unknown error occurred" });
+                }
             }
         });
     }
     static login(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { email, password } = req.body;
             try {
-                const user = yield AuthService_1.AuthService.login(email, password);
-                if (!user) {
-                    res.status(401).send('Invalid email or password');
-                    return;
-                }
-                res.status(200).json(user);
+                const { email, password } = req.body;
+                const token = yield AuthService_1.AuthService.loginUser(email, password);
+                res.status(200).json({ token });
             }
             catch (error) {
-                console.error('Error logging in:', error);
-                res.status(500).send('Error logging in');
+                if (error instanceof Error) {
+                    res.status(401).json({ error: error.message });
+                }
+                else {
+                    res.status(401).json({ error: "An unknown error occurred" });
+                }
             }
         });
     }

@@ -10,34 +10,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExchangeRequestService = void 0;
-const ExchangeRequest_1 = require("../models/ExchangeRequest");
+const ExchangeRequestRepository_1 = require("../repositories/ExchangeRequestRepository");
 class ExchangeRequestService {
-    static createExchangeRequest(userId, bookId) {
+    static createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle) {
         return __awaiter(this, void 0, void 0, function* () {
-            const request = yield ExchangeRequest_1.ExchangeRequest.create({ userId, bookId });
-            return request;
+            try {
+                yield ExchangeRequestRepository_1.ExchangeRequestRepository.createExchangeRequest(userId, exchangeWithUserId, bookId, bookTitle);
+            }
+            catch (error) {
+                throw new Error('Error creating exchange request');
+            }
         });
     }
     static deleteExchangeRequest(requestId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletedCount = yield ExchangeRequest_1.ExchangeRequest.destroy({ where: { id: requestId } });
-            return deletedCount > 0;
+            try {
+                return yield ExchangeRequestRepository_1.ExchangeRequestRepository.deleteExchangeRequest(requestId);
+            }
+            catch (error) {
+                throw new Error('Error deleting exchange request');
+            }
         });
     }
     static getUserExchangeRequests(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const requests = yield ExchangeRequest_1.ExchangeRequest.findAll({ where: { userId } });
-            return requests;
+            try {
+                return yield ExchangeRequestRepository_1.ExchangeRequestRepository.getUserExchangeRequests(userId);
+            }
+            catch (error) {
+                throw new Error('Error fetching exchange requests');
+            }
         });
     }
     static confirmExchangeRequest(requestId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const [updatedCount] = yield ExchangeRequest_1.ExchangeRequest.update({ confirmed: true }, { where: { id: requestId } });
-                return updatedCount > 0;
+                return yield ExchangeRequestRepository_1.ExchangeRequestRepository.confirmExchangeRequest(requestId);
             }
             catch (error) {
-                console.error('Error confirming exchange request:', error);
                 throw new Error('Error confirming exchange request');
             }
         });

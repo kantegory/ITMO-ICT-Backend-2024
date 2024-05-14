@@ -15,6 +15,7 @@
     "@types/sequelize": "^4.28.20",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.3",
@@ -22,12 +23,12 @@
     "sequelize": "^6.37.1",
     "sequelize-typescript": "^2.1.6",
     "sqlite3": "^5.1.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "typescript": "^5.4.5"
   }
 }

@@ -17,11 +17,11 @@ class BookController {
             const { title, author } = req.body;
             try {
                 yield BookService_1.BookService.createBook(title, author);
-                res.status(201).send('Book created successfully');
+                res.status(201).send("Book created successfully");
             }
             catch (error) {
-                console.error('Error creating book:', error);
-                res.status(500).send('Error creating book');
+                console.error("Error creating book:", error);
+                res.status(500).send("Error creating book");
             }
         });
     }
@@ -32,8 +32,8 @@ class BookController {
                 res.json(books);
             }
             catch (error) {
-                console.error('Error fetching books:', error);
-                res.status(500).send('Error fetching books');
+                console.error("Error fetching books:", error);
+                res.status(500).send("Error fetching books");
             }
         });
     }
