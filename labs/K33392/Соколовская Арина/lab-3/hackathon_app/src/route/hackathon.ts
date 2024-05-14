@@ -5,6 +5,7 @@ import { Router, Request, Response } from 'express';
 
 const hackathonController = require("../controller/hackathon"); 
 const hackathonRouter = Router();
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 hackathonRouter
   .route('/:id')
@@ -16,19 +17,15 @@ hackathonRouter
 
 hackathonRouter
   .route('/:id/task')
-  .get(roleMiddleware(['jury', 'curator', 'admin']), hackathonController.get_hackathon_task) // team_leader for team on this hack, curator, admin, jury
+  .get(hackathonController.get_hackathon_task) // team_leader for team on this hack, curator, admin, jury (access check in controller)
   .patch(roleMiddleware(['curator', 'admin']), hackathonController.patch_hackathon_task); // curator, admin
 
 hackathonRouter
   .route('/:id/solution')
-  .post(hackathonController.post_hackathon_solution); // team_leader for team on this hack
+  .post(hackathonController.post_hackathon_solution); // team_leader for team on this hack (access check in controller)
 
 hackathonRouter
   .route('/')
   .get(hackathonController.get_hackathons); // any
 
 export default hackathonRouter;
-
-function roleMiddleware(arg0: string[]): import("express-serve-static-core").RequestHandler<{}, any, any, import("qs").ParsedQs, Record<string, any>> {
-  throw new Error('Function not implemented.');
-}

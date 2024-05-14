@@ -13,6 +13,10 @@ userRouter
 
 userRouter
   .route('token/:token')
-  .get(userController.get_user_by_token) // any
+  .post(userController.get_user_by_token) // any
+
+userRouter
+  .route('token/:token/id')
+  .post(userController.get_id_by_token) // any
 
 export default userRouter;

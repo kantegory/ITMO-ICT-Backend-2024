@@ -7,10 +7,10 @@ const teamRouter = Router();
 
 teamRouter
   .route('/:id')
-  .patch(teamController.patch_team); // team_leader for team
+  .patch(teamController.patch_team); // team_leader for team (access check in controller)
 
 teamRouter
   .route('/:id/:user_id')
-  .post(teamController.post_participant); // team_leader for team
+  .post(teamController.post_participant); // team_leader for team (access check in controller TO DO)
 
 export default teamRouter;

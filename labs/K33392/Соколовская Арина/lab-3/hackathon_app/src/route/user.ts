@@ -8,7 +8,7 @@ const userRouter = Router();
 
 userRouter
   .route('/:id/hackathons')
-  .get(userController.get_hackathons_by_user); // user himself
+  .get(userController.get_hackathons_by_user); // user himself TO DO!!!
 
 userRouter
   .route('/:id/hackathons/active')
