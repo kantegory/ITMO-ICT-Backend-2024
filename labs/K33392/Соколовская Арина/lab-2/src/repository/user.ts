@@ -29,7 +29,7 @@ export class UserRepository {
     }
 
     async create(user: User): Promise<User>{
-        const new_user = await this.repository.create(JSON.parse(JSON.stringify(user)));
+        const new_user = await this.repository.create({name: user.name, surname: user.surname, email: user.email, password: user.password, about: user.about});
         return new_user;
     }
 }

@@ -60,7 +60,7 @@ export class HackathonService {
 
         const new_team = await this.teamRepository.post(team);
         if (new_team){
-            const participant = JSON.parse(JSON.stringify({user_id: new_team.leader_id, task_id: new_team.task_id}));
+            const participant = {user_id: new_team.leader_id, team_id: new_team.id};
             await this.participantRepository.post(participant as Participant);
         }
         return new_team;

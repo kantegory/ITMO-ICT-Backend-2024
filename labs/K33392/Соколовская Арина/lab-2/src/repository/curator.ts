@@ -24,7 +24,7 @@ export class CuratorRepository {
     }
 
     async post(curator: Curator): Promise<Curator | null> {
-        const new_curator = await this.repository.create(JSON.parse(JSON.stringify(curator)));
+        const new_curator = await this.repository.create({task_id: curator.task_id, user_id: curator.user_id});
         return new_curator;
     }
 

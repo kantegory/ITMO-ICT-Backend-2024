@@ -44,7 +44,7 @@ export class AdminService {
 
 
     async post_jury(jury: Jury, hackathon_id: number): Promise<Jury | null> {
-        const hackathonJury = JSON.parse(JSON.stringify({user_id: jury.user_id, task_id: hackathon_id}));
+        const hackathonJury = {jury_id: jury.user_id, hackathon_id: hackathon_id};
         await this.hackathonJuryRepository.post(hackathonJury as HackathonJury);
         return await this.juryRepository.post(jury);
         return null;

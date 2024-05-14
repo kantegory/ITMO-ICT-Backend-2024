@@ -14,7 +14,7 @@ export class ParticipantRepository {
     }
 
     async post(participant: Participant): Promise<Participant | null> {
-        const new_participant = await this.repository.create(JSON.parse(JSON.stringify(participant)));
+        const new_participant = await this.repository.create({user_id: participant.user_id, team_id: participant.team_id});
 
         return new_participant;
     }

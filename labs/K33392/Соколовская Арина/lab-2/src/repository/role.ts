@@ -7,7 +7,7 @@ export class RoleRepository {
     private repository = sequelize.getRepository(Role);
     
     async post(role: Role): Promise<Role> {
-        const new_role = await this.repository.create(JSON.parse(JSON.stringify(role)));
+        const new_role = await this.repository.create({name: role.name});
         return new_role;
     }
 

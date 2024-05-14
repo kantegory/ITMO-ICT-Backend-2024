@@ -1,5 +1,6 @@
 import { Table, Model, AutoIncrement, PrimaryKey, Unique, BeforeCreate, BeforeUpdate, Column, BelongsTo, HasMany, ForeignKey } from "sequelize-typescript";
 import bcrypt from "bcrypt";
+import { Hackathon } from "./task";
 
 export @Table
 class Role extends Model {
@@ -71,6 +72,7 @@ class Curator extends Model {
     @Column
     id!: number;
     
+    @ForeignKey(() => Hackathon)
     @Column
     task_id!: number;
 

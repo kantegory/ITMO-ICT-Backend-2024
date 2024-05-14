@@ -16,7 +16,7 @@ export class HackathonJuryRepository {
     }
 
     async post(hackathonJury: HackathonJury): Promise<HackathonJury | null> {
-        const new_hackathonJury = this.repository.create(JSON.parse(JSON.stringify(hackathonJury)));
+        const new_hackathonJury = this.repository.create({hackathon_id: hackathonJury.hackathon_id, jury_id: hackathonJury.jury_id});
         return new_hackathonJury;
     }
 }

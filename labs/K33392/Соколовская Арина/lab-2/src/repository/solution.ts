@@ -19,8 +19,7 @@ export class SolutionRepository {
     }
 
     async post(solution: Solution): Promise<Solution | null> {
-        console.log(JSON.parse(JSON.stringify(solution)));
-        const new_solution = await this.repository.create(JSON.parse(JSON.stringify(solution)));
+        const new_solution = await this.repository.create({team_id: solution.team_id, solution_link: solution.solution_link, submission_date: solution.submission_date});
         // console.log(new_solution);
         return new_solution;
     }

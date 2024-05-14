@@ -1,5 +1,5 @@
 import Repository from 'sequelize-typescript';
-import { Hackathon } from '../model/task'
+import { Hackathon, HackathonJury } from '../model/task'
 import sequelize from '../config/db';
 
 
@@ -34,7 +34,7 @@ export class HackathonRepository {
     }
 
     async post(hackathon: Hackathon): Promise<Hackathon | null> {
-        const new_hackathon = await this.repository.create(JSON.parse(JSON.stringify(hackathon)));
+        const new_hackathon = await this.repository.create({name: hackathon.name, description: hackathon.description, task: hackathon.task, start_datetime: hackathon.start_datetime, end_datetime: hackathon.end_datetime});
         return new_hackathon;
     }
 
