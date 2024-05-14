@@ -2,20 +2,17 @@ import { Hackathon } from '../model/task';
 import { HackathonRepository } from '../repository/hackathon';
 import { ParticipantRepository } from '../repository/participant';
 import { TeamRepository } from '../repository/team';
-import { UserRepository } from '../repository/user';
 
 export class UserService {
     private participantRepository: ParticipantRepository;
     private teamRepository: TeamRepository;
     private hackathonRepository: HackathonRepository;
-    private userRepository: UserRepository;
 
 
     constructor() {
         this.participantRepository = new ParticipantRepository();
         this.teamRepository = new TeamRepository();
         this.hackathonRepository = new HackathonRepository();
-        this.userRepository = new UserRepository();
     }
 
     async findUserHackathons(id: number): Promise<Hackathon[]> {
@@ -28,14 +25,4 @@ export class UserService {
         return hackathons;
         return [];
     }
-
-    // async findById(id: number): Promise<User> {
-    //     const user = await this.userRepository.findById(id);
-    //     return user;
-    // }
-
-    // async findByEmail(email: string): Promise<User | null> {
-    //     const user = await this.userRepository.findByEmail(email);
-    //     return user;
-    // }
 }

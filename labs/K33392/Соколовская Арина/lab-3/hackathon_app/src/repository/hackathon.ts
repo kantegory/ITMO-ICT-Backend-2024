@@ -1,5 +1,4 @@
-import Repository from 'sequelize-typescript';
-import { Hackathon, HackathonJury } from '../model/task'
+import { Hackathon } from '../model/task'
 import sequelize from '../config/db';
 
 

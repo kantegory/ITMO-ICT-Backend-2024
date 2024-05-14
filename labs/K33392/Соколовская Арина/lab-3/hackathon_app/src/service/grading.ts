@@ -1,7 +1,5 @@
 import { Grading } from '../model/solution';
-import { User } from '../model/user'
 import { GradingRepository } from '../repository/grading';
-import { UserRepository } from '../repository/user';
 
 export class GradingService {
     private gradingRepository: GradingRepository;
