@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { UserService } from "../service/user";
 import { User } from "../model/user";
+import jwt from "jsonwebtoken"
 
 const userService = new UserService();
 
@@ -26,4 +27,11 @@ exports.patch_user = async (req: Request, res: Response) => {
     } else {
         res.send(JSON.stringify(updated_user));
     }
+};
+
+
+exports.get_user_by_token = function (token: string) {
+    const parsed = jwt.verify(token, process.env.secret_key as string);
+    const user = (parsed as User);
+    return user;
 };

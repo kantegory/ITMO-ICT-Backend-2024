@@ -11,4 +11,8 @@ userRouter
   .get(userController.get_user) // any
   .patch(userController.patch_user); // user itself
 
+userRouter
+  .route('token/:token')
+  .get(userController.get_user_by_token) // any
+
 export default userRouter;
