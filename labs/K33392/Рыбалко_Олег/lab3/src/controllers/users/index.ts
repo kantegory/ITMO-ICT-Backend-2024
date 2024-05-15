@@ -108,5 +108,18 @@ export class UsersController {
       res.status(500).send({ error: 'Internal Server Error' })
     }
   }
+
+  verify = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body
+      if (!token) return res.sendStatus(401)
+      const resp = jwt.verify(token, process.env.SECRET_KEY as string)
+      await this.service.findByEmail(resp.sub as string)
+      res.sendStatus(200)
+    } catch (error) {
+      console.log(error)
+      res.sendStatus(401)
+    }
+  }
 }
 

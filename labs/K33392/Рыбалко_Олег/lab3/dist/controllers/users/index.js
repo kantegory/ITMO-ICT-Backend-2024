@@ -95,6 +95,20 @@ export class UsersController {
                 res.status(500).send({ error: 'Internal Server Error' });
             }
         };
+        this.verify = async (req, res) => {
+            try {
+                const { token } = req.body;
+                if (!token)
+                    return res.sendStatus(401);
+                const resp = jwt.verify(token, process.env.SECRET_KEY);
+                await this.service.findByEmail(resp.sub);
+                res.sendStatus(200);
+            }
+            catch (error) {
+                console.log(error);
+                res.sendStatus(401);
+            }
+        };
         this.service = new UsersService(User);
     }
 }
