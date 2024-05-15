@@ -1,18 +1,16 @@
 import { Request, Response } from "express";
 import Item from "../models/Item";
 import ShopService from "../services/shop";
-import UserService from "../services/user";
+
 
 
 class ShopController {
     
     
     private shopService: ShopService
-    private userService: UserService
 
     constructor() {
         this.shopService = new ShopService()
-        this.userService = new UserService()
     }
 
     index = (request: Request, response: Response) => {
