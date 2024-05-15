@@ -9,7 +9,7 @@ import verifyRefreshToken from "../utility/verifyRefreshToken";
 
 
 class UserController {
-    private userService: UserService; // lazy
+    private userService: UserService;
 
     constructor() {
         this.userService = new UserService()
@@ -20,15 +20,16 @@ class UserController {
             const token = request.body.jwt as string
 
             if (token) {
-                jwt.verify(token, process.env.SECRET_KEY, async (err, decodedToken) => {
+                jwt.verify(token, process.env.SECRET_KEY, async (err, decodedToken: any) => {
                     if (err) {
                         // res.status(403).send("Invalid token")
                         // console.log(err.message)
                     } else {
                         console.log(decodedToken)
                         response.status(200).json({
-                            "status": "success",
-                            "userId": decodedToken.id
+                            "response": "success",
+                            "userId": decodedToken.id,
+                            "jwt": token
                         })
                         return
                     }
@@ -40,7 +41,7 @@ class UserController {
             if (err.name == "TypeError") {
                 // res.status(403).send("Authorization is required for this page")
             } else {
-                response.status(400).json({"status": err.message})
+                response.status(400).json({"response": err.message})
                 return
             }
         }
@@ -53,27 +54,29 @@ class UserController {
                 const isLegit = out[0]
                 const userId = out[1]
                 if (!isLegit) {
-                    destroyTokens(response) // why not
-                    response.status(403).send({"status": "Bad tokens"})
+                    // destroyTokens(response)
+                    response.status(403).send({"response": "Bad tokens"})
                     return
                 } else {
                     // JWT doesn't exist, but Refresh Token exists and is valid. So now we make new ones
-                    makeTokens(response)
+                    const {jwt, refreshToken} = await makeTokens(userId)
                     response.status(200).json({
-                        "status": "success",
-                        "userId": userId
+                        "response": "success",
+                        "userId": userId,
+                        "jwt": jwt,
+                        "refresh_token": refreshToken.token
                     })
                     return
                 }
             } else {
-                response.status(403).send({"status": "Bad tokens"})
+                response.status(403).send({"response": "Bad tokens"})
                 return
             }
         } catch (err) {
             if (err.name == "TypeError") {
-                response.status(403).send({"status": "Bad tokens"})
+                response.status(403).send({"response": "Bad tokens"})
             } else {
-                response.status(403).send({"status": "Other error"})
+                response.status(403).send({"response": "Other error"})
             }
             return
         }
@@ -95,9 +98,14 @@ class UserController {
             const user: User | ValidationError | NotUniqueError = await this.userService.createUser(request.body)
             
             response.locals.uId = user.id
-            await makeTokens(response)
+            const {jwt, refreshToken} = await makeTokens(user.id)
             
-            response.status(200).json({'response': "success", 'userId': user.id})
+            response.status(200).json({
+                'response': "success",
+                'userId': user.id,
+                'jwt': jwt,
+                'refreshToken': refreshToken,
+            })
             return
         } catch (error) {
             response.status(400).json({'response': 'error', 'error_message': error.message})
