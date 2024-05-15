@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import destroyTokens from '../utility/destroyTokens'
 import axios from "axios";
+import setTokensInCookies from "../utility/setTokensInCookies";
 
 const requireAuth = async (req: any, res: any, next: any) => {
     try {
@@ -18,6 +19,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
             res.status(403).send({"response": "Unauthorized"})
             return
         }
+        setTokensInCookies(res, authResponse.data.jwt, authResponse.data.refresh_token)
         res.locals.uId=authResponse.data.uid
         next()
     } catch (error) {
