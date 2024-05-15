@@ -164,11 +164,12 @@
 
 ## 3.1 DI, IoC
 
-[Презентация по DI, IoC](https://docs.google.com/presentation/d/1yXC0oczjMlvYeFOKedzOLcct_C1FoLJl1kLXeXAu5DE/edit?usp=sharing)
+[Презентация по DI, IoC](https://docs.google.com/presentation/d/1yXC0oczjMlvYeFOKedzOLcct_C1FoLJl1kLXeXAu5DE/edit?usp=sharing)  
 
 ## 3.2 Микросервисы
 
-[Презентация по микросервисам](https://docs.google.com/presentation/d/1pwV0WHDG2QoV5GK067dd1nbq4_RDQUambryIfVjWQnw/edit?usp=sharing)
+[Презентация по микросервисам](https://docs.google.com/presentation/d/1pwV0WHDG2QoV5GK067dd1nbq4_RDQUambryIfVjWQnw/edit?usp=sharing)  
+[Пример](https://github.com/kantegory/mentoring/tree/master/26_express_rabbitmq)
 
 **ЛР3** (срок: 16.05.2024)
 
@@ -176,14 +177,21 @@
 
 ## 3.3 Docker, docker compose, docker swarm
 
-[Презентация по docker](https://docs.google.com/presentation/d/1QhqPb2nmiwmzZ_e6pcAHAGHRHlep1i04OEmE8PsKRxA/edit?usp=sharing)
+[Презентация по docker](https://docs.google.com/presentation/d/1QhqPb2nmiwmzZ_e6pcAHAGHRHlep1i04OEmE8PsKRxA/edit?usp=sharing)  
+[Пример настройки docker, docker compose для node-приложения](https://github.com/kantegory/manual-deploy-node)  
+
+## 3.4 Очереди сообщений
+
+[Презентация по очередям сообщений](https://docs.google.com/presentation/d/1ixkiwg-7BH1qCXN9fcb8nGF-cmGBMt-ntiycXjsISoc/edit?usp=sharing)  
+[Пример](https://github.com/kantegory/mentoring/tree/master/26_express_rabbitmq)
 
 **ЛР4** (срок: 30.05.2024)
 
-Необходимо упаковать ваше приложение в docker-контейнеры и обеспечить сетевое взаимодействие между различными частями вашего приложения. Делать это можно как с помощью docker-compose так и с помощью docker swarm. При разумном использовании swirl вы получите дополнительные баллы.
-
+Необходимо упаковать ваше приложение в docker-контейнеры и обеспечить сетевое взаимодействие между различными частями вашего приложения, а также настроить общение микросервисов между собой посредством RabbitMQ. Делать это можно как с помощью docker-compose так и с помощью docker swarm. При разумном использовании swirl вы получите дополнительные баллы.
 
 ## 3.4 CI/CD
+
+[Пример репозитория с настроенным CI/CD через Gitlab CI](https://github.com/kantegory/manual-node-deploy)  
 
 Вводную информацию по Github Actions и Gitlab CI можно подчерпнуть из документации:
 
