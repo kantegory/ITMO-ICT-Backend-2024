@@ -2,11 +2,9 @@ import authRouter from "./auth";
 import userRouter from "./user";
 import { Router } from "express";
 
-const authMiddleware = require("../middleware/authMiddleware");
-
 const router = Router();
 
-router.use('/', userRouter);
-router.use('/auth', authRouter);
+router.use('/users', userRouter);
+router.use('/', authRouter);
 
 export default router;

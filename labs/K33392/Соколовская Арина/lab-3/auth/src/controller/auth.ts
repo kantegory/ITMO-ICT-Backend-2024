@@ -21,6 +21,7 @@ const generateAcessToken = (id: number, role_name: string, email: string) => {
 
 exports.register_user = async (req: Request, res: Response) => {
     try {
+        console.log(req.body);
         const { name, surname, email, password, about } = req.body;
         const user = await userService.findByEmail(email);
         if (user) {

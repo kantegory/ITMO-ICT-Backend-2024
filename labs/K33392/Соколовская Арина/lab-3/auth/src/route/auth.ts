@@ -5,7 +5,6 @@ import { Router, Request, Response } from 'express';
 const authController = require("../controller/auth"); 
 const roleController = require("../controller/role"); 
 const authRouter = Router();
-const roleWiddleware = require("../middleware/roleWiddleware")
 
 
 authRouter
@@ -18,6 +17,6 @@ authRouter
 
 authRouter
   .route('/role')
-  .post(roleWiddleware["admin"], roleController.create_role);
+  .post(roleController.create_role);
 
 export default authRouter;
