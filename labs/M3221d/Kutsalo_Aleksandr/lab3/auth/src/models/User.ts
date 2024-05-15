@@ -1,7 +1,5 @@
 import { Table, Column, Model, Unique, AllowNull, BeforeCreate, BeforeUpdate, DataType, IsEmail, HasMany } from 'sequelize-typescript'
 import {hashSync} from 'bcrypt'
-import ShoppingCartItem from './ShoppingCartItem'
-import Item from './Item'
 
 @Table
 class User extends Model {
@@ -19,9 +17,6 @@ class User extends Model {
     @Column(DataType.STRING)
     password: string
 
-    @HasMany(() => ShoppingCartItem, 'userId')
-    shoppingCartItems: Item[]
-
     @BeforeCreate
     @BeforeUpdate
     static generatePasswordHash(instance: User) {
@@ -29,7 +24,6 @@ class User extends Model {
 
         if (instance.changed('password')) {
             instance.password = hashSync(password, 5)
-
         }
     }
 }
