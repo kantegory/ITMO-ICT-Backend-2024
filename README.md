@@ -191,7 +191,7 @@
 
 ## 3.4 CI/CD
 
-[Пример репозитория с настроенным CI/CD через Gitlab CI](https://github.com/kantegory/manual-node-deploy)  
+[Пример репозитория с настроенным CI/CD через Gitlab CI](https://github.com/kantegory/manual-deploy-node)  
 
 Вводную информацию по Github Actions и Gitlab CI можно подчерпнуть из документации:
 
