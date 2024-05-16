@@ -10,8 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersController = void 0;
-const Order_1 = require("../../models/orders/Order");
-const User_1 = require("../../models/users/User");
 const orderService_1 = require("../../services/orders/orderService");
 class OrdersController {
     constructor() {
@@ -26,7 +24,9 @@ class OrdersController {
                     res.status(201).json(order);
                 }
                 else {
-                    res.status(400).json({ message: 'Unable to create order. Product may be out of stock or not found.' });
+                    res.status(400).json({
+                        message: "Unable to create order. Product may be out of stock or not found.",
+                    });
                 }
             }
             catch (error) {
@@ -45,7 +45,7 @@ class OrdersController {
                     res.status(200).json(order);
                 }
                 else {
-                    res.status(404).json({ message: 'Order not found' });
+                    res.status(404).json({ message: "Order not found" });
                 }
             }
             catch (error) {
@@ -65,7 +65,9 @@ class OrdersController {
                     res.status(200).json(updatedOrder);
                 }
                 else {
-                    res.status(400).json({ message: 'Unable to update order. Product may be out of stock or not found.' });
+                    res.status(400).json({
+                        message: "Unable to update order. Product may be out of stock or not found.",
+                    });
                 }
             }
             catch (error) {
@@ -84,7 +86,7 @@ class OrdersController {
                     res.status(204).send();
                 }
                 else {
-                    res.status(404).json({ message: 'Order not found' });
+                    res.status(404).json({ message: "Order not found" });
                 }
             }
             catch (error) {
@@ -97,15 +99,7 @@ class OrdersController {
     findOrdersByUserId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const userId = req.params.userId;
-                const userWithOrders = yield User_1.User.findByPk(userId, {
-                    include: [{ model: Order_1.Order }]
-                });
-                if (!userWithOrders) {
-                    res.status(404).send("User not found");
-                    return;
-                }
-                res.json(userWithOrders.orders);
+                res.json(yield this.orderService.findOrdersByUserId(req.params.userId));
             }
             catch (error) {
                 console.error("Error fetching user orders:", error);

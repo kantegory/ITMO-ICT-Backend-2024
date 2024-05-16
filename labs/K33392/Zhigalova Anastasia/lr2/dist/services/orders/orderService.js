@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
 const Order_1 = require("../../models/orders/Order");
 const Product_1 = require("../../models/products/Product");
-const User_1 = require("../../models/users/User");
 class OrderService {
     createOrder(userId, productId, quantity) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -23,7 +22,12 @@ class OrderService {
                     return null;
                 }
                 const orderDate = new Date();
-                const order = yield Order_1.Order.create({ userId, productId, quantity, orderDate });
+                const order = yield Order_1.Order.create({
+                    userId,
+                    productId,
+                    quantity,
+                    orderDate,
+                });
                 yield Product_1.Product.update({ stockQuantity: product.stockQuantity - quantity }, { where: { id: productId } });
                 return order;
             }
@@ -36,7 +40,7 @@ class OrderService {
     getOrderById(orderId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const order = yield Order_1.Order.findByPk(orderId, { include: [Product_1.Product, User_1.User] });
+                const order = yield Order_1.Order.findByPk(orderId, { include: [Product_1.Product] });
                 return order;
             }
             catch (error) {
@@ -93,13 +97,7 @@ class OrderService {
     findOrdersByUserId(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const userWithOrders = yield User_1.User.findByPk(userId, {
-                    include: [{ model: Order_1.Order }]
-                });
-                if (!userWithOrders) {
-                    return null;
-                }
-                return userWithOrders.orders;
+                return yield Order_1.Order.findAll({ where: { userId: userId } });
             }
             catch (error) {
                 console.error("Error fetching user orders:", error);
