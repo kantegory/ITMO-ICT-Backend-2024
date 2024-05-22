@@ -1,0 +1,17 @@
+
+> devices-service@0.0.0 build /home/astukalov/Documents/my-projects/api-monorepo/api-services/devices
+> webpack
+
+asset [1m[32mindex.js[39m[22m 1010 KiB [1m[32m[emitted][39m[22m (name: index)
+runtime modules 937 bytes 4 modules
+cacheable modules 689 KiB
+  modules by path [1m./src/[39m[22m 21.7 KiB 29 modules
+  modules by path [1m../../[39m[22m 667 KiB
+    modules by path [1m../../packages/shared/src/[39m[22m 460 KiB
+      modules by path [1m../../packages/shared/src/fastify/*.ts[39m[22m 5.54 KiB 3 modules
+      + 4 modules
+    modules by path [1m../../node_modules/.pnpm/@prisma+client@5.14.0_prisma@5.14.0/node_modules/[39m[22m 208 KiB
+      modules by path [1m../../node_modules/.pnpm/@prisma+client@5.14.0_prisma@5.14.0/node_modules/@...(truncated)[39m[22m 180 KiB 2 modules
+      modules by path [1m../../node_modules/.pnpm/@prisma+client@5.14.0_prisma@5.14.0/node_modules/.pris...(truncated)[39m[22m 27.7 KiB 2 modules
++ 16 modules
+webpack 5.91.0 compiled [1m[32msuccessfully[39m[22m in 502 ms

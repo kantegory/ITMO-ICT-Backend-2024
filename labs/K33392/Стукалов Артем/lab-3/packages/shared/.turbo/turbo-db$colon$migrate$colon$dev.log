@@ -1,0 +1,58 @@
+
+> @repo/database@0.0.0 db:migrate:dev /home/astukalov/Documents/my-projects/api-monorepo/packages/database
+> prisma migrate dev
+
+[2mPrisma schema loaded from prisma/schema.prisma[22m
+[2mDatasource "db": PostgreSQL database "ts_backend_2", schema "public" at "127.0.0.1:5432"[22m
+
+- Drift detected: Your database schema is not in sync with your migration history.
+
+The following is a summary of the differences between the expected database schema given your migrations files, and the actual schema of the database.
+
+It should be understood as the set of changes to get from the expected schema to the actual schema.
+
+[+] Added enums
+  - AreaType
+  - DeviceType
+
+[+] Added tables
+  - Area
+  - BaseCommand
+  - Command
+  - Device
+  - DeviceData
+  - Script
+  - User
+
+[*] Changed the `Area` table
+  [+] Added foreign key on columns (userId)
+
+[*] Changed the `BaseCommand` table
+  [+] Added unique index on columns (name)
+
+[*] Changed the `Command` table
+  [+] Added foreign key on columns (baseCommandId)
+  [+] Added foreign key on columns (deviceId)
+  [+] Added foreign key on columns (userId)
+
+[*] Changed the `Device` table
+  [+] Added unique index on columns (uuid)
+  [+] Added foreign key on columns (areaId)
+  [+] Added foreign key on columns (userId)
+
+[*] Changed the `DeviceData` table
+  [+] Added foreign key on columns (deviceId)
+
+[*] Changed the `Script` table
+  [+] Added foreign key on columns (baseCommandId)
+  [+] Added foreign key on columns (commandDeviceId)
+  [+] Added foreign key on columns (conditionDeviceId)
+  [+] Added foreign key on columns (userId)
+
+[*] Changed the `User` table
+  [+] Added unique index on columns (username)
+
+- The following migration(s) are applied to the database but missing from the local migrations directory: 20240414125127_added_base_users, 20240414131013_users_added_pass_salt, 20240414140738_change_crated_at_to_int, 20240414220357_user_renaming_and_added_device_area_tables, 20240417202327_added_commands
+
+[?25l[2K[1G[36m?[39m [1mWe need to reset the "public" schema at "127.0.0.1:5432"
+Do you want to continue? [31mAll data will be lost[39m.[22m [90m›[39m [90m(y/N)[39m

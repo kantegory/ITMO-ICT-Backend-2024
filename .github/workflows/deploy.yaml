@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - astukalov/feature/lab-3
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VPS_USER_NAME: ${{ secrets.vps_user_name }}
+      VPS_SERVER_NAME: ${{ secrets.vps_server_name }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 20.x
+      - name: Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install rsync -y
+          mkdir "$HOME/.ssh"
+          echo "${{ secrets.vps_private_key }}" > "$HOME/.ssh/key"
+          chmod 600 "$HOME/.ssh/key"
+      - name: Delivery
+        run: |
+          rsync -e "ssh -p 23348 -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete . $VPS_USER_NAME@$VPS_SERVER_NAME:/home/tutor03/Documents/itmo-back-ts
+      - name: Building on server
+        run: |
+          ssh -i $HOME/.ssh/key $VPS_USER_NAME@$VPS_SERVER_NAME '/home/tutor03/Documents/itmo-back-ts/labs/K33392/Стукалов Артем/lab-3 && docker compose up -d --build'

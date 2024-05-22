@@ -1,0 +1,21 @@
+{
+  "name": "api-monorepo",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "dotenv-cli": "^7.4.2",
+    "prettier": "^3.2.5",
+    "turbo": "^1.13.3",
+    "typescript": "^5.4.5"
+  }
+}
