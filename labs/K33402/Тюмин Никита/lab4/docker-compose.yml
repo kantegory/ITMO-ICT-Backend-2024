@@ -22,6 +22,17 @@ services:
       context: ./tours
     networks:
       - node
+  core:
+    depends_on:
+      - postgres
+    container_name: node_tours
+    restart: unless-stopped
+    build:
+      context: ./tours
+    networks:
+      - node
+    command:
+      - "sequelize db:migrate && npm run seed"
 
   postgres:
     container_name: node_postgres
