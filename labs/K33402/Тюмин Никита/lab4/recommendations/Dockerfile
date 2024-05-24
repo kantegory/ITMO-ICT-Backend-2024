@@ -9,4 +9,4 @@ RUN npm run build
 
 COPY .env /app/.env
 EXPOSE 8000
-CMD [ "node", "app.js" ]
+CMD [ "node", "dist/app.js" ]
