@@ -37,7 +37,7 @@ jobs:
   pub-shared-database:
     runs-on: [ubuntu-latest]
     steps:
-      - name: Checkout repository
+      - name: Checkout repositoryd
         uses: actions/checkout@v2
 
       - name: Set up Node.js
