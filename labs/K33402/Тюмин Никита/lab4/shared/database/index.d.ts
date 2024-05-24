@@ -1,10 +1,4 @@
 import {
-    ConnectionParams,
-    DBModels,
-    initDb,
-} from "./src";
-
-import {
     BaseDictionary,
     ComfortLevel,
     DifficultyLevel,
@@ -17,10 +11,6 @@ import {
 } from "./src";
 
 export {
-    ConnectionParams,
-    DBModels,
-    initDb,
-
     User,
     UserProfile,
     Tour,

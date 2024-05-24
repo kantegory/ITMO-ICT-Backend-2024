@@ -1,18 +1,17 @@
 import { Dialect } from 'sequelize'
 import {
-    initDb,
     User,
     UserProfile,
     Tour,
 
-    BaseDictionary,
     ComfortLevel,
     DifficultyLevel,
     Place,
     TourActivity,
     TourType,
 } from 'shared-database'
-import {ModelCtor} from "sequelize-typescript";
+import { ModelCtor, Sequelize } from "sequelize-typescript";
+import dbConfig from "../config/db";
 
 const models: Array<ModelCtor> = [
     User,
@@ -26,24 +25,31 @@ const models: Array<ModelCtor> = [
     TourType,
 ]
 
+
+const sequelize = new Sequelize({
+    database: dbConfig.database,
+    dialect: dbConfig.dialect as Dialect,
+    username: dbConfig.username,
+    password: dbConfig.password,
+    storage: dbConfig.storage,
+    host: dbConfig.host,
+    port: dbConfig.port,
+    logging: console.log,
+})
+
 const initSeq = async () => {
-    const dbModels = await initDb({
-        database: process.env.DB_DATABASE,
-        dialect: process.env.DB_DIALECT as Dialect,
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        storage: process.env.DB_STORAGE,
-    }, models)
+    sequelize.addModels(models)
+    await sequelize.authenticate()
 }
 
-export {initSeq}
-export {models}
+export { initSeq }
+export { sequelize }
+export { models }
 export {
     User,
     UserProfile,
     Tour,
 
-    BaseDictionary,
     ComfortLevel,
     DifficultyLevel,
     Place,
