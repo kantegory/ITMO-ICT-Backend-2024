@@ -26,12 +26,12 @@ services:
     depends_on:
       - postgres
     container_name: node_core
-    restart: unless-stopped
+    restart: no
     build:
-      context: ./tours
+      context: ./core
     networks:
       - node
-    command: ["sh", "-c", "npx sequelize db:migrate"]
+    command: ["sh", "-c", "npm run migrate && npm run seed"]
 
   postgres:
     container_name: node_postgres
