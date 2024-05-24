@@ -14,25 +14,25 @@ jobs:
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/core'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/core
         with:
           node-version: '20'
 
       - name: Install dependencies
         run: npm install
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/core'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/core
 
       - name: Build project
         run: npm run build
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/core'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/core
 
       - name: Patch version
         run: npm version patch
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/core'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/core
 
       - name: Publish to npm
         run: npm publish
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/core'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/core
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
@@ -44,25 +44,25 @@ jobs:
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/database'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/database
         with:
           node-version: '20'
 
       - name: Install dependencies
         run: npm install
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/database'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/database
 
       - name: Build project
         run: npm run build
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/database'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/database
 
       - name: Patch version
         run: npm version patch
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/database'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/database
 
       - name: Publish to npm
         run: npm publish
-        working-directory: './labs/K33402/Тюмин Никита/lab4/shared/database'
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/database
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
