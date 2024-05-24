@@ -25,7 +25,7 @@ services:
   core:
     depends_on:
       - postgres
-    container_name: node_tours
+    container_name: node_core
     restart: unless-stopped
     build:
       context: ./tours
