@@ -1,13 +1,13 @@
 FROM node:20-alpine as builder
-WORKDIR /app/core
-COPY ../shared ../shared
+WORKDIR /app
 COPY package*.json ./
 RUN npm install
+RUN update shared-core shared-database
 COPY . .
 RUN npm run build
 
 FROM node:20-alpine as prod
 WORKDIR /app
-COPY --from=builder /app/core/dist /app
+COPY --from=builder /app/dist /app
 EXPOSE 8000
 CMD [ "node", "app.js" ]

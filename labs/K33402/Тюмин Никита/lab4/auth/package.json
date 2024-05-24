@@ -18,8 +18,8 @@
     "jsonwebtoken": "^9.0.2",
     "sequelize": "^6.37.3",
     "sequelize-typescript": "^2.1.6",
-    "shared-core": "file:../shared/core",
-    "shared-database": "file:../shared/database",
+    "shared-core": "^1.0.0",
+    "shared-database": "^1.0.0",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
