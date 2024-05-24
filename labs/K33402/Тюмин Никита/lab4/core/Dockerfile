@@ -6,5 +6,3 @@ RUN npm install
 RUN npm update shared-core shared-database
 COPY . .
 RUN npm run build
-
-COPY .env /app/.env

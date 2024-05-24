@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     build:
       context: ./auth
+    volumes:
+      - .:/app
     networks:
       - node
   recommendations:
@@ -13,6 +15,8 @@ services:
     restart: unless-stopped
     build:
       context: ./recommendations
+    volumes:
+      - .:/app
     networks:
       - node
   tours:
@@ -20,6 +24,8 @@ services:
     restart: unless-stopped
     build:
       context: ./tours
+    volumes:
+      - .:/app
     networks:
       - node
 
