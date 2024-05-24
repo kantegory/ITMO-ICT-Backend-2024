@@ -11,7 +11,7 @@ import {
     TourType,
 } from 'shared-database'
 import { ModelCtor, Sequelize } from "sequelize-typescript";
-import { production as dbConfig } from "../config/db";
+import dbConfig from "../config/db";
 
 const models: Array<ModelCtor> = [
     User,
