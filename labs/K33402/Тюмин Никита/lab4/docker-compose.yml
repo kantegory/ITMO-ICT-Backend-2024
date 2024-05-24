@@ -3,6 +3,8 @@ version: '3.8'
 services:
   auth:
     container_name: node_auth
+    ports:
+      - "8000:4000"
     restart: unless-stopped
     build:
       context: ./auth
@@ -10,6 +12,8 @@ services:
       - node
   recommendations:
     container_name: node_recommendations
+    ports:
+      - "8000:6000"
     restart: unless-stopped
     build:
       context: ./recommendations
@@ -17,6 +21,8 @@ services:
       - node
   tours:
     container_name: node_tours
+    ports:
+      - "8000:5000"
     restart: unless-stopped
     build:
       context: ./tours
