@@ -13,7 +13,7 @@ services:
   recommendations:
     container_name: node_recommendations
     ports:
-      - "4000:8000"
+      - "6000:8000"
     restart: unless-stopped
     build:
       context: ./recommendations
