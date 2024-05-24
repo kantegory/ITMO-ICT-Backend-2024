@@ -6,28 +6,22 @@ services:
     restart: unless-stopped
     build:
       context: ./auth
-    volumes:
-      - .:/app
     networks:
       - node
-#  recommendations:
-#    container_name: node_recommendations
-#    restart: unless-stopped
-#    build:
-#      context: ./recommendations
-#    volumes:
-#      - .:/app
-#    networks:
-#      - node
-#  tours:
-#    container_name: node_tours
-#    restart: unless-stopped
-#    build:
-#      context: ./tours
-#    volumes:
-#      - .:/app
-#    networks:
-#      - node
+  recommendations:
+    container_name: node_recommendations
+    restart: unless-stopped
+    build:
+      context: ./recommendations
+    networks:
+      - node
+  tours:
+    container_name: node_tours
+    restart: unless-stopped
+    build:
+      context: ./tours
+    networks:
+      - node
 
   postgres:
     container_name: node_postgres
