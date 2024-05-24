@@ -32,10 +32,7 @@ services:
     networks:
       - node
     command:
-      - sh -c "
-          sequelize db:migrate &&
-          npm run seed
-        "
+      - sequelize db:migrate
 
   postgres:
     container_name: node_postgres
