@@ -12,13 +12,13 @@ jobs:
       - name: Checkout repositoryd
         uses: actions/checkout@v2
 
+      - name: Cd to package
+        run: cd "./labs/K33402/Тюмин Никита/lab4/shared/core"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Cd to package
-        run: cd "./labs/K33402/Тюмин Никита/lab4/shared/core"
 
       - name: Install dependencies
         run: npm install
@@ -40,13 +40,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Cd to package
+        run: cd "./labs/K33402/Тюмин Никита/lab4/shared/database"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Cd to package
-        run: cd "./labs/K33402/Тюмин Никита/lab4/shared/database"
 
       - name: Install dependencies
         run: npm install
