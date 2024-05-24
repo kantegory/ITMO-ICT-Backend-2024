@@ -31,7 +31,7 @@ services:
       context: ./tours
     networks:
       - node
-    command: ["sh", "-c", "sequelize db:migrate"]
+    command: ["sh", "-c", "npx sequelize db:migrate"]
 
   postgres:
     container_name: node_postgres
