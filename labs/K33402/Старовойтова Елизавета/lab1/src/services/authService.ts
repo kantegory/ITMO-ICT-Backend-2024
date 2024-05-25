@@ -16,7 +16,6 @@ class AuthService {
     }
 
     static async login(data: any) {
-        //@ts-ignore
         const user = await User.findOne({where: { email: data.email }});
         if (!user) {
             throw new Error('Not found user by email: ' + data.email)

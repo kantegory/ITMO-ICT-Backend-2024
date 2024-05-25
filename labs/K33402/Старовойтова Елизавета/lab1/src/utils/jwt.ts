@@ -14,23 +14,21 @@ export interface JwtToken {
 }
 
 class Jwt {
-    static generateAccessToken(sub: string, payload: Object = {}): string {
+    static generateAccessToken(sub: string): string {
         return this._signToken(
             sub,
-            payload,
             TokenType.ACCESS,
             jwtConfig.JWT_ACCESS_TOKEN_TTL,
         )
     }
-    static generateRefreshToken(sub: string, payload: Object = {}): string {
+    static generateRefreshToken(sub: string): string {
         return this._signToken(
             sub,
-            payload,
             TokenType.REFRESH,
             jwtConfig.JWT_REFRESH_TOKEN_TTL,
         )
     }
-    static _signToken(sub: string, payload: Object, type: string, ttl: number): string {
+    static _signToken(sub: string, type: string, ttl: number): string {
         const now = Date.now()
         const data = {
             sub: sub,
