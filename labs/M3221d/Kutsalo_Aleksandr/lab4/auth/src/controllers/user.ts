@@ -95,6 +95,7 @@ class UserController {
 
     create = async (request: any, response: any) => {
         try {
+            console.log(request.body)
             const user: User | ValidationError | NotUniqueError = await this.userService.createUser(request.body)
             
             response.locals.uId = user.id
@@ -121,7 +122,7 @@ class UserController {
                 response.status(400).send({"response": "Invalid Credentials"})
                 return
             }
-            response.locals.uId = user.id
+            console.log("a")
             const {jwt, refreshToken} = await makeTokens(response)
             response.status(200).json({
                 'response': "Success",

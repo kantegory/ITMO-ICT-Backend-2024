@@ -5,9 +5,6 @@ const userRouter: Router = Router()
 
 const userController: UserController = new UserController()
 
-userRouter.route('/auth')
-    .post(userController.auth)
-
 userRouter.route('/id/:id')
     .get(userController.get)
 
