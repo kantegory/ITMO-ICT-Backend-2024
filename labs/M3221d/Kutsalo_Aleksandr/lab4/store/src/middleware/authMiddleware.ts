@@ -20,7 +20,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
             res.status(403).send({"response": "Unauthorized"})
             return
         }
-        setTokensInCookies(res, authResponse.data.jwt, authResponse.data.refresh_token)
+        setTokensInCookies(res, authResponse.data.jwt, authResponse.data.refresh_token.token)
         res.locals.uId=authResponse.data.uid
         next()
     } catch (error) {
