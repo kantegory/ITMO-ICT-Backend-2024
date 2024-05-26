@@ -118,11 +118,18 @@ class UserController {
         try {
             const user: User | UserNotFound = await this.userService.getByEmail(request.body.email)
             if (!isCorrectPassword(request.body.password, user.password)) {
-                throw Error("Passwords don't match")
+                response.status(400).send({"response": "Invalid Credentials"})
+                return
             }
             response.locals.uId = user.id
-            await makeTokens(response)
-            response.status(200).json({'response': "Success", 'userId': user.id})
+            const {jwt, refreshToken} = await makeTokens(response)
+            response.status(200).json({
+                'response': "Success",
+                'userId': user.id,
+                'jwt': jwt,
+                'refresh_token': refreshToken.token
+            })
+            return
         } catch (error) {
             response.status(405).json({'error': error.message})
         }
