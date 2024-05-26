@@ -5,5 +5,7 @@ export default function setTokensInCookies(res: any, jwt: string, refreshToken?:
             httpOnly: true,
             maxAge: Number(process.env.REFRESH_TOKEN_AGE_MS)
         })
+    } else {
+        res.cookie('refresh_token', 'to be deleted', {maxAge: 1})
     }
 }

@@ -16,6 +16,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
             }
         )
         if (authResponse.status != 200) {
+            destroyTokens(res)
             res.status(403).send({"response": "Unauthorized"})
             return
         }
@@ -23,7 +24,8 @@ const requireAuth = async (req: any, res: any, next: any) => {
         res.locals.uId=authResponse.data.uid
         next()
     } catch (error) {
-      res.status(401).json({"response": error.message})
+        destroyTokens(res)
+        res.status(401).json({"response": error.message})
     }
  
  }
