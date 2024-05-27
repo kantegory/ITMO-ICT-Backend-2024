@@ -1,6 +1,11 @@
 default:
 	npm start
 
+.PHONY: docker
+docker:
+	docker build -t store .
+	docker run -d store
+
 .PHONY: init
 init:
 	npm i
