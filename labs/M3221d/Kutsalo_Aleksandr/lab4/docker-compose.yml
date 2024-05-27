@@ -1,3 +1,5 @@
+version: "3"
+
 services:
   auth:
     build:
@@ -11,3 +13,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - '4001:4001'
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
