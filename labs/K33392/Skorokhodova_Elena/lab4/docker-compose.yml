@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - mynetwork
+
+  authorize:
+    build:
+      context: ./authorize
+    volumes:
+      - ./authorize/dist:/app
+    depends_on:
+      - rabbitmq
+    networks:
+      - mynetwork
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    working_dir: /app
+    command: node app.js
+
+  otherfunctions:
+    build:
+      context: ./otherfunctions
+    volumes:
+      - ./otherfunctions/dist:/app
+    depends_on:
+      - rabbitmq
+    networks:
+      - mynetwork
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    working_dir: /app
+    command: node app.js
+
+networks:
+  mynetwork:
+    driver: bridge
