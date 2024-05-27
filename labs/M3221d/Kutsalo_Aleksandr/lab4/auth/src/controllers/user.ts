@@ -6,6 +6,7 @@ import { isCorrectPassword } from "../utility/passwordCheck";
 import makeTokens from "../utility/makeTokens";
 import destroyTokens from "../utility/destroyTokens";
 import verifyRefreshToken from "../utility/verifyRefreshToken";
+import amqplib from 'amqplib'
 
 
 class UserController {
@@ -13,6 +14,26 @@ class UserController {
 
     constructor() {
         this.userService = new UserService()
+        this.listenUserCreation()
+    }
+
+    listenUserCreation = async() => {
+        const connection = await amqplib.connect(process.env.AQMP_NAME)
+        const channel = await connection.createChannel()
+        await channel.assertQueue('users-creation')
+
+        console.log("Listening users creation")
+        await channel.consume('users-creation', (data) => {
+            if (data) {
+                console.log(`New user: ${Buffer.from(data!.content)}`)
+                try {
+                    this.userService.createUser(JSON.parse(data.content.toString()))
+                } catch (e) {
+                    console.error(e)
+                }
+                channel.ack(data!);
+                }
+        })
     }
 
     auth = async (request: any, response: any) => {

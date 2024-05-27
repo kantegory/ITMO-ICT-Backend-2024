@@ -1,8 +1,21 @@
 import axios from "axios";
 import destroyTokens from "../utility/destroyTokens";
 import setTokensInCookies from "../utility/setTokensInCookies";
+import amqplib from 'amqplib'
+
 
 class UserController {
+    private channel
+
+    constructor() {
+        this.makeConnection()
+    }
+
+    makeConnection = async() => {
+        const connection = await amqplib.connect(process.env.AQMP_NAME)
+        this.channel = await connection.createChannel()
+        await this.channel.assertQueue('users-creation')
+    }
 
     get = async (req, res) =>  {
         try {
@@ -17,12 +30,26 @@ class UserController {
 
     create = async (req, res) =>  {
         try {
-            const authResponse = await axios.post(
-                process.env.AUTH_SERVICE_NAME + "/users/create",
-                req.body
+            this.channel.sendToQueue(
+                'users-creation',
+                Buffer.from(
+                    JSON.stringify({
+                        ...(req.body),
+                        date: new Date(),
+                    }),
+                ),
             )
-            setTokensInCookies(res, authResponse.data.jwt, authResponse.data.refreshToken.token)
-            res.status(200).json(authResponse.data)
+            console.log("Sent request to the queue")
+            res.status(200).json({'response': "success"})
+            return
+
+
+            // const authResponse = await axios.post(
+            //     process.env.AUTH_SERVICE_NAME + "/users/create",
+            //     req.body
+            // )
+            // setTokensInCookies(res, authResponse.data.jwt, authResponse.data.refreshToken.token)
+            // res.status(200).json(authResponse.data)
         } catch (error) {
             res.status(400).send({"response": error.message})
         }

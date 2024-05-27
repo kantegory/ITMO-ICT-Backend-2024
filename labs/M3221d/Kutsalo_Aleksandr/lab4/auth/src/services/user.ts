@@ -31,15 +31,20 @@ class UserService {
     
     async createUser(userBody: any): Promise<User> {
         try {
-            const user = await this.userRepository.create(userBody)
-
+            const {name, email, password} = userBody
+            const user = await this.userRepository.create({name: name,
+                email: email,
+                password: password})
+            // console.log(user.toJSON())
             return user.toJSON()
         } catch (error) {
             switch (error.name) {
-                case "SequelizeUniqueConstraintError": 
-                    throw new NotUniqueError("User with this email already exists")
+                case "SequelizeUniqueConstraintError":
+                    console.log("User with this email already exists")
+                    break
                 case "SequelizeValidationError":
-                    throw new ValidationError("User's data was given incorrectly")
+                    console.log("User's data was given incorrectly")
+                    break
             }
         }
     }

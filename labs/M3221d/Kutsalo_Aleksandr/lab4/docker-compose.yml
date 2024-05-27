@@ -23,6 +23,8 @@ services:
 #      - '5672:5672'
     networks:
       - my_network
+    expose:
+      - '5672'
 networks:
   my_network:
     driver: 'bridge'
