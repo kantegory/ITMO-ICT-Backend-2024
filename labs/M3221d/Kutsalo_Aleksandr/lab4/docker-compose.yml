@@ -7,13 +7,20 @@ services:
       dockerfile: Dockerfile
     ports:
       - '4002:4002'
+    networks:
+      - my_network
   store:
     build:
       context: './store'
       dockerfile: Dockerfile
     ports:
       - '4001:4001'
+    networks:
+      - my_network
   rabbitmq:
     image: rabbitmq:3-management
     ports:
       - '5672:5672'
+networks:
+  my_network:
+    driver: 'bridge'

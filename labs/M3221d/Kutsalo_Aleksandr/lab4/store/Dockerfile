@@ -1,9 +1,11 @@
 FROM node:16-alpine
 
-WORKDIR /src/app
+WORKDIR /src/store
 
-COPY . /src/app
+COPY . /src/store
 
 RUN npm i
+
+EXPOSE 4001
 
 CMD npm start

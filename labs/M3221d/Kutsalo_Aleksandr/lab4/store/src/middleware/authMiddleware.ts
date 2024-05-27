@@ -9,7 +9,7 @@ const requireAuth = async (req: any, res: any, next: any) => {
         const refreshToken = req.cookies.refresh_token
 
         const authResponse = await axios.post(
-            "http://localhost:4002/users/auth",
+             process.env.AUTH_SERVICE_NAME +  "/users/auth",
             {
                 "jwt": token,
                 "refresh_token": refreshToken

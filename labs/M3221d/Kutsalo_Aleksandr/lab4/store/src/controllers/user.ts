@@ -7,31 +7,31 @@ class UserController {
     get = async (req, res) =>  {
         try {
             const authResponse = await axios.get(
-                "http://localhost:4002/users/id/" + req.params.id,
+                process.env.AUTH_SERVICE_NAME + "/users/id/" + req.params.id,
             )
             res.status(200).json(authResponse.data)
         } catch (error) {
-            res.status(400).send({"response": error.response.data.error_message})
+            res.status(400).send({"response": error.message})
         }
     }
 
     create = async (req, res) =>  {
         try {
             const authResponse = await axios.post(
-                "http://localhost:4002/users/create",
+                process.env.AUTH_SERVICE_NAME + "/users/create",
                 req.body
             )
             setTokensInCookies(res, authResponse.data.jwt, authResponse.data.refreshToken.token)
             res.status(200).json(authResponse.data)
         } catch (error) {
-            res.status(400).send({"response": error.response.data.error_message})
+            res.status(400).send({"response": error.message})
         }
     }
 
     login = async (req, res) =>  {
         try {
             const authResponse = await axios.post(
-                "http://localhost:4002/users/login",
+                process.env.AUTH_SERVICE_NAME + "/users/login",
                 req.body
             )
             if (authResponse.status != 200) {
@@ -55,7 +55,7 @@ class UserController {
             destroyTokens(res)
             res.status(200).send({"response": "Logged out"})
         } catch (error) {
-            res.status(400).send({"response": error.response.data.error_message})
+            res.status(400).send({"response": error.message})
         }
     }
 }
