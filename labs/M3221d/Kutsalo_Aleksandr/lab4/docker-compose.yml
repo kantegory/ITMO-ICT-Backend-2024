@@ -5,8 +5,8 @@ services:
     build:
       context: './auth'
       dockerfile: Dockerfile
-    ports:
-      - '4002:4002'
+#    ports:
+#      - '4002:4002'
     networks:
       - my_network
   store:
@@ -19,8 +19,10 @@ services:
       - my_network
   rabbitmq:
     image: rabbitmq:3-management
-    ports:
-      - '5672:5672'
+#    ports:
+#      - '5672:5672'
+    networks:
+      - my_network
 networks:
   my_network:
     driver: 'bridge'
