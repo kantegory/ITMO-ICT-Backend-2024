@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  auth:
+    build:
+      context: './auth'
+      dockerfile: Dockerfile
+    ports:
+      - '4002:4002'
+  store:
+    build:
+      context: './store'
+      dockerfile: Dockerfile
+    ports:
+      - '4001:4001'

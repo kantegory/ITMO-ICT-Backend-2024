@@ -7,3 +7,5 @@ build:
 	docker build -t store store/
 	docker build -t auth auth/
 
+compose:
+	docker-compose up
