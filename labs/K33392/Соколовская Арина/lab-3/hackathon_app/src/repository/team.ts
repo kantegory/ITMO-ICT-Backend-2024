@@ -27,7 +27,16 @@ export class TeamRepository {
 
     async patch(id: number, team: Team): Promise<Team | null> {
         let db_team = await this.repository.findByPk(id);
-        db_team = team;
+        if (!db_team) {
+            return null;
+        }
+
+        for (const key of Object.keys(team) as (keyof Team)[]) {
+            if (team[key] !== undefined) {
+                (db_team[key] as any) = team[key];
+            }
+        }
+
         await db_team.save();
         return db_team;
     }

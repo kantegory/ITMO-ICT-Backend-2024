@@ -18,7 +18,8 @@ exports.get_user = async (req: Request, res: Response) => {
 };
 
 exports.patch_user = async (req: Request, res: Response) => {
-    const user = req.body as User;
+    let user = req.body as User;
+    user.id = Number(req.params.id);
     const updated_user = await userService.patch(user);
     if (updated_user === null) {
         res

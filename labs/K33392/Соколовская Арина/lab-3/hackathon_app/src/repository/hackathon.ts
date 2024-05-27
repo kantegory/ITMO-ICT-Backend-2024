@@ -39,9 +39,17 @@ export class HackathonRepository {
 
     async patch(id: number, hackathon: Hackathon): Promise<Hackathon | null> {
         let db_hackathon = await this.repository.findByPk(id);
-        db_hackathon = hackathon;
-        await db_hackathon.save();
+        if (!db_hackathon) {
+            return null;
+        }
         
+        for (const key of Object.keys(hackathon) as (keyof Hackathon)[]) {
+            if (hackathon[key] !== undefined) {
+                (db_hackathon[key] as any) = hackathon[key];
+            }
+        }
+
+        await db_hackathon.save();
         return db_hackathon;
     }
 

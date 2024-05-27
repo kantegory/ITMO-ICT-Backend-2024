@@ -21,14 +21,23 @@ export class UserRepository {
         return user;
     } 
 
-    async patch(id: number, user: User): Promise<User>{
+    async patch(id: number, user: User): Promise<User | null>{
         let db_user = await this.repository.findByPk(id);
-        db_user = user;
+        if (!db_user) {
+            return null;
+        }
+
+        for (const key of Object.keys(user) as (keyof User)[]) {
+            if (user[key] !== undefined) {
+                (db_user[key] as any) = user[key];
+            }
+        }
+
         await db_user.save();
         return db_user;
     }
 
-    async create(user: User): Promise<User>{
+    async create(user: User): Promise<User | null>{
         const new_user = await this.repository.create({name: user.name, surname: user.surname, email: user.email, password: user.password, about: user.about});
         return new_user;
     }

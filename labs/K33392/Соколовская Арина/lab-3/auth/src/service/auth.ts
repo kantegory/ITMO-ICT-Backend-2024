@@ -8,7 +8,7 @@ export class AuthService {
         this.userRepository = new UserRepository();
     }
 
-    async post_user(user: User): Promise<User> {
+    async post_user(user: User): Promise<User | null> {
         if (!user.role_name) {
             user.role_name = 'user';
         }
