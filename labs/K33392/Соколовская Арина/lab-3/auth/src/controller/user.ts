@@ -36,7 +36,7 @@ exports.get_user_role_by_token = async (req: Request, res: Response) => {
         const parsed = jwt.verify(token, process.env.secret_key as string);
         console.log(parsed);
         const user_role = (parsed as User).role_name;
-        res.send(JSON.stringify(user_role));
+        res.send(user_role);
     } catch (e) {
         if (e instanceof Error) {
             res.status(400).send(e.message)

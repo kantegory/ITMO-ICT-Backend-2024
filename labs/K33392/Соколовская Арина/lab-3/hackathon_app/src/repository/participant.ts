@@ -13,8 +13,11 @@ export class ParticipantRepository {
         return participants;
     }
 
-    async post(participant: Participant): Promise<Participant | null> {
-        const new_participant = await this.repository.create({user_id: participant.user_id, team_id: participant.team_id});
+async post(user_id: number, team_id: number): Promise<Participant | null> {
+        console.log("in rep")
+        console.log(user_id + " " + team_id)
+        const new_participant = await this.repository.create({user_id: user_id, team_id: team_id});
+        console.log("out rep")
 
         return new_participant;
     }
@@ -23,7 +26,6 @@ export class ParticipantRepository {
         const participant = await this.repository.findOne({
             where: {
                 user_id: user_id,
-                task_id: hackathon_id,
             }
         })
         return participant;

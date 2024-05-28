@@ -51,14 +51,13 @@ export class HackathonService {
 
         const new_team = await this.teamRepository.post(team);
         if (new_team){
-            const participant = {user_id: new_team.leader_id, team_id: new_team.id};
-            await this.participantRepository.post(participant as Participant);
+            await this.participantRepository.post(new_team.leader_id, new_team.id);
         }
         return new_team;
     }
 
-    async patch(hackathon: Hackathon): Promise<Hackathon | null> {
-        const new_hackathon = await this.hackathonRepository.patch(hackathon.id, hackathon);
+    async patch(id: number, hackathon: Hackathon): Promise<Hackathon | null> {
+        const new_hackathon = await this.hackathonRepository.patch(id, hackathon);
         return new_hackathon;
     }
 }

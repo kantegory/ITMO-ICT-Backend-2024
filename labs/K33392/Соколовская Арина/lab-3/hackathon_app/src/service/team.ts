@@ -11,13 +11,13 @@ export class TeamService {
         this.participantRepository = new ParticipantRepository();
     }
 
-    async patch(team: Team): Promise<Team | null> {
-        const updated_team = await this.teamRepository.patch(team.id, team);
+    async patch(id: number, team: Team): Promise<Team | null> {
+        const updated_team = await this.teamRepository.patch(id, team);
         return updated_team;
     }
 
-    async postParticipant(participant: Participant): Promise<Participant | null> {
-        const new_participant = await this.participantRepository.post(participant);
+    async postParticipant(user_id: number, team_id: number): Promise<Participant | null> {
+        const new_participant = await this.participantRepository.post(user_id, team_id);
         return new_participant;
     }
 }

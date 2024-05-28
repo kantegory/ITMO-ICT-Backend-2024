@@ -45,7 +45,6 @@ exports.post_hackathon_team = async (req: Request, res: Response) => {
 exports.get_hackathon_task = async (req: Request, res: Response) => {
     try {
         const allowed = ['admin', 'curator', 'jury'];
-        let user_role = "";
 
         if (!req.headers.authorization) {
             return res.status(403).json({message: "Unauthorized"});
@@ -55,14 +54,30 @@ exports.get_hackathon_task = async (req: Request, res: Response) => {
             return res.status(403).json({message: "Unauthorized"});
         }
 
-        axios.post(`http://localhost:8000/auth/token/${token}`).then((resp) => {
-            user_role = resp.data;
+        let user_role = "";
+        await axios({
+            method: 'get',
+            url: 'http://localhost:8000/auth/users/role',
+            headers: {}, 
+            data: {
+              token: token,
+            }
+          }).then((res) => {
+            user_role = res.data;
         });
+
         if (!allowed.includes(user_role)) {
             const hackathon_id = Number(req.params.id);
             let user_id = 0;
-            axios.post(`http://localhost:8000/auth/token/${token}/id`).then((resp) => {
-                user_id = resp.data;
+            await axios({
+                method: 'get',
+                url: 'http://localhost:8000/auth/users/get_id',
+                headers: {}, 
+                data: {
+                  token: token,
+                }
+              }).then((res) => {
+                user_id = res.data;
             });
 
             const team = await teamRepository.findByLead(hackathon_id, user_id);
@@ -82,8 +97,8 @@ exports.get_hackathon_task = async (req: Request, res: Response) => {
 
 exports.patch_hackathon_task = async (req: Request, res: Response) => {
     try {
-        const task = await hackathonService.patch(req.body as Hackathon)
-        if (task != null) res.send(JSON.stringify(task));
+        let task = await hackathonService.patch(Number(req.params.id), req.body as Hackathon);
+        if (task != null) res.send(task);
     } catch (e) {
         if (e instanceof Error) {
             res.send({ error: e.message });
@@ -101,12 +116,23 @@ exports.post_hackathon_solution = async (req: Request, res: Response) => {
             return res.status(403).json({message: "Unauthorized"});
         }
         const hackathon_id = Number(req.params.id);
+
+        console.log(hackathon_id);
         
         let user_id = 0;
-        axios.post(`http://localhost:8000/auth/token/${token}/id`).then((resp) => {
-            user_id = resp.data;
+        await axios({
+            method: 'get',
+            url: 'http://localhost:8000/auth/users/get_id',
+            headers: {}, 
+            data: {
+              token: token,
+            }
+          }).then((res) => {
+            user_id = res.data;
         });
 
+        console.log(user_id);
+        console.log("end");
         const team = await teamRepository.findByLead(hackathon_id, user_id);
         if (!team) {
             return res.status(403).json({message: "Access Denied"});

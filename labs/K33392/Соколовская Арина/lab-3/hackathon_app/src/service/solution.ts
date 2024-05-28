@@ -13,8 +13,8 @@ export class SolutionService {
         return solution;
     }
 
-    async patch(solution: Solution): Promise<Solution | null> {
-        const new_solution = await this.solutionRepository.patch(solution.id, solution);
+    async patch(id: number, solution: Solution): Promise<Solution | null> {
+        const new_solution = await this.solutionRepository.patch(id, solution);
         return new_solution;
     }
 

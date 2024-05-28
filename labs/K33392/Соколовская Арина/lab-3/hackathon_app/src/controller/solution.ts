@@ -23,14 +23,30 @@ exports.get_solution = async (req: Request, res: Response) => {
             return res.status(403).json({message: "Unauthorized"});
         }
 
-        axios.post(`http://localhost:8000/auth/token/${token}`).then((resp) => {
-            user_role = resp.data;
+        await axios({
+            method: 'get',
+            url: 'http://localhost:8000/auth/users/role',
+            headers: {}, 
+            data: {
+              token: token,
+            }
+          }).then((res) => {
+            user_role = res.data;
         });
+
         if (!allowed.includes(user_role)) {
             let user_id = 0;
-            axios.post(`http://localhost:8000/auth/token/${token}/id`).then((resp) => {
-                user_id = resp.data;
+            await axios({
+                method: 'get',
+                url: 'http://localhost:8000/auth/users/get_id',
+                headers: {}, 
+                data: {
+                  token: token,
+                }
+              }).then((res) => {
+                user_id = res.data;
             });
+
             const solution_id = Number(req.params.id);
             const solution = await solutionRepository.findById(solution_id);
             if (!solution) {
@@ -63,8 +79,15 @@ exports.patch_solution = async (req: Request, res: Response) => {
         }
         
         let user_id = 0;
-        axios.post(`http://localhost:8000/auth/token/${token}/id`).then((resp) => {
-            user_id = resp.data;
+        await axios({
+            method: 'get',
+            url: 'http://localhost:8000/auth/users/get_id',
+            headers: {}, 
+            data: {
+                token: token,
+            }
+            }).then((res) => {
+            user_id = res.data;
         });
         const solution_id = Number(req.params.id);
         const db_solution = await solutionRepository.findById(solution_id);
@@ -77,7 +100,7 @@ exports.patch_solution = async (req: Request, res: Response) => {
             return res.status(403).json({message: "Access Denied"});
         }
 
-        const solution = await solutionService.patch(req.body as Solution)
+        const solution = await solutionService.patch(Number(req.params.id), req.body as Solution)
         if (solution != null) res.send(JSON.stringify(solution));
     } catch (e) {
         if (e instanceof Error) {

@@ -1,8 +1,8 @@
-import { Request, Response } from "express"
+import { Request, Response, response } from "express"
 import axios from "axios"
 
 module.exports = function(roles: string[]) {
-    return function(req: Request, res: Response, next: any) {
+    return async function(req: Request, res: Response, next: any) {
         try {
             if (!req.headers.authorization) {
                 return res.status(403).json({message: "Unauthorized"});
@@ -13,9 +13,18 @@ module.exports = function(roles: string[]) {
             }
 
             let user_role = "";
-            axios.post(`http://localhost:8000/auth/token/${token}`).then((resp) => {
-                user_role = resp.data;
+            await axios({
+                method: 'get',
+                url: 'http://localhost:8000/auth/users/role',
+                headers: {}, 
+                data: {
+                  token: token,
+                }
+              }).then((res) => {
+                user_role = res.data;
             });
+
+            console.log(user_role);
             if (!roles.includes(user_role)){
                 return res.status(403).json({message: "Access Denied"});
             }
