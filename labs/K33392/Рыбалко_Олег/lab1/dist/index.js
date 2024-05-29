@@ -12,7 +12,7 @@ app.use(authMiddlware);
 app.use('/products', productsRouter);
 app.use('/sales', salesRouter);
 app.use('/customers', customersRouter);
-app.listen(process.env.PORT, () => {
+app.listen(+process.env.PORT, () => {
     sequelize; // to not delete after compilation
     console.log(`Listening on port ${process.env.PORT}`);
 });
