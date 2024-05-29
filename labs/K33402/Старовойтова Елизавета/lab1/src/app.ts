@@ -2,7 +2,7 @@ import User from "./models/user";
 import 'reflect-metadata';
 
 
-require('dotenv').config(); // must be at the top
+require('dotenv').config();
 
 import express, {Application} from 'express';
 import initSequelize from './providers/sequelize';
@@ -33,6 +33,7 @@ require('dotenv').config();
 for (let router of routers) {
     app.use(router.prefix, router.router)
 }
+// Обработка в случае исключений
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (err instanceof ValidationError) {
         ApiResponse.errors(res, err.errors)
