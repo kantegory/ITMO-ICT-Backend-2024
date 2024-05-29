@@ -1,0 +1,18 @@
+version: "3.9"
+name: backend
+
+services:
+  auth:
+    build:
+      context: ./lab1
+
+  backend:
+    build:
+      context: ./lab3
+
+  gateway:
+    image: caddy
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
