@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node dist/index.js"
+    "start": "tsc && node dist/index.js",
+    "serve": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
