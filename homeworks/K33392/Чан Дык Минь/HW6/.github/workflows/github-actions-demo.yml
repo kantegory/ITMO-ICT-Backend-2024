@@ -1,0 +1,34 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - dev-minh
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.VPS_SCRKEY }}
+
+    - name: Deploy to server
+      env:
+        VPS_HOSTNAME: ${{ secrets.VPS_HOSTNAME }}
+        VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+        GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+        GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ env.VPS_USERNAME }}@${{ env.VPS_HOSTNAME }} "
+        mkdir -p /home/${{ env.VPS_USERNAME }}/deployed_project &&
+        cd /home/ubuntu/project/lab3_be &&
+        git remote set-url origin https://${{ env.GIT_USERNAME }}:${{ env.GIT_PASSWORD }}@github.com/${{ env.GIT_USERNAME }}/lab3_be.git &&
+        git pull origin main &&
+        sudo docker-compose up --build -d &&
+        echo 'Deployment completed!'"
