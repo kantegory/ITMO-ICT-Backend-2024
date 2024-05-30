@@ -7,14 +7,8 @@ const express_1 = __importDefault(require("express"));
 const userController_1 = require("../../controllers/users/userController");
 const router = express_1.default.Router();
 const userController = new userController_1.UserController();
-router.post("/register", (req, res) => {
-    userController.register(req, res);
-});
-router.post("/login", (req, res) => {
-    userController.login(req, res);
-});
-router.get("/:id", (req, res) => {
-    userController.getUserWithOrders(req, res);
-});
+router.post("/register", userController.register);
+router.post("/login", userController.login);
+router.get("/:id", userController.getUserWithOrders);
 router.post("/verify", userController.verify);
 exports.default = router;
