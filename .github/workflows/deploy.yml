@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main  # укажем нужную ветку
+      - '*' # укажем нужную ветку
 
 jobs:
   deploy:
