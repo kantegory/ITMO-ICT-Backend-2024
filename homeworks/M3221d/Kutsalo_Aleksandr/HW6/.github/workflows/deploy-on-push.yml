@@ -10,10 +10,32 @@ jobs:
     runs-on: [self-hosted, macos-latest, ubuntu-latest]
 
     steps:
+      - uses: actions/setup-node@v1
+        with:
+            node-version: 20.x
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: SSH configs
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.VPS_SCRKEY }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+
+      - name: Server deployment
+        env:
+          VPS_ADDR: ${{ secrets.VPS_ADDR }}
+          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+          ROOT_PWD: ${{ secrets.ROOT_PWD }}
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+          REPO: ${{ secrets.REPO }}
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ env.VPS_USERNAME }}@${{ env.VPS_HOSTNAME }} "
+          su root -p ${{ env.ROOT_PWD }}
+          mkdir /project &&
+          cd /project &&
+          git remote set-url origin https://${{ env.GIT_USERNAME }}:${{ env.GIT_PASSWORD }}@github.com/${{ env.GIT_USERNAME }}/${{ env.REPO }}.git &&
+          git pull origin main &&
+          docker compose up -d --build
