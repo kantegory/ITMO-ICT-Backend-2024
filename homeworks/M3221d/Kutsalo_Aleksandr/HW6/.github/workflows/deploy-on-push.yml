@@ -1,0 +1,19 @@
+name: deploy-on-push
+
+on:
+  push:
+    branches:
+      - lab4
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH configs
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.VPS_SCRKEY }}
