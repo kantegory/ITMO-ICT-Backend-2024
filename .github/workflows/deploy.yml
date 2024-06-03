@@ -25,7 +25,7 @@ jobs:
           chmod 600 "$HOME/.ssh/key"
       - name: Sync
         run: |
-          rsync -e "ssh -p 23348 -i $HOME/.ssh/key -o StrictHostKeyChecking=no" -avz --exclude '.git' --chown=github:www-data --chmod=Dg=rwx,Fg=rwx --archive --compress --delete . $CLOUD_UNAME@$CLOUD_HOST:/home/$CLOUD_UNAME/deploy
+          rsync -e "ssh -p 23348 -i $HOME/.ssh/key -o StrictHostKeyChecking=no" -avz --exclude '.git' --chown=github:www-data --chmod=Dg=rwx,Fg=rwx --archive --compress --delete . ${{ secrets.CLOUD_UNAME }}@${{ secrets.CLOUD_HOST }}:/home/alexey/deploy
       - name: Build
         run: |
-          ssh -p 23348 -i $HOME/.ssh/key $CLOUD_UNAME@$CLOUD_HOST 'cd /home/alexey/labs/K33392/Korotin_Alexey/lab2 && docker compose up -d --build'
+          ssh -p 23348 -i $HOME/.ssh/key ${{ secrets.CLOUD_UNAME }}@${{ secrets.CLOUD_HOST }} 'cd /home/alexey/labs/K33392/Korotin_Alexey/lab2 && docker compose up -d --build'
