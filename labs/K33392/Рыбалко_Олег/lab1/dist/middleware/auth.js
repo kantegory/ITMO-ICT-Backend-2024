@@ -1,3 +1,4 @@
+import process from 'process';
 export const authMiddlware = async (req, res, next) => {
     try {
         if (req.path === '/users/auth' ||
@@ -6,12 +7,12 @@ export const authMiddlware = async (req, res, next) => {
             return;
         }
         if (!req.headers.authorization)
-            return res.status(401);
+            return res.sendStatus(401);
         const token = req.headers.authorization.split(' ')[1];
         if (!token)
-            return res.status(403).json({ message: 'Unauthorized' });
-        console.log(`${req.protocol}://${req.hostname}/users/verify`);
-        const resp = await fetch(`${req.protocol}://${req.hostname}/users/verify`, {
+            return res.sendStatus(403);
+        console.log(`${process.env.AUTH_URL}/users/verify`);
+        const resp = await fetch(`${process.env.AUTH_URL}/users/verify`, {
             method: 'POST',
             body: JSON.stringify({ token: token }),
             headers: { 'Content-Type': 'application/json' },

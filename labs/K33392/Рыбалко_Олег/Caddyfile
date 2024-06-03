@@ -4,6 +4,6 @@
 }
 
 localhost:80 {
-	reverse_proxy /users/* auth:9091
+	reverse_proxy /users/* http://auth:9091
 	reverse_proxy http://backend:9090
 }
