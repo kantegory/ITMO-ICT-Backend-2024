@@ -1,6 +1,14 @@
 version: "3"
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    #    ports:
+    #      - '5672:5672'
+    networks:
+      - my_network
+    expose:
+      - '5672'
   auth:
     build:
       context: './auth'
@@ -9,6 +17,9 @@ services:
 #      - '4002:4002'
     networks:
       - my_network
+    depends_on:
+      - rabbitmq
+    restart: always
   store:
     build:
       context: './store'
@@ -17,14 +28,9 @@ services:
       - '4001:4001'
     networks:
       - my_network
-  rabbitmq:
-    image: rabbitmq:3-management
-#    ports:
-#      - '5672:5672'
-    networks:
-      - my_network
-    expose:
-      - '5672'
+    depends_on:
+      - rabbitmq
+      - auth
+    restart: always
 networks:
   my_network:
-    driver: 'bridge'
