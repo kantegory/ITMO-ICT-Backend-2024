@@ -13,14 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Save a key
-      run: |
-        echo ${{ secrets.PRIVATE_KEY }} > $HOME/id_ed25519
-        chmod 600 $HOME/id_ed25519
-
     - name: Update code
-      run: ssh -i $HOME/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.SSH_HOST }} "cd /root/ITMO-ICT-Backend-2024 && git checkout lr4 && git pull"
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        script: cd /root/ITMO-ICT-Backend-2024 && git checkout lr4 && git pull
     
