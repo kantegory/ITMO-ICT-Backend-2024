@@ -7,6 +7,7 @@ services:
       context: ./lab1
     environment:
       - "AUTH_URL=http://auth:9091"
+      - "PORT=9090"
     ports:
       - "9090:9090"
     depends_on:
@@ -16,6 +17,8 @@ services:
   auth:
     build:
       context: ./lab3
+    environment:
+      - "PORT=9090"
     
   logs:
     build:

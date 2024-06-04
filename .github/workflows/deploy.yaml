@@ -19,5 +19,5 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        script: cd /root/ITMO-ICT-Backend-2024 && git checkout lr4 && git pull
+        script: cd /root/ITMO-ICT-Backend-2024 && git checkout lr4 && git pull && docker-compose up --build -d
     
