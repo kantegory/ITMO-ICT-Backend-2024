@@ -34,7 +34,8 @@ amqp.connect(
 
       channel.consume(
         queue,
-        function (msg: Message) {
+        function (msg: Message | null) {
+          if (!msg) return
           const log = JSON.parse(msg.content.toString()) as Log
           console.log(`Received: ${msg.content.toString()}`)
           db.run(
