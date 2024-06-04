@@ -11,10 +11,19 @@ services:
       - "9090:9090"
     depends_on:
       - auth
+      - rabbitmq
 
   auth:
     build:
       context: ./lab3
+    
+  logs:
+    build:
+      context: ./lab4
+    depends_on:
+      rabbitmq:
+        condition:
+          service_healthy
 
   gateway:
     image: caddy
@@ -28,4 +37,9 @@ services:
 
   rabbitmq:
     image: "rabbitmq:3"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
