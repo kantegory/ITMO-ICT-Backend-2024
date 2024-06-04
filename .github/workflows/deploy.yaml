@@ -18,7 +18,7 @@ jobs:
 
     - name: Save a key
       run: |
-        echo "${{ secrets.PRIVATE_KEY }}" > "$HOME/id_ed25519"
+        echo ${{ secrets.PRIVATE_KEY }} > $HOME/id_ed25519
         chmod 600 $HOME/id_ed25519
 
     - name: Update code
