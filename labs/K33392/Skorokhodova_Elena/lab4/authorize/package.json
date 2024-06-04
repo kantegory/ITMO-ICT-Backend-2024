@@ -1,12 +1,13 @@
 {
   "name": "express_app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Authorization service",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/app.js"
+    "build": "npx tsc",
+    "start": "tsc && node dist/index.js",
+    "dev": "npx tsc & node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",

@@ -11,8 +11,9 @@ services:
   authorize:
     build:
       context: ./authorize
+      dockerfile: Dockerfile
     volumes:
-      - ./authorize/dist:/app
+      - ./authorize/db.sqlite:/app/db.sqlite
     depends_on:
       - rabbitmq
     networks:
@@ -20,13 +21,15 @@ services:
     environment:
       - RABBITMQ_HOST=rabbitmq
     working_dir: /app
-    command: node app.js
+    ports:
+      - "8001:8001"
 
   otherfunctions:
     build:
       context: ./otherfunctions
+      dockerfile: Dockerfile
     volumes:
-      - ./otherfunctions/dist:/app
+      - ./otherfunctions/db.sqlite:/app/db.sqlite
     depends_on:
       - rabbitmq
     networks:
@@ -34,7 +37,20 @@ services:
     environment:
       - RABBITMQ_HOST=rabbitmq
     working_dir: /app
-    command: node app.js
+    ports:
+      - "8000:8000"
+
+  gateway:
+    build:
+      context: ./deployment/gateway/src
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - authorize
+      - otherfunctions
+    networks:
+      - mynetwork
 
 networks:
   mynetwork:
