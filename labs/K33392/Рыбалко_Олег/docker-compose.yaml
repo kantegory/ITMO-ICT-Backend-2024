@@ -26,3 +26,6 @@ services:
       - auth
       - backend
 
+  rabbitmq:
+    image: "rabbitmq:3"
+

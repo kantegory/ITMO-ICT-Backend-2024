@@ -231,6 +231,8 @@
   },
   "devDependencies": {},
   "scripts": {
+    "build": "tsc",
+    "serve": "node dist/server.js",
     "start": "tsc && node dist/server.js"
   },
   "author": "",
