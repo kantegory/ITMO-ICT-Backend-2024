@@ -36,21 +36,10 @@ services:
       - mynetwork
     environment:
       - RABBITMQ_HOST=rabbitmq
+      - AUTH_SERVICE=http://authorize:8001
     working_dir: /app
     ports:
       - "8000:8000"
-
-  gateway:
-    build:
-      context: ./deployment/gateway/src
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - authorize
-      - otherfunctions
-    networks:
-      - mynetwork
 
 networks:
   mynetwork:
