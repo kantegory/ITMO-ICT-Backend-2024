@@ -1,0 +1,40 @@
+{
+	"include": ["./"],
+	"exclude": ["node_modules", "lib"],
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"outDir": "./dist",
+		"baseUrl": "./",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"useDefineForClassFields": true,
+		"skipLibCheck": true,
+		"experimentalDecorators": true,
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+
+		/* Strict Checks */
+		"strict": true,
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+
+		/* Linter Checks */
+		"noPropertyAccessFromIndexSignature": false,
+		"noUncheckedIndexedAccess": true,
+
+		"noImplicitReturns": true,
+		// "noUnusedLocals": true,
+		// "noUnusedParameters": true,
+		// "noFallthroughCasesInSwitch": true - used in eslint
+
+		/* Advanced */
+		"allowUnreachableCode": false
+	}
+}
