@@ -1,4 +1,8 @@
 import { Sequelize } from 'sequelize-typescript';
+// import { Customer } from '../models/Customer.js'
+// import { Sale } from '../models/Sale.js'
+// import { Product } from '../models/Product.js'
+// import { User } from '../models/User.js'
 import { Dog } from '../models/dogs/Dog.js';
 const sequelize = new Sequelize({
     database: 'some_db',
