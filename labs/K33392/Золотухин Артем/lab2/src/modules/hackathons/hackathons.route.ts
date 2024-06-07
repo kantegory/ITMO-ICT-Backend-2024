@@ -15,6 +15,7 @@ import {
 const hackathonRoutes = async (server: FastifyInstance) => {
   server.post<{ Body: CreateHackathonInput }>('/', {
     schema: {
+      tags: ['hackathons'],
       body: $ref('createHackathonSchema'),
       response: { 201: $ref('hackathonResponseSchema') },
     },
@@ -22,15 +23,22 @@ const hackathonRoutes = async (server: FastifyInstance) => {
   })
 
   server.get('/', {
+    schema: {
+      tags: ['hackathons'],
+    },
     handler: getAllHackathonsHandler,
   })
 
   server.get('/:id', {
+    schema: {
+      tags: ['hackathons'],
+    },
     handler: getHackathonHandler,
   })
 
   server.put<{ Params: { id: number }; Body: UpdateHackathonInput }>('/:id', {
     schema: {
+      tags: ['hackathons'],
       body: $ref('updateHackathonSchema'),
       response: { 200: $ref('hackathonResponseSchema') },
     },
@@ -38,6 +46,9 @@ const hackathonRoutes = async (server: FastifyInstance) => {
   })
 
   server.delete('/:id', {
+    schema: {
+      tags: ['hackathons'],
+    },
     handler: deleteHackathonHandler,
   })
 }

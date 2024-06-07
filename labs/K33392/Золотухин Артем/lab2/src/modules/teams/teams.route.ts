@@ -12,6 +12,7 @@ import { $ref, CreateTeamInput, UpdateTeamInput } from './teams.schema'
 const teamRoutes = async (server: FastifyInstance) => {
   server.post<{ Body: CreateTeamInput }>('/', {
     schema: {
+      tags: ['teams'],
       body: $ref('createTeamSchema'),
       response: { 201: $ref('teamResponseSchema') },
     },
@@ -19,15 +20,22 @@ const teamRoutes = async (server: FastifyInstance) => {
   })
 
   server.get('/', {
+    schema: {
+      tags: ['teams'],
+    },
     handler: getAllTeamsHandler,
   })
 
   server.get<{ Params: { id: number } }>('/:id', {
+    schema: {
+      tags: ['teams'],
+    },
     handler: getTeamHandler,
   })
 
   server.put<{ Params: { id: number }; Body: UpdateTeamInput }>('/:id', {
     schema: {
+      tags: ['teams'],
       body: $ref('updateTeamSchema'),
       response: { 200: $ref('teamResponseSchema') },
     },
@@ -35,6 +43,9 @@ const teamRoutes = async (server: FastifyInstance) => {
   })
 
   server.delete<{ Params: { id: number } }>('/:id', {
+    schema: {
+      tags: ['teams'],
+    },
     handler: deleteTeamHandler,
   })
 }

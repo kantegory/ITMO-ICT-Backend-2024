@@ -11,6 +11,7 @@ const userRoutes = async (server: FastifyInstance) => {
     '/',
     {
       schema: {
+        tags: ['users'],
         body: $ref('createUserSchema'),
         response: {
           201: $ref('createUserResponseSchema'),
@@ -24,6 +25,7 @@ const userRoutes = async (server: FastifyInstance) => {
     '/login',
     {
       schema: {
+        tags: ['users'],
         body: $ref('loginSchema'),
         response: { 200: $ref('loginResponseSchema') },
       },
@@ -31,7 +33,16 @@ const userRoutes = async (server: FastifyInstance) => {
     loginHandler
   )
 
-  server.get('/', { preHandler: [server.authenticate] }, getUsersHandler)
+  server.get(
+    '/',
+    {
+      preHandler: [server.authenticate],
+      schema: {
+        tags: ['users'],
+      },
+    },
+    getUsersHandler
+  )
 }
 
 export default userRoutes

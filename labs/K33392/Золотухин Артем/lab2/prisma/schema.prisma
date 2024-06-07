@@ -23,6 +23,7 @@ model User {
   Scores       Score[]
 }
 
+
 model Team {
   id           Int          @id @default(autoincrement())
   name         String

@@ -1,10 +1,10 @@
 import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import fjwt from '@fastify/jwt'
 import swagger from '@fastify/swagger'
+import fastifySwaggerUI from '@fastify/swagger-ui'
 import userRoutes from './modules/user/user.route'
 import { userSchemas } from './modules/user/user.schema'
 import { version } from '../package.json'
-import fastifySwaggerUI from '@fastify/swagger-ui'
 import {
   jsonSchemaTransform,
   serializerCompiler,
@@ -56,14 +56,6 @@ app.decorate(
   }
 )
 
-// app.addHook('onRequest', async (request, reply) => {
-//   try {
-//     await request.jwtVerify()
-//   } catch (err) {
-//     reply.send(err)
-//   }
-// })
-
 app.get('/healthcheck', async () => {
   return {
     status: 'OK',
@@ -92,12 +84,29 @@ async function main() {
         description: '',
         version: version,
       },
-      servers: [],
+      tags: [
+        { name: 'users', description: 'User related end-points' },
+        { name: 'hackathons', description: 'Hackathon related end-points' },
+        { name: 'projects', description: 'Project related end-points' },
+        { name: 'teams', description: 'Team related end-points' },
+        { name: 'scores', description: 'Score related end-points' },
+        { name: 'comments', description: 'Comment related end-points' },
+      ],
     },
   })
 
   app.register(fastifySwaggerUI, {
     routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'none',
+      deepLinking: false,
+    },
+    staticCSP: true,
+    transformStaticCSP: (header) => header,
+    transformSpecification: (swaggerObject, request, reply) => {
+      return swaggerObject
+    },
+    transformSpecificationClone: true,
   })
 
   app.register(userRoutes, { prefix: 'api/users' })

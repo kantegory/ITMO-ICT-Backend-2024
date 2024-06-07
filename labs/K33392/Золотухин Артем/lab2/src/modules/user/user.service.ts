@@ -1,14 +1,15 @@
-import { hashPassword } from '../../utils/hash'
+import bcrypt from 'bcrypt'
 import prisma from '../../utils/prisma'
 import { CreateUserInput } from './user.schema'
 
 const createUser = async (input: CreateUserInput) => {
   const { password, ...rest } = input
 
-  const { hash, salt } = await hashPassword(password)
+  const salt = await bcrypt.genSalt(10)
+  const hash = await bcrypt.hash(password, salt)
 
   const user = await prisma.user.create({
-    data: { ...rest, salt, password: hash },
+    data: { ...rest, password: hash },
   })
 
   return user

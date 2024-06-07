@@ -10,6 +10,7 @@ import { $ref, CreateCommentInput, UpdateCommentInput } from './comments.schema'
 const commentRoutes = async (server: FastifyInstance) => {
   server.post<{ Body: CreateCommentInput }>('/', {
     schema: {
+      tags: ['comments'],
       body: $ref('createCommentSchema'),
       response: { 201: $ref('commentResponseSchema') },
     },
@@ -17,11 +18,15 @@ const commentRoutes = async (server: FastifyInstance) => {
   })
 
   server.get<{ Params: { projectId: number } }>('/:projectId', {
+    schema: {
+      tags: ['comments'],
+    },
     handler: getCommentsByProjectIdHandler,
   })
 
   server.put<{ Params: { id: number }; Body: UpdateCommentInput }>('/:id', {
     schema: {
+      tags: ['comments'],
       body: $ref('updateCommentSchema'),
       response: { 200: $ref('commentResponseSchema') },
     },
@@ -29,6 +34,9 @@ const commentRoutes = async (server: FastifyInstance) => {
   })
 
   server.delete<{ Params: { id: number } }>('/:id', {
+    schema: {
+      tags: ['comments'],
+    },
     handler: deleteCommentHandler,
   })
 }
