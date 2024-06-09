@@ -6,7 +6,7 @@ services:
     build:
       context: ./lab1
     environment:
-      - "AUTH_URL=http://auth:9091"
+      - "AUTH_URL=http://auth:9090"
       - "PORT=9090"
     ports:
       - "9090:9090"

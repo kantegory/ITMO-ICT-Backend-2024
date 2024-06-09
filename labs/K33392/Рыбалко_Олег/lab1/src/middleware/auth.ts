@@ -20,6 +20,7 @@ export const authMiddlware = async (req: Request, res: Response, next: any) => {
       headers: { 'Content-Type': 'application/json' },
     })
     if (!resp.ok) return res.sendStatus(401)
+    req['user'] = await resp.json()
     next()
   } catch (e) {
     console.log(e)
