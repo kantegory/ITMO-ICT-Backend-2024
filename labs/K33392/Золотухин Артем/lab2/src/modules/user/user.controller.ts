@@ -3,6 +3,7 @@ import createUser, { findUserByEmail, findUsers } from './user.service'
 import { CreateUserInput, LoginRequest } from './user.schema'
 import bcrypt from 'bcrypt'
 import { app } from '../../app'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 export const registerUserHandler = async (
   request: FastifyRequest<{
@@ -16,11 +17,14 @@ export const registerUserHandler = async (
     const user = await createUser(body)
     return reply.code(201).send(user)
   } catch (e) {
-    console.log(e)
+    if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002') {
+      return reply
+        .code(409)
+        .send({ message: 'User with that email already exists' })
+    }
     return reply.code(500).send(e)
   }
 }
-
 export const loginHandler = async (
   request: FastifyRequest<{
     Body: LoginRequest

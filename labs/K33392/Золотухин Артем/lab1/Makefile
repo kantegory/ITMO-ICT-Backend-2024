@@ -4,7 +4,7 @@ install:
 	npm install
 
 build:
-	npm run swc ./src --strip-leading-paths --config-file ./.swcrc -d dist
+	npm run swc -- ./src --strip-leading-paths --config-file ./.swcrc -d dist
 
 lint:
 	npm run eslint -- --ext .ts,tsx --max-warnings=0 ./src
@@ -12,4 +12,4 @@ lint:
 dev:
 	npm run dev
 
-.DEFAULT_GOAL := run
+.DEFAULT_GOAL := dev
