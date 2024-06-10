@@ -1,0 +1,53 @@
+name: Push Deploy
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js and npm
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies, build project, patch version, and publish to npm (pub-shared-core)
+        working-directory: ./labs/K33392/Тишалович Леонид/lab4/shared/database
+        run: |
+          npm i
+          npm run build
+          npm version patch
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Install dependencies, build project, patch version, and publish to npm (pub-shared-database)
+        working-directory: ./labs/K33392/Тишалович Леонид/lab4/shared/database
+        run: |
+          npm install
+          npm run build
+          npm version patch
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: SSH into server and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.PROJECT_FOLDER }}
+            git pull
+            docker-compose build
+            docker-compose down
+            docker-compose up -d

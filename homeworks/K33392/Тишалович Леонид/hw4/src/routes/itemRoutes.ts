@@ -147,7 +147,7 @@ router.post("/", ItemController.createItem);
  *       404:
  *         description: Item not found
  */
-router.put("/:id", ItemController.updateItem);
+router.patch("/:id", ItemController.updateItem);
 
 /**
  * @swagger
