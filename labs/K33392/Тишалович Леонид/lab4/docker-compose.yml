@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    environment:
+      - PORT=4000
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=database
+      - DB_PORT=5432
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "4000:4000"
+    depends_on:
+      - database
+
+  main:
+    build:
+      context: ./main
+      dockerfile: Dockerfile
+    environment:
+      - PORT=5000
+      - AUTH_SERVICE_URL=http://auth:4000/auth
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=database
+      - DB_PORT=5432
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+
+  database:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
