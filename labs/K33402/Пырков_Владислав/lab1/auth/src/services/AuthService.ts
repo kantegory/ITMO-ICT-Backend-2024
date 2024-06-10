@@ -14,7 +14,6 @@ class AuthService {
 			return serviceHandleError({ message: 'Эта почта уже используется' })
 		}
 		try {
-			console.log('CREATE USER')
 			const newUser = await userRepository.create({
 				name,
 				email,
@@ -42,7 +41,6 @@ class AuthService {
 			}
 
 			const passwordMatch = await user.checkPassword(password)
-			console.log('Результат проверки пароля: ', passwordMatch)
 			if (!passwordMatch) {
 				return serviceHandleError({ message: 'Некорректный пароль' })
 			}
