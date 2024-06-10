@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@config/*": ["src/config/*"],
+        "@controllers/*": ["src/controllers/*"],
+        "@models/*": ["src/models/*"],
+        "@routes/*": ["src/routes/*"],
+        "@services/*": ["src/services/*"],
+        "@app/*": ["src/*"]
+      },
+      "target": "ES6",
+      "module": "commonjs",
+      "outDir": "dist",
+      "strict": true,
+      "esModuleInterop": true
+    },
+    "include": ["src/**/*.ts", "src/app.ts"],
+    "exclude": ["node_modules"]
+  }
+  
