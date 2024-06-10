@@ -14,6 +14,7 @@ export default {
 			return handleError({ res, error, code: 500 })
 		}
 	},
+
 	async getAllUsers(req: Request, res: Response) {
 		try {
 			const users = await UserService.getAllUsers()
@@ -26,7 +27,14 @@ export default {
 	async createUser(req: Request, res: Response) {
 		try {
 			console.log(req.body)
+			console.log('TRY CREATE')
+			console.log('TRY CREATE')
+			console.log('TRY CREATE')
+			console.log('TRY CREATE')
+			console.log('TRY CREATE')
+			console.log('TRY CREATE')
 			const newUser = await UserService.createUser(req.body)
+			console.log('created')
 			res.status(201).json(newUser)
 		} catch (error) {
 			handleError({ res, error, code: 500 })

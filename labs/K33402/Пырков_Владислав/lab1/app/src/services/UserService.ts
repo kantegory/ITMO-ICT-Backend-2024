@@ -14,9 +14,10 @@ class UserService {
 	}
 
 	static async createUser(userData: any) {
+		const { name, email, passoword } = userData
 		console.log(userData)
 		// todo any replace
-		return userRepository.create(userData)
+		return userRepository.create({ name, email, passoword })
 	}
 
 	static async updateUser(id: number, userData: any) {

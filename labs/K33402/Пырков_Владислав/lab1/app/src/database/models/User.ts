@@ -8,7 +8,9 @@ import {
 	Unique,
 } from 'sequelize-typescript'
 
-@Table
+@Table({
+	tableName: 'User',
+})
 class User extends Model {
 	@PrimaryKey
 	@AutoIncrement

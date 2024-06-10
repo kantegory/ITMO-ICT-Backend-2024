@@ -5,6 +5,7 @@
 	"main": "app.ts",
 	"scripts": {
 		"build": "npx tsc",
+		"start": "node app.ts",
 		"dev": "nodemon app.ts"
 	},
 	"author": "impsyn",
