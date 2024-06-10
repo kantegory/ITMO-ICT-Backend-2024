@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
-import UserService from 'src/services/UserService'
-import handleError from 'src/utils/handleError'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+
+import UserService from '../services/UserService'
+import handleError from '../utils/handleError'
 
 export default {
 	async getUserById(req: Request, res: Response) {
@@ -23,6 +25,7 @@ export default {
 
 	async createUser(req: Request, res: Response) {
 		try {
+			console.log(req.body)
 			const newUser = await UserService.createUser(req.body)
 			res.status(201).json(newUser)
 		} catch (error) {
@@ -47,6 +50,22 @@ export default {
 			return res.status(204).json(user)
 		} catch (error) {
 			return handleError({ res, error, code: 500 })
+		}
+	},
+
+	async verify(req: Request, res: Response) {
+		try {
+			const { token } = req.body
+			if (!token) return res.sendStatus(401)
+			const key = process.env.SECRET_KEY || ''
+			const payload = jwt.verify(token, key)
+			const userId = (payload as JwtPayload).id
+			if (!userId) return res.sendStatus(401)
+			const user = await UserService.getUserById(userId)
+			if (!user) return res.sendStatus(401)
+			return res.sendStatus(200)
+		} catch (error) {
+			return handleError({ res, error })
 		}
 	},
 }

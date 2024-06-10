@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
-import { ProfileService } from '../services/ProfileService'
-import { UserService } from '../services/UserService'
+import ProfileService from '../services/ProfileService'
+import UserService from '../services/UserService'
 import handleError from '../utils/handleError'
 
 class UserController {

@@ -1,21 +1,28 @@
 import bcrypt from 'bcrypt'
-import { Column, Model, PrimaryKey, Table, Unique } from 'sequelize-typescript'
+import {
+	Column,
+	DataType,
+	Model,
+	PrimaryKey,
+	Table,
+	Unique,
+} from 'sequelize-typescript'
 
 @Table
 class User extends Model {
 	@PrimaryKey
-	@Column
+	@Column(DataType.INTEGER)
 	declare id: number
 
-	@Column
+	@Column(DataType.STRING)
 	name!: string
 
 	@Unique
-	@Column
+	@Column(DataType.STRING)
 	public email!: string
 
 	@Unique
-	@Column
+	@Column(DataType.STRING)
 	public password!: string
 
 	public async hashPassword() {

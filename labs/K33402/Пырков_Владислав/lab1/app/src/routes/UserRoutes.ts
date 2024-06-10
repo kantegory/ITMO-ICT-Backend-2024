@@ -2,12 +2,14 @@ import express from 'express'
 
 import UserController from '../controllers/UserController'
 
-const router = express.Router()
+const userRoutes = express.Router()
 
-router.get('/', UserController.getAllUsers)
-router.get('/:id', UserController.getUserById)
-router.post('/', UserController.createUser)
-router.put('/:id', UserController.updateUser)
-router.delete('/:id', UserController.deleteUser)
+userRoutes.get('/', UserController.getAllUsers)
+userRoutes.get('/:id', UserController.getUserById)
+userRoutes.post('/', UserController.createUser)
+userRoutes.put('/:id', UserController.updateUser)
+userRoutes.delete('/:id', UserController.deleteUser)
 
-export default router
+userRoutes.post('/verify', UserController.verify)
+
+export default userRoutes

@@ -1,8 +1,7 @@
-import sequelize from 'src/config/sequelize'
-import serviceHandleError from 'src/utils/serviceHandleError'
-
+import sequelize from '../config/sequelize'
 import Profile from '../models/Profile'
 import User from '../models/User'
+import serviceHandleError from '../utils/serviceHandleError'
 
 const userRepository = sequelize.getRepository(User)
 const profileRepository = sequelize.getRepository(Profile)

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import process from 'process'
-import sequelize from 'src/config/sequelize'
 
+import sequelize from '../config/sequelize'
 import User from '../models/User'
 import serviceHandleError from '../utils/serviceHandleError'
 
@@ -9,12 +9,12 @@ const userRepository = sequelize.getRepository(User)
 
 class AuthService {
 	static async reg(name: string, email: string, password: string) {
+		const existingUser = await userRepository.findOne({ where: { email } })
+		if (existingUser) {
+			return serviceHandleError({ message: 'Эта почта уже используется' })
+		}
 		try {
-			const existingUser = await userRepository.findOne({ where: { email } })
-			if (existingUser) {
-				return serviceHandleError({ message: 'Эта почта уже используется' })
-			}
-
+			console.log('CREATE USER')
 			const newUser = await userRepository.create({
 				name,
 				email,

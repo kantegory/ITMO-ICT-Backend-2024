@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
-import ExchangeService from 'src/services/ExchangeService'
-import handleError from 'src/utils/handleError'
+
+import ExchangeService from '../services/ExchangeService'
+import handleError from '../utils/handleError'
 
 class ExchangeController {
 	public static async createExchange(req: Request, res: Response) {

@@ -1,13 +1,12 @@
-import sequelize from 'src/database'
-import serviceHandleError from 'src/utils/serviceHandleError'
-
+import sequelize from '../database'
 import UserHasBook from '../database/models/UserHasBook'
 import Book from '../database/models/UserHasBook'
+import serviceHandleError from '../utils/serviceHandleError'
 
 const bookRepository = sequelize.getRepository(Book)
 const userHasBookRepository = sequelize.getRepository(UserHasBook)
 
-class UserBookService {
+class UserHasBookService {
 	public static async getUserBooks(userId: number) {
 		try {
 			const userBooks = await userHasBookRepository.findAll({
@@ -49,4 +48,4 @@ class UserBookService {
 	}
 }
 
-export default UserBookService
+export default UserHasBookService

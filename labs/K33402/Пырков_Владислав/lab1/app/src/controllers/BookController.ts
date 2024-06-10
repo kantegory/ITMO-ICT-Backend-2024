@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import handleError from 'src/utils/handleError'
 
 import BookService from '../services/BookService'
+import handleError from '../utils/handleError'
 
 class BookController {
-	public static async create(req: Request, res: Response) {
+	public static async createBook(req: Request, res: Response) {
 		const { title, author } = req.body
 		try {
 			await BookService.createBook(title, author)
@@ -19,7 +19,7 @@ class BookController {
 		}
 	}
 
-	public static async getAll(req: Request, res: Response) {
+	public static async getAllBooks(req: Request, res: Response) {
 		try {
 			const books = await BookService.getAllBooks()
 			return res.json(books)

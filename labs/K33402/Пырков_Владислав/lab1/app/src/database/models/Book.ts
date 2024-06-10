@@ -1,6 +1,7 @@
 import {
 	AutoIncrement,
 	Column,
+	DataType,
 	Model,
 	PrimaryKey,
 	Table,
@@ -10,13 +11,13 @@ import {
 class Book extends Model {
 	@PrimaryKey
 	@AutoIncrement
-	@Column
+	@Column(DataType.INTEGER)
 	declare id: number
 
-	@Column
+	@Column(DataType.STRING)
 	title!: string
 
-	@Column
+	@Column(DataType.STRING)
 	author!: string
 }
 

@@ -1,11 +1,17 @@
 import express from 'express'
 
+import sequelize from './src/config/sequelize'
+import router from './src/routes'
+
 const PORT = Number(process.env.PORT) || 8000
 
 const app = express()
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
-app.use(express.json()) // Used to parse JSON bodies
+app.use('/', router)
 
 app.listen(PORT, () => {
+	sequelize
 	console.log(`Authorization service is running on port ${PORT}`)
 })

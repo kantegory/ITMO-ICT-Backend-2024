@@ -1,6 +1,7 @@
 import {
 	AutoIncrement,
 	Column,
+	DataType,
 	Model,
 	PrimaryKey,
 	Table,
@@ -11,19 +12,19 @@ import {
 class User extends Model {
 	@PrimaryKey
 	@AutoIncrement
-	@Column
+	@Column(DataType.INTEGER)
 	declare id: number
 
-	@Column
-	username!: string
+	@Column(DataType.STRING)
+	declare name: string
 
 	@Unique
-	@Column
-	email!: string
+	@Column(DataType.STRING)
+	declare email: string
 
 	@Unique
-	@Column
-	password!: string
+	@Column(DataType.STRING)
+	declare password: string
 }
 
 export default User

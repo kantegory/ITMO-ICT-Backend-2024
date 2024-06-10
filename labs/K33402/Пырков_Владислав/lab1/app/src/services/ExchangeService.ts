@@ -1,6 +1,6 @@
-import sequelize from 'src/database'
-import Exchange from 'src/database/models/Exchange'
-import serviceHandleError from 'src/utils/serviceHandleError'
+import sequelize from '../database'
+import Exchange from '../database/models/Exchange'
+import serviceHandleError from '../utils/serviceHandleError'
 
 const exchangeRepository = sequelize.getRepository(Exchange)
 

@@ -1,11 +1,11 @@
 import {
 	AutoIncrement,
 	Column,
+	DataType,
 	ForeignKey,
 	Model,
 	PrimaryKey,
 	Table,
-	Unique,
 } from 'sequelize-typescript'
 
 import Book from './Book'
@@ -15,15 +15,15 @@ import User from './User'
 class UserHasBook extends Model {
 	@PrimaryKey
 	@AutoIncrement
-	@Column
+	@Column(DataType.INTEGER)
 	declare id: number
 
 	@ForeignKey(() => User)
-	@Column
+	@Column(DataType.INTEGER)
 	userId!: string
 
 	@ForeignKey(() => Book)
-	@Column
+	@Column(DataType.INTEGER)
 	bookId!: string
 }
 

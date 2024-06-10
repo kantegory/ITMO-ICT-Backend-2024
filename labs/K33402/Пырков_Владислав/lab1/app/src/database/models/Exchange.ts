@@ -1,6 +1,7 @@
 import {
 	AutoIncrement,
 	Column,
+	DataType,
 	Default,
 	ForeignKey,
 	Model,
@@ -15,23 +16,23 @@ import User from './User'
 class Exchange extends Model {
 	@PrimaryKey
 	@AutoIncrement
-	@Column
+	@Column(DataType.INTEGER)
 	declare id: number
 
 	@ForeignKey(() => User)
-	@Column
-	senderId!: string
+	@Column(DataType.INTEGER)
+	senderId!: number
 
 	@ForeignKey(() => User)
-	@Column
-	recepientId!: string
+	@Column(DataType.INTEGER)
+	recepientId!: number
 
 	@ForeignKey(() => Book)
-	@Column
-	bookId!: string
+	@Column(DataType.INTEGER)
+	bookId!: number
 
-	@Column
 	@Default('pending')
+	@Column(DataType.STRING)
 	status!: string
 }
 

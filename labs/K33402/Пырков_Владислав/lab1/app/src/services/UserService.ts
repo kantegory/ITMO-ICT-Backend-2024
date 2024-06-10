@@ -1,7 +1,6 @@
-import sequelize from 'src/database'
-import serviceHandleError from 'src/utils/serviceHandleError'
-
+import sequelize from '../database'
 import User from '../database/models/User'
+import serviceHandleError from '../utils/serviceHandleError'
 
 const userRepository = sequelize.getRepository(User)
 
@@ -15,6 +14,7 @@ class UserService {
 	}
 
 	static async createUser(userData: any) {
+		console.log(userData)
 		// todo any replace
 		return userRepository.create(userData)
 	}

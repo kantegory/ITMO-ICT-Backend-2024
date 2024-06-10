@@ -1,7 +1,6 @@
-import sequelize from 'src/database'
-import serviceHandleError from 'src/utils/serviceHandleError'
-
+import sequelize from '../database'
 import Book from '../database/models/Book'
+import serviceHandleError from '../utils/serviceHandleError'
 
 const bookRepository = sequelize.getRepository(Book)
 

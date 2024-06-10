@@ -1,5 +1,6 @@
 import {
 	Column,
+	DataType,
 	ForeignKey,
 	Model,
 	PrimaryKey,
@@ -11,17 +12,17 @@ import User from './User'
 @Table
 class Profile extends Model {
 	@PrimaryKey
-	@Column
+	@Column(DataType.INTEGER)
 	declare id: number
 
 	@ForeignKey(() => User)
-	@Column
+	@Column(DataType.INTEGER)
 	userId!: number
 
-	@Column
+	@Column(DataType.STRING)
 	location!: string
 
-	@Column
+	@Column(DataType.STRING)
 	bio!: string
 }
 

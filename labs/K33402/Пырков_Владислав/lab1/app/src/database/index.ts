@@ -1,11 +1,17 @@
+import dotenv from 'dotenv'
+
 import { Sequelize } from 'sequelize-typescript'
 
+import Book from './models/Book'
+import Exchange from './models/Exchange'
 import User from './models/User'
+import UserHasBook from './models/UserHasBook'
 
+dotenv.config()
 const sequelize = new Sequelize({
-	database: process.env.DB_NAME || 'database123',
-	username: process.env.DB_USER || 'username123',
-	password: process.env.DB_PASSWORD || 'password123',
+	database: process.env.DB_NAME || 'postgres',
+	username: process.env.DB_USER || 'postgres',
+	password: process.env.DB_PASSWORD || 'toraha01',
 	dialect: 'postgres',
 	storage: 'db.postgres',
 	host: process.env.DB_HOST || 'localhost',
@@ -14,7 +20,7 @@ const sequelize = new Sequelize({
 	logging: console.log,
 })
 
-sequelize.addModels([User])
+sequelize.addModels([User, Book, UserHasBook, Exchange])
 
 sequelize.sync().then(() => {
 	console.log('sync sequelize')
