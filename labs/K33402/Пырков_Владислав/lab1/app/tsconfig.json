@@ -2,10 +2,10 @@
 	"include": ["./"],
 	"exclude": ["node_modules", "lib"],
 	"compilerOptions": {
-		"target": "ESNext",
+		"target": "ES2021",
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
-		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"lib": ["ES2021"],
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"allowSyntheticDefaultImports": true,
@@ -13,7 +13,9 @@
 		"forceConsistentCasingInFileNames": true,
 		"useDefineForClassFields": true,
 		"skipLibCheck": true,
+
 		"experimentalDecorators": true,
+
 		"allowImportingTsExtensions": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,

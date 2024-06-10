@@ -1,19 +1,21 @@
 import sequelize from 'src/database'
+import serviceHandleError from 'src/utils/serviceHandleError'
 
 import User from '../database/models/User'
 
 const userRepository = sequelize.getRepository(User)
 
-export default class UserService {
-	static async getAllUsers() {
-		return userRepository.findAll()
-	}
-
+class UserService {
 	static async getUserById(id: number) {
 		return userRepository.findByPk(id)
 	}
 
+	static async getAllUsers() {
+		return userRepository.findAll()
+	}
+
 	static async createUser(userData: any) {
+		// todo any replace
 		return userRepository.create(userData)
 	}
 
@@ -21,7 +23,7 @@ export default class UserService {
 		const user = await userRepository.findByPk(id)
 
 		if (!user) {
-			throw new Error('User not found')
+			return serviceHandleError({ message: 'Пользователь не найден' })
 		}
 
 		await user.update(userData)
@@ -33,9 +35,11 @@ export default class UserService {
 		const user = await User.findByPk(id)
 
 		if (!user) {
-			throw new Error('User not found')
+			return serviceHandleError({ message: 'Пользователь не найден' })
 		}
 
 		await user.destroy()
 	}
 }
+
+export default UserService
