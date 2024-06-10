@@ -14,7 +14,6 @@ export const registerUserHandler = async (
 
   try {
     const user = await createUser(body)
-
     return reply.code(201).send(user)
   } catch (e) {
     console.log(e)

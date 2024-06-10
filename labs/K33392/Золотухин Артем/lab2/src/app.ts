@@ -1,16 +1,11 @@
-import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
+import Fastify from 'fastify'
 import fjwt from '@fastify/jwt'
 import swagger from '@fastify/swagger'
 import fastifySwaggerUI from '@fastify/swagger-ui'
 import userRoutes from './modules/user/user.route'
 import { userSchemas } from './modules/user/user.schema'
 import { version } from '../package.json'
-import {
-  jsonSchemaTransform,
-  serializerCompiler,
-  validatorCompiler,
-  ZodTypeProvider,
-} from 'fastify-type-provider-zod'
+import { buildJsonSchemas } from 'fastify-zod'
 import hackathonRoutes from './modules/hackathons/hackathons.route'
 import { hackathonSchemas } from './modules/hackathons/hackathons.schema'
 import { projectSchemas } from './modules/projects/projects.schema'
@@ -23,7 +18,6 @@ import { commentSchemas } from './modules/comments/comments.schema'
 import commentRoutes from './modules/comments/comments.route'
 
 export const app = Fastify()
-export const server = app.withTypeProvider<ZodTypeProvider>()
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -47,7 +41,10 @@ app.register(fjwt, {
 
 app.decorate(
   'authenticate',
-  async (request: FastifyRequest, reply: FastifyReply) => {
+  async (
+    request: { jwtVerify: () => any },
+    reply: { send: (arg0: unknown) => any }
+  ) => {
     try {
       await request.jwtVerify()
     } catch (e) {
@@ -74,9 +71,6 @@ async function main() {
     app.addSchema(schema)
   }
 
-  app.setValidatorCompiler(validatorCompiler)
-  app.setSerializerCompiler(serializerCompiler)
-
   app.register(swagger, {
     openapi: {
       info: {
@@ -92,6 +86,16 @@ async function main() {
         { name: 'scores', description: 'Score related end-points' },
         { name: 'comments', description: 'Comment related end-points' },
       ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      security: [{ bearerAuth: [] }],
     },
   })
 
@@ -103,9 +107,7 @@ async function main() {
     },
     staticCSP: true,
     transformStaticCSP: (header) => header,
-    transformSpecification: (swaggerObject, request, reply) => {
-      return swaggerObject
-    },
+    transformSpecification: (swaggerObject) => swaggerObject,
     transformSpecificationClone: true,
   })
 
@@ -117,7 +119,7 @@ async function main() {
   app.register(commentRoutes, { prefix: 'api/comments' })
 
   try {
-    await app.listen(3000, '0.0.0.0')
+    await app.listen({ port: 3000, host: '0.0.0.0' })
     console.log('Server running on 3000')
   } catch (e) {
     console.log(`Server error ${e}`)
