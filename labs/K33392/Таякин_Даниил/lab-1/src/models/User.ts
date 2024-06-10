@@ -35,3 +35,12 @@ export class User extends Model {
     @Column
     isAdmin: Boolean
 }
+
+// helper models
+
+export interface UserCreate {
+    email: string
+    firstName: string
+    lastName: string
+    password: string
+}
