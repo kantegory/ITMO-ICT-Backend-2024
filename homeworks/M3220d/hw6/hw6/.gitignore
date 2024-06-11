@@ -1,0 +1,10 @@
+# Logs #
+/logs
+*.log
+*.log*
+
+# Node files #
+node_modules/
+
+# Dist #
+dist/
