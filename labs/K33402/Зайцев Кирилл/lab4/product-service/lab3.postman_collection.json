@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "b8b81926-642e-4141-8318-2befa36c1a37",
+		"name": "lab3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33596488"
+	},
+	"item": [
+		{
+			"name": "Post product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Создание продукта успешно\", function () {\r",
+							"  pm.response.to.have.status(201);\r",
+							"  const jsonData = pm.response.json();\r",
+							"  pm.expect(jsonData).to.have.property(\"id\");\r",
+							"  pm.expect(jsonData).to.have.property(\"name\", \"Sample Product\");\r",
+							"  pm.environment.set(\"productId\", jsonData.id);\r",
+							"});\r",
+							"\r",
+							"// Добавление результата теста в коллекционные переменные\r",
+							"let results = pm.collectionVariables.get(\"results\") || [];\r",
+							"results.push({ endpoint: pm.request.url.toString(), status: \"pass\" });\r",
+							"pm.collectionVariables.set(\"results\", results);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Sample Product\",\r\n  \"category\": \"Sample Category\",\r\n  \"price\": 100,\r\n  \"stock\": 50,\r\n  \"discount\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Обновление продукта успешно\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"  const jsonData = pm.response.json();\r",
+							"  pm.expect(jsonData).to.have.property(\"name\", \"Updated Product\");\r",
+							"});\r",
+							"\r",
+							"// Добавление результата теста в коллекционные переменные\r",
+							"let results = pm.collectionVariables.get(\"results\") || [];\r",
+							"results.push({ endpoint: pm.request.url.toString(), status: \"pass\" });\r",
+							"pm.collectionVariables.set(\"results\", results);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Updated Product\",\r\n  \"category\": \"Updated Category\",\r\n  \"price\": 150,\r\n  \"stock\": 30,\r\n  \"discount\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/products/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "results",
+			"value": ""
+		}
+	]
+}
