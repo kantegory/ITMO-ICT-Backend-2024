@@ -1,5 +1,5 @@
 import express from 'express';
-import { userRoutes } from '../src/routes/UserRoutes';
+import { userRoutes } from './routes/UserRoutes';
 import { SQLRepo } from './config/database'; // Путь к классу SQLRepo
 
 new SQLRepo();
