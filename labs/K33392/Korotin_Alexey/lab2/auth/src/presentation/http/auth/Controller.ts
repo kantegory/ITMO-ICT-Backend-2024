@@ -8,6 +8,7 @@ import {InvalidEmailException} from "../../../domain/account/EmailAddress";
 import {validationResult} from 'express-validator';
 import {decodeRefresh} from "../../../application/services/RefreshToken";
 
+
 export default class AuthController {
 
     public constructor(private repository: AccountRepository,

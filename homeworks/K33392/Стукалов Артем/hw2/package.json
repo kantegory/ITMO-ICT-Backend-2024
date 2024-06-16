@@ -1,0 +1,32 @@
+{
+  "name": "hw2",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "concurrently --kill-others -n swc-build,node \"yarn build-watch\" \"yarn dev-watch\"",
+    "dev-watch": "cross-env NODE_ENV=development nodemon --config nodemon.json",
+    "build-watch": "swc ./src -w --strip-leading-paths --config-file ./.swcrc -d dist",
+    "build": "swc ./src --strip-leading-paths --config-file ./.swcrc -d dist",
+    "clean": "rimraf ./dist",
+    "preview": "cross-env NODE_ENV=production node ./dist/main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.10.2",
+    "fastify": "^4.26.2"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.3.10",
+    "@swc/core": "^1.4.2",
+    "@types/node": "^20.11.24",
+    "chokidar": "^3.6.0",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.0",
+    "prisma": "^5.10.2",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

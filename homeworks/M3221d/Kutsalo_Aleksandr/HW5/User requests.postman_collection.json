@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "e122b68c-d88a-4e95-af7f-282287dca30e",
+		"name": "User requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28197772"
+	},
+	"item": [
+		{
+			"name": "Get by ID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/id/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"id",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Creating user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"johndoe9@example.com\",\n    \"password\": \"qwerty\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/create",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logging in",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"password123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Trying to access auth only content",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/auth_only",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"auth_only"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logging out",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/logout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "routerPath",
+			"value": "users",
+			"type": "string"
+		}
+	]
+}

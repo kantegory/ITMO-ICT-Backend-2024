@@ -1,0 +1,2270 @@
+{
+	"info": {
+		"_postman_id": "74e20e9b-069b-4f31-9c4f-48ebd61cb4e0",
+		"name": "node",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16598400",
+		"_collection_link": "https://winter-water-135849.postman.co/workspace/My-Workspace~b0c19e8a-f3f8-40df-80bc-fec9367f7b8e/collection/16598400-74e20e9b-069b-4f31-9c4f-48ebd61cb4e0?action=share&source=collection_link&creator=16598400"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/users",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "152"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"98-EsIHOeGHcY2SwH8m6AtRfUDvoPY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:16:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"firstName\": \"Nikita\",\n        \"lastName\": \"Nikita\",\n        \"email\": \"admin@mail.com\"\n    },\n    {\n        \"id\": 2,\n        \"firstName\": \"Nikita\",\n        \"lastName\": \"Nikita\",\n        \"email\": \"admin@mail.come\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "find",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/users/1",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/users/2",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"users",
+										"2"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21-rB2rftkuiHse1z83+NviFiGImPQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:26:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"User does not exists\"\n}"
+						},
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/users/1",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"users",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "74"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4a-j86kzZ0xncKz/typ/nZnjDNhZi0\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:27:16 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"firstName\": \"Nikita\",\n    \"lastName\": \"Nikita\",\n    \"email\": \"admin@mail.com\"\n}"
+						}
+					]
+				},
+				{
+					"name": "destroy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/users/1",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/users/3",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"users",
+										"3"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "21"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"15-u8o96Kh+nMN/3PM0/62pRTWc5ZE\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:27:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Success.\"\n}"
+						},
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/users/3",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"users",
+										"3"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21-rB2rftkuiHse1z83+NviFiGImPQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:27:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"User does not exists\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Nikita\",\r\n    \"lastName\": \"Nikita\",\r\n    \"email\": \"admin@mail.com\",\r\n    \"password\": \"123qwe123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/auth/register",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"Nikita\",\r\n    \"lastName\": \"Nikita\",\r\n    \"email\": \"admin@mail.coqweqweme\",\r\n    \"password\": \"adminn\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/register",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "81"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"51-uPYRTnlO/XzCZO75aV4M2MN7bAY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:27:30 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"firstName\": \"Nikita\",\n    \"lastName\": \"Nikita\",\n    \"email\": \"admin@mail.coqweqweme\"\n}"
+						},
+						{
+							"name": "422 required field",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"Nikita\",\r\n    \"email\": \"admin@mail.ruur\",\r\n    \"password\": \"adminn\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/register",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "76"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4c-AuhecDWLj4g7xJiiFDJ4ASUuSYA\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:29:51 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"type\": \"field\",\n        \"msg\": \"Invalid value\",\n        \"path\": \"lastName\",\n        \"location\": \"body\"\n    }\n]"
+						},
+						{
+							"name": "422 email exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"Nikita\",\r\n    \"lastName\": \"Nikita\",\r\n    \"email\": \"admin@mail.com\",\r\n    \"password\": \"adminn\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/register",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Unprocessable Entity",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "105"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"69-NPluBS4iyWfeI5YXAPSzBlBWee4\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:30:24 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"type\": \"field\",\n        \"value\": \"admin@mail.com\",\n        \"msg\": \"Email already exists\",\n        \"path\": \"email\",\n        \"location\": \"body\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/auth/me",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/auth/me",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "74"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4a-j86kzZ0xncKz/typ/nZnjDNhZi0\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:30:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"firstName\": \"Nikita\",\n    \"lastName\": \"Nikita\",\n    \"email\": \"admin@mail.com\"\n}"
+						},
+						{
+							"name": "401 unauthenticated",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/auth/me",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"me"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "29"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1d-800w7SMvTm3v9J5EL4IOwZL7upA\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:30:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Unauthenticated.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Response body contains access_token and refresh_token\", () => {\r",
+									"    var jsonData = pm.response.json()\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property('accessToken')\r",
+									"    pm.expect(jsonData).to.have.property('refreshToken')\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Access_token and refresh_token values are strings\", () => {\r",
+									"    var jsonData = pm.response.json()\r",
+									"\r",
+									"    pm.expect(jsonData.accessToken).to.be.a('string')\r",
+									"    pm.expect(jsonData.refreshToken).to.be.a('string')\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Cookies jwt_access and jwt_refresh are present\", () => {\r",
+									"    pm.expect(pm.cookies.has('jwt_access')).to.be.true\r",
+									"    pm.expect(pm.cookies.has('jwt_refresh')).to.be.true\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"admin@mail.com\",\r\n    \"password\": \"123qwe123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"admin@mail.com\",\r\n    \"password\": \"adminn\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/login",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "jwt_access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MTU0MjM0NzUyNDMsImV4cCI6MTcxNTQyNTI3NTI0M30.g4WYZwMUik4Y2Uv37PTUrnh7IcUz5GdR4L5kL2EomE8; Max-Age=1800; Path=/; Expires=Sat, 11 May 2024 11:01:15 GMT; HttpOnly"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "jwt_refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJSRUZSRVNIIiwiaWF0IjoxNzE1NDIzNDc1MjQ1LCJleHAiOjE3MTU1OTYyNzUyNDV9.p8bWz03HTM9fUG9Lb6_n6rL8GlTGKtwHVkZD16GHAh0; Max-Age=172800; Path=/; Expires=Mon, 13 May 2024 10:31:15 GMT; HttpOnly"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "413"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"19d-w883QZqdQs46e5uDiT0nlZZeOq8\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:31:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MTU0MjM0NzUyNDMsImV4cCI6MTcxNTQyNTI3NTI0M30.g4WYZwMUik4Y2Uv37PTUrnh7IcUz5GdR4L5kL2EomE8\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJSRUZSRVNIIiwiaWF0IjoxNzE1NDIzNDc1MjQ1LCJleHAiOjE3MTU1OTYyNzUyNDV9.p8bWz03HTM9fUG9Lb6_n6rL8GlTGKtwHVkZD16GHAh0\"\n}"
+						},
+						{
+							"name": "401",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"admin@mail.cofm\",\r\n    \"password\": \"adminn\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/login",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "29"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1d-800w7SMvTm3v9J5EL4IOwZL7upA\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:31:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Unauthenticated.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/auth/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/auth/logout",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "jwt_access=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "jwt_refresh=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "15"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"f-hYGkEKKcjinNuxEpGquKWFapAtk\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:31:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"ok\"\n}"
+						}
+					]
+				},
+				{
+					"name": "refresh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/auth/refresh",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "401",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/auth/refresh",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"refresh"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "29"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1d-800w7SMvTm3v9J5EL4IOwZL7upA\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:31:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Unauthenticated.\"\n}"
+						},
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/auth/refresh",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"refresh"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "jwt_access=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MTU0MjM1MjEwMzcsImV4cCI6MTcxNTQyNTMyMTAzN30.2eWu5FTLzUtC7A839PlD-oTR2o0rJYnATNcruM2RdQ8; Max-Age=1800; Path=/; Expires=Sat, 11 May 2024 11:02:01 GMT; HttpOnly"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "jwt_refresh=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJSRUZSRVNIIiwiaWF0IjoxNzE1NDIzNTIxMDM4LCJleHAiOjE3MTU1OTYzMjEwMzh9.sP1eq5FQnZLj19fhgPXmzZQnkD656vyWwTJzV11g_4E; Max-Age=172800; Path=/; Expires=Mon, 13 May 2024 10:32:01 GMT; HttpOnly"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "413"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"19d-9UJPoNaBA5u+TE2fcLvjw6HRzUM\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:32:01 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MTU0MjM1MjEwMzcsImV4cCI6MTcxNTQyNTMyMTAzN30.2eWu5FTLzUtC7A839PlD-oTR2o0rJYnATNcruM2RdQ8\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsInR5cGUiOiJSRUZSRVNIIiwiaWF0IjoxNzE1NDIzNTIxMDM4LCJleHAiOjE3MTU1OTYzMjEwMzh9.sP1eq5FQnZLj19fhgPXmzZQnkD656vyWwTJzV11g_4E\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "userProfiles",
+			"item": [
+				{
+					"name": "my",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/user_profiles/my",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user_profiles",
+								"my"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/user_profiles/my",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user_profiles",
+										"my"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "181"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"b5-2ptPOmE0NQftawJEKY4HnO0d1O4\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:32:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userId\": 1,\n    \"maxBudget\": 90,\n    \"hasChildren\": true,\n    \"peopleCount\": null,\n    \"comfortLevels\": [],\n    \"difficultyLevels\": [],\n    \"places\": [],\n    \"tourActivities\": [\n        {\n            \"id\": 1,\n            \"name\": \"Bike tours\"\n        }\n    ],\n    \"tourTypes\": []\n}"
+						}
+					]
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"maxBudget\": 10000,\r\n    \"hasChildren\": true,\r\n    \"peopleCount\": null,\r\n    \"comfortLevels\": [],\r\n    \"difficultyLevels\": [],\r\n    \"places\": [],\r\n    \"tourActivities\": [],\r\n    \"tourTypes\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user_profiles/my",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user_profiles",
+								"my"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"maxBudget\": 90,\r\n    \"hasChildren\": true,\r\n    \"peopleCount\": null,\r\n    \"comfortLevels\": [],\r\n    \"difficultyLevels\": [],\r\n    \"places\": [],\r\n    \"tourActivities\": [1],\r\n    \"tourTypes\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user_profiles/my",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user_profiles",
+										"my"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "181"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"b5-2ptPOmE0NQftawJEKY4HnO0d1O4\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:17:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userId\": 1,\n    \"maxBudget\": 90,\n    \"hasChildren\": true,\n    \"peopleCount\": null,\n    \"comfortLevels\": [],\n    \"difficultyLevels\": [],\n    \"places\": [],\n    \"tourActivities\": [\n        {\n            \"id\": 1,\n            \"name\": \"Bike tours\"\n        }\n    ],\n    \"tourTypes\": []\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "tours",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/tours",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"tours"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "gr",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "90",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "canGoWithChildren",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "minPeople",
+									"value": "90",
+									"disabled": true
+								},
+								{
+									"key": "maxPeople",
+									"value": "200",
+									"disabled": true
+								},
+								{
+									"key": "comfortLevelIds[]",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "difficultyLevelIds[]",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "placeIds[]",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tourActivityIds[]",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tourTypeIds[]",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/tours?name=gr&minPrice=90&canGoWithChildren=true&minPeople=90&maxPeople=200",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "gr"
+										},
+										{
+											"key": "minPrice",
+											"value": "90"
+										},
+										{
+											"key": "maxPrice",
+											"value": "100",
+											"disabled": true
+										},
+										{
+											"key": "canGoWithChildren",
+											"value": "true"
+										},
+										{
+											"key": "minPeople",
+											"value": "90"
+										},
+										{
+											"key": "maxPeople",
+											"value": "200"
+										},
+										{
+											"key": "comfortLevelIds[]",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "difficultyLevelIds[]",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "placeIds[]",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tourActivityIds[]",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "tourTypeIds[]",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "259"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"103-B1RYkyTeIQIeP6Lw3ZNfllr2Z+Q\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:18:38 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 2,\n        \"name\": \"GREAT TOUR\",\n        \"price\": 110,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 120,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "store",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TOUR\",\r\n    \"price\": 100,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 100,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1,2],\r\n    \"tourTypes\": [1,2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/tours",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"tours"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"NEW TOUR\",\r\n    \"price\": 100,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 100,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1],\r\n    \"tourTypes\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/tours",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "255"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"ff-kFSD0g9Zp76DjQWT1iQE4E6s8i0\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:18:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 6,\n    \"name\": \"NEW TOUR\",\n    \"price\": 100,\n    \"canGoWithChildren\": true,\n    \"maxPeople\": 100,\n    \"comfortLevel\": {\n        \"id\": 1,\n        \"name\": \"Basen\"\n    },\n    \"difficultyLevel\": {\n        \"id\": 1,\n        \"name\": \"Base\"\n    },\n    \"place\": {\n        \"id\": 1,\n        \"name\": \"Moscow\"\n    },\n    \"tourActivities\": [\n        {\n            \"id\": 1,\n            \"name\": \"Bike tours\"\n        }\n    ],\n    \"tourTypes\": []\n}"
+						}
+					]
+				},
+				{
+					"name": "find",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/tours/1",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"tours",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/tours/6",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours",
+										"6"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "255"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"ff-kFSD0g9Zp76DjQWT1iQE4E6s8i0\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:19:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 6,\n    \"name\": \"NEW TOUR\",\n    \"price\": 100,\n    \"canGoWithChildren\": true,\n    \"maxPeople\": 100,\n    \"comfortLevel\": {\n        \"id\": 1,\n        \"name\": \"Basen\"\n    },\n    \"difficultyLevel\": {\n        \"id\": 1,\n        \"name\": \"Base\"\n    },\n    \"place\": {\n        \"id\": 1,\n        \"name\": \"Moscow\"\n    },\n    \"tourActivities\": [\n        {\n            \"id\": 1,\n            \"name\": \"Bike tours\"\n        }\n    ],\n    \"tourTypes\": []\n}"
+						},
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/tours/6",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours",
+										"6"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21-LBk79SW2qHaiG2ZQfClJiiDvWJk\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:33:04 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Tour does not exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"GREAT TOUR\",\r\n    \"price\": 100,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 100,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1,2],\r\n    \"tourTypes\": [1,2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/tours/1",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"tours",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"UPDATED TOUR\",\r\n    \"price\": 110,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 120,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1],\r\n    \"tourTypes\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/tours/6",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours",
+										"6"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "259"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"103-kYjMVty8ouLwPuMAbYOnwtHEO9I\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:19:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 6,\n    \"name\": \"UPDATED TOUR\",\n    \"price\": 110,\n    \"canGoWithChildren\": true,\n    \"maxPeople\": 120,\n    \"comfortLevel\": {\n        \"id\": 1,\n        \"name\": \"Basen\"\n    },\n    \"difficultyLevel\": {\n        \"id\": 1,\n        \"name\": \"Base\"\n    },\n    \"place\": {\n        \"id\": 1,\n        \"name\": \"Moscow\"\n    },\n    \"tourActivities\": [\n        {\n            \"id\": 1,\n            \"name\": \"Bike tours\"\n        }\n    ],\n    \"tourTypes\": []\n}"
+						},
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"UPDATED TOUR\",\r\n    \"price\": 110,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 120,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1],\r\n    \"tourTypes\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/tours/6",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours",
+										"6"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21-LBk79SW2qHaiG2ZQfClJiiDvWJk\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:33:17 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Tour does not exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "destroy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"price\": 100,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 100,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1,2],\r\n    \"tourTypes\": [1,2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/tours/1",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"tours",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"price\": 100,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 100,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1,2],\r\n    \"tourTypes\": [1,2]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/tours/6",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours",
+										"6"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "21"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"15-u8o96Kh+nMN/3PM0/62pRTWc5ZE\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:19:33 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Success.\"\n}"
+						},
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"price\": 100,\r\n    \"canGoWithChildren\": true,\r\n    \"maxPeople\": 100,\r\n    \"comfortLevelId\": 1,\r\n    \"difficultyLevelId\": 1,\r\n    \"placeId\": 1,\r\n    \"tourActivities\": [1,2],\r\n    \"tourTypes\": [1,2]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/tours/6",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"tours",
+										"6"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"21-LBk79SW2qHaiG2ZQfClJiiDvWJk\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:33:29 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Tour does not exists\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "recommendations",
+			"item": [
+				{
+					"name": "my",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/recommendations/my",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"recommendations",
+								"my"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "gr",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "90",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "canGoWithChildren",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "minPeople",
+									"value": "90",
+									"disabled": true
+								},
+								{
+									"key": "maxPeople",
+									"value": "200",
+									"disabled": true
+								},
+								{
+									"key": "comfortLevelIds[]",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "difficultyLevelIds[]",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "placeIds[]",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tourActivityIds[]",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "tourTypeIds[]",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/recommendations/my",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"recommendations",
+										"my"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "757"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2f5-yRoaEaIqJFw0vTnucpXz6pL2KjY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:19:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 3,\n        \"name\": \"TOUR\",\n        \"price\": 100,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 100,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    },\n    {\n        \"id\": 4,\n        \"name\": \"TOUR\",\n        \"price\": 100,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 100,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    },\n    {\n        \"id\": 5,\n        \"name\": \"TOUR\",\n        \"price\": 100,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 100,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "by tour",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/recommendations/tours/1",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"recommendations",
+								"tours",
+								"1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/recommendations/tours/2",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"recommendations",
+										"tours",
+										"2"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1015"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3f7-1mm5q2nE6/j1vwvoMZUDXjGH8s8\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:19:52 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 2,\n        \"name\": \"GREAT TOUR\",\n        \"price\": 110,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 120,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    },\n    {\n        \"id\": 3,\n        \"name\": \"TOUR\",\n        \"price\": 100,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 100,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    },\n    {\n        \"id\": 4,\n        \"name\": \"TOUR\",\n        \"price\": 100,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 100,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    },\n    {\n        \"id\": 5,\n        \"name\": \"TOUR\",\n        \"price\": 100,\n        \"canGoWithChildren\": true,\n        \"maxPeople\": 100,\n        \"comfortLevel\": {\n            \"id\": 1,\n            \"name\": \"Basen\"\n        },\n        \"difficultyLevel\": {\n            \"id\": 1,\n            \"name\": \"Base\"\n        },\n        \"place\": {\n            \"id\": 1,\n            \"name\": \"Moscow\"\n        },\n        \"tourActivities\": [\n            {\n                \"id\": 1,\n                \"name\": \"Bike tours\"\n            }\n        ],\n        \"tourTypes\": []\n    }\n]"
+						},
+						{
+							"name": "404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/recommendations/tours/12",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"recommendations",
+										"tours",
+										"12"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "27"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1b-UXpA/C0+3JjeYOCF5MeC3ZWFrD8\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 May 2024 10:33:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Tour not found\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"pm.test('Response time is below 300 ms', () => {\r",
+					"    pm.expect(pm.response.responseTime).to.be.below(200)\r",
+					"})\r",
+					"\r",
+					"pm.test(\"Content-Type is present\", function () {\r",
+					"    pm.response.to.have.header(\"Content-Type\");\r",
+					"});\r",
+					"\r",
+					"pm.test(\"Response is in JSON format\", function () {\r",
+					"    pm.expect(contentType).to.include(\"application/json\")\r",
+					"})\r",
+					"\r",
+					"pm.test(\"Response code is not 5xx\", function () {\r",
+					"    var statusCode = pm.response.code\r",
+					"    pm.expect(statusCode).to.not.be.within(500, 599)\r",
+					"})"
+				]
+			}
+		}
+	]
+}
