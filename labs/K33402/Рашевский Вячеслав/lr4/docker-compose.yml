@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  lr2:
+    container_name: lr2
+    build:
+      context: ./lr2
+      dockerfile: Dockerfile
+    ports:
+      - "3000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/db
+    volumes:
+      - ./lr2:/usr/src/app:cached
+      - /usr/src/app/node_modules
+    networks:
+      - my-network
+
+  lr3:
+    container_name: lr3
+    build:
+      context: ./lr3
+      dockerfile: Dockerfile
+    ports:
+      - "3001"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/db
+    volumes:
+      - ./lr3:/usr/src/app:cached
+      - /usr/src/app/node_modules
+    networks:
+      - my-network
+
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    depends_on:
+      - lr2
+      - lr3
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - my-network
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  pgdata:
