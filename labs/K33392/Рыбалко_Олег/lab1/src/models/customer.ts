@@ -5,20 +5,24 @@ import {
   Unique,
   PrimaryKey,
   AutoIncrement,
+  Default,
 } from 'sequelize-typescript'
 
 @Table
-export class Cat extends Model {
+export class Customer extends Model {
   @Unique
   @PrimaryKey
   @AutoIncrement
   @Column
-  identifier: number
+  declare id: number
 
   @Column
-  name: string
+  declare firstName: string
 
   @Column
-  breed: string
+  declare lastName: string
+
+  @Column
+  declare info: string
 }
 
