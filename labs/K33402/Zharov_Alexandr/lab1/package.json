@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node dist/index.js",
+    "lint": "npx eslint . --ext .ts",
+    "migrate": "npx sequelize db:migrate"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "sequelize-typescript": "^2.1.6",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0-dev.20240402"
+  }
+}

@@ -1,0 +1,32 @@
+name: Deploy via SSH
+
+on:
+  push:
+    branches:
+      - lab4
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.VPS_PRIVATE_KEY }}
+
+    - name: Deploy to server
+      env:
+        VPS_SERVER_NAME: ${{ secrets.VPS_SERVER_NAME }}
+        VPS_USER_NAME: ${{ secrets.VPS_USER_NAME }}
+      run: |
+        ssh -o StrictHostKeyChecking=no $VPS_USER_NAME@$VPS_SERVER_NAME "
+        mkdir -p /home/$VPS_USER_NAME/deployed_project &&
+        cd /home/$VPS_USER_NAME/deployed_project &&
+        git init &&
+        git remote add origin https://github.com/your_username/your_repository.git &&
+        git pull origin main &&
+        echo 'Deployment completed!'"
