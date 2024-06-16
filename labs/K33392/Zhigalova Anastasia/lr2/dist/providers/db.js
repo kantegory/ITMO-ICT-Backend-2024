@@ -16,12 +16,11 @@ const Product_1 = require("../models/products/Product");
 const Promotion_1 = require("../models/promotions/Promotion");
 const User_1 = require("../models/users/User");
 const sequelize = new sequelize_typescript_1.Sequelize({
-    //repositoryMode: true,
-    database: 'some_db',
-    dialect: 'sqlite',
-    username: 'root',
-    password: '',
-    storage: 'db.sqlite',
+    database: process.env.DB_NAME || 'some_db',
+    dialect: process.env.DB_DIALECT || 'sqlite',
+    username: process.env.DB_USERNAME || 'root',
+    password: process.env.DB_PASSWORD || '',
+    storage: process.env.DB_STORAGE || 'db.sqlite',
     logging: console.log,
 });
 const models = [User_1.User, Discount_1.Discount, Order_1.Order, Product_1.Product, Promotion_1.Promotion];
