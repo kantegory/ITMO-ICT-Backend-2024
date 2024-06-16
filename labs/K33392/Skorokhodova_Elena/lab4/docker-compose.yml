@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - mynetwork
+
+  authorize:
+    build:
+      context: ./authorize
+      dockerfile: Dockerfile
+    volumes:
+      - ./authorize/db.sqlite:/app/db.sqlite
+    depends_on:
+      - rabbitmq
+    networks:
+      - mynetwork
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    working_dir: /app
+    ports:
+      - "8001:8001"
+
+  otherfunctions:
+    build:
+      context: ./otherfunctions
+      dockerfile: Dockerfile
+    volumes:
+      - ./otherfunctions/db.sqlite:/app/db.sqlite
+    depends_on:
+      - rabbitmq
+    networks:
+      - mynetwork
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - AUTH_SERVICE=http://authorize:8001
+    working_dir: /app
+    ports:
+      - "8000:8000"
+
+networks:
+  mynetwork:
+    driver: bridge

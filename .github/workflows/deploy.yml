@@ -1,0 +1,28 @@
+name: Deploy to Yandex.Cloud
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 20.x
+      - name: Preparation
+        run: |
+          sudo apt-get update
+          sudo apt-get install rsync -y
+          mkdir "$HOME/.ssh"
+          echo "${{ secrets.MY_PRIVATE_KEY }}" > "$HOME/.ssh/key"
+          chmod 600 "$HOME/.ssh/key"
+      - name: Sync
+        run: |
+          rsync -e "ssh -p 22 -i $HOME/.ssh/key -o StrictHostKeyChecking=no" -avz --exclude '.git' --chown=github:www-data --chmod=Dg=rwx,Fg=rwx --archive --compress --delete . ${{ secrets.MY_USERNAME }}@${{ secrets.MY_HOST }}:/home/helbroone/deploy
+      - name: Build
+        run: |
+          ssh -p 22 -i $HOME/.ssh/key ${{ secrets.MY_USERNAME }}@${{ secrets.MY_HOST }} 'cd /home/helbroone/deploy/labs/K33392/Skorokhodova_Elena/lab4 && sudo docker compose up -d --build'
