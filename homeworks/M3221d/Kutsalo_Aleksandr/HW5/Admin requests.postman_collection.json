@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "26c6415a-c78f-45c3-b360-51c871cd94f1",
+		"name": "Admin requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28197772"
+	},
+	"item": [
+		{
+			"name": "Get all items",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/shop/item",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shop",
+						"item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Hoodie\",\n    \"description\": \"A really good hoodie\",\n    \"price\": 123,\n    \"imageURL\": \"https://i.ebayimg.com/images/g/4TQAAOSwhTxh-y4U/s-l1600.webp\",\n    \"quantity\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/item",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete item by ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/item/6",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"item",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create tag",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Blue\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/tag",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"tag"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all tags",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/tag",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"tag"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Make association",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"itemId\": 4,\n    \"tagId\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/tag",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"tag"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add item to cart",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{routerPath}}/item/4",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{routerPath}}",
+						"item",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "routerPath",
+			"value": "admin",
+			"type": "string"
+		}
+	]
+}
