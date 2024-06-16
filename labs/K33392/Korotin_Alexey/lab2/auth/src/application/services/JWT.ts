@@ -6,11 +6,12 @@ export interface Session {
     email: string;
     role: AccountRole;
     status: AccountStatus;
+    iss: string,
     iat: number;
     exp: number;
 }
 
-export type PartialSession = Omit<Session, "iat" | "exp">;
+export type PartialSession = Omit<Session, "iss" | "iat" | "exp">;
 
 export interface EncodeResult {
     token: string;
@@ -33,17 +34,21 @@ export type DecodeResult =
 export type ExpirationStatus = "expired" | "active";
 
 const SECRET = process.env["app.secret"] ?? "";
+const TOKEN_DURATION_MINUTES = Number(process.env["app.token.durationMinutes"]) ?? 15;
+const TOKEN_ISSUER_CLAIM = process.env['app.token.issuer'] ?? "Unknown";
 export function encodeSession(partialSession: PartialSession): EncodeResult {
     // Always use HS512 to sign the token
     const algorithm: TAlgorithm = "HS512";
     // Determine when the token should expire
     const issued = Date.now();
-    const fifteenMinutesInMs = 15 * 60 * 1000; // todo: extract duration
-    const expires = issued + fifteenMinutesInMs;
+    const tokenDurationMillis = TOKEN_DURATION_MINUTES * 60 * 1000;
+    const expires = issued + tokenDurationMillis;
     const session: Session = {
         ...partialSession,
-        iat: issued / 1000,
-        exp: expires / 1000
+        iss: TOKEN_ISSUER_CLAIM,
+        // integer representation
+        iat: Math.floor(issued / 1000),
+        exp: Math.floor(expires / 1000)
     };
 
     return {

@@ -1,11 +1,13 @@
 import {AccountRole, AccountStatus} from "../../../domain/replicas/Account";
 import {decode, TAlgorithm} from "jwt-simple";
+import {type} from "node:os";
 
 export interface Session {
     sub: string;
     email: string;
     role: AccountRole;
     status: AccountStatus;
+    iss: string;
     iat: number;
     exp: number;
 }
@@ -51,6 +53,12 @@ export function decodeSession(tokenString: string): DecodeResult {
             return {
                 type: "invalid-token"
             };
+        }
+
+        if (e.message === "Token expired") {
+            return {
+                type: "invalid-token"
+            }
         }
 
         if (e.message === "Signature verification failed" || e.message === "Algorithm not supported") {

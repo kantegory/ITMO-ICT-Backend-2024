@@ -15,7 +15,7 @@ exports.findById = async (req, res) => {
         return res.send(user.toJSON());
     }
 
-    return res.status(404).send("User could not be found");
+    return res.status(404).send("Account could not be found");
 }
 
 exports.deleteById = async (req, res) => {
@@ -48,7 +48,7 @@ exports.update = async (req, res) => {
 
     const user = await db.User.findByPk(userId);
     if (!user) {
-        return res.status(404).send("User could not be found");
+        return res.status(404).send("Account could not be found");
     }
 
     try {
