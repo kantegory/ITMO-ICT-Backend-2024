@@ -1,34 +1,23 @@
-import jwt from 'jsonwebtoken'; 
-import dotenv from 'dotenv'; 
-import process from 'process'; 
-import { UserController } from '../controllers/users/userController';
- 
-dotenv.config(); 
- 
-const secretKey = process.env.SECRET_KEY; 
- 
-const authenticateToken = (req, res, next) => { 
-    const authHeader = req.headers['authorization']; 
-if (authHeader === undefined) return res.sendStatus(401); 
-if (!authHeader.startsWith('Bearer')) return res.sendStatus(401);
+import dotenv from "dotenv";
+import process from "process";
+import { Request, Response } from "express";
 
-    const token = authHeader.split(' ')[1];
- 
-    
-   
-    jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
-      if (err) {
-        console.error(err);
-        return res.status(403).send("Access Denied: Invalid Token");
-      }
-      req.user = user;
-      next();
-    });
-    
-    
-      
-  }; 
- 
+dotenv.config();
+
+const authenticateToken = async (req: Request, res: Response, next) => {
+  const authHeader = req.headers["authorization"];
+  if (authHeader === undefined) return res.sendStatus(401);
+  if (!authHeader.startsWith("Bearer")) return res.sendStatus(401);
+
+  const token = authHeader.split(" ")[1];
+
+  const resp = await fetch(`${process.env.AUTH_SERVICE_URL}/users/verify`, {
+    body: JSON.stringify({ token: token }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  if (!resp.ok) return res.sendStatus(401);
+  next();
+};
+
 export default authenticateToken;
-
-

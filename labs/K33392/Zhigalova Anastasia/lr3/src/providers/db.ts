@@ -1,8 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
-import { Discount } from "../models/discounts/Discount";
-import { Order } from "../models/orders/Order";
-import { Product } from "../models/products/Product";
-import { Promotion } from "../models/promotions/Promotion";
+import { User } from "../models/users/User";
 
 const sequelize = new Sequelize({
   database: process.env.DB_NAME || "some_db",
@@ -19,7 +16,7 @@ const sequelize = new Sequelize({
   logging: console.log,
 });
 
-const models = [Discount, Order, Product, Promotion];
+const models = [User];
 
 sequelize.addModels(models);
 

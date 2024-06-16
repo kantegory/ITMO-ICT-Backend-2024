@@ -1,9 +1,12 @@
 import { Order } from "../../models/orders/Order";
 import { Product } from "../../models/products/Product";
-import { User } from "../../models/users/User";
 
 export class OrderService {
-  async createOrder(userId: number, productId: number, quantity: number): Promise<Order | null> {
+  async createOrder(
+    userId: number,
+    productId: number,
+    quantity: number
+  ): Promise<Order | null> {
     try {
       const product = await Product.findByPk(productId);
       if (!product || product.stockQuantity < quantity) {
@@ -12,9 +15,17 @@ export class OrderService {
       }
 
       const orderDate = new Date();
-      const order = await Order.create({ userId, productId, quantity, orderDate });
+      const order = await Order.create({
+        userId,
+        productId,
+        quantity,
+        orderDate,
+      });
 
-      await Product.update({ stockQuantity: product.stockQuantity - quantity }, { where: { id: productId } });
+      await Product.update(
+        { stockQuantity: product.stockQuantity - quantity },
+        { where: { id: productId } }
+      );
 
       return order;
     } catch (error) {
@@ -25,7 +36,7 @@ export class OrderService {
 
   async getOrderById(orderId: number): Promise<Order | null> {
     try {
-      const order = await Order.findByPk(orderId, { include: [Product, User] });
+      const order = await Order.findByPk(orderId, { include: [Product] });
       return order;
     } catch (error) {
       console.error("An error occurred while retrieving the order:", error);
@@ -33,7 +44,10 @@ export class OrderService {
     }
   }
 
-  async updateOrderQuantity(orderId: number, newQuantity: number): Promise<Order | null> {
+  async updateOrderQuantity(
+    orderId: number,
+    newQuantity: number
+  ): Promise<Order | null> {
     try {
       const order = await Order.findByPk(orderId);
       if (!order) {
@@ -43,15 +57,21 @@ export class OrderService {
 
       const product = await Product.findByPk(order.productId);
       if (!product || product.stockQuantity + order.quantity < newQuantity) {
-        console.error("Product is not available in sufficient quantity for update.");
+        console.error(
+          "Product is not available in sufficient quantity for update."
+        );
         return null;
       }
 
-      const updatedStockQuantity = product.stockQuantity + order.quantity - newQuantity;
-      await Product.update({ stockQuantity: updatedStockQuantity }, { where: { id: order.productId } });
+      const updatedStockQuantity =
+        product.stockQuantity + order.quantity - newQuantity;
+      await Product.update(
+        { stockQuantity: updatedStockQuantity },
+        { where: { id: order.productId } }
+      );
 
       await order.update({ quantity: newQuantity });
-      
+
       return order;
     } catch (error) {
       console.error("An error occurred while updating the order:", error);
@@ -67,14 +87,16 @@ export class OrderService {
         return false;
       }
 
-
       const product = await Product.findByPk(order.productId);
       if (product) {
-        await Product.update({ stockQuantity: product.stockQuantity + order.quantity }, { where: { id: order.productId } });
+        await Product.update(
+          { stockQuantity: product.stockQuantity + order.quantity },
+          { where: { id: order.productId } }
+        );
       }
 
       await Order.destroy({ where: { id: orderId } });
-      
+
       return true;
     } catch (error) {
       console.error("An error occurred while deleting the order:", error);
@@ -82,22 +104,12 @@ export class OrderService {
     }
   }
 
-
-   async findOrdersByUserId(userId: string): Promise<Order[] | null> {
+  async findOrdersByUserId(userId: string): Promise<Order[]> {
     try {
-        const userWithOrders = await User.findByPk(userId, {
-            include: [{ model: Order }]
-        });
-
-        if (!userWithOrders) {
-            return null;
-        }
-
-        return userWithOrders.orders;
+      return await Order.findAll({ where: { userId: userId } });
     } catch (error) {
-        console.error("Error fetching user orders:", error);
-        throw error;
+      console.error("Error fetching user orders:", error);
+      throw error;
     }
-}
-
+  }
 }

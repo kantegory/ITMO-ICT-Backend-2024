@@ -10,10 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const Discount_1 = require("../models/discounts/Discount");
-const Order_1 = require("../models/orders/Order");
-const Product_1 = require("../models/products/Product");
-const Promotion_1 = require("../models/promotions/Promotion");
+const User_1 = require("../models/users/User");
 const sequelize = new sequelize_typescript_1.Sequelize({
     database: process.env.DB_NAME || "some_db",
     dialect: process.env.DB_DIALECT || "sqlite",
@@ -22,7 +19,7 @@ const sequelize = new sequelize_typescript_1.Sequelize({
     storage: process.env.DB_STORAGE || "db.sqlite",
     logging: console.log,
 });
-const models = [Discount_1.Discount, Order_1.Order, Product_1.Product, Promotion_1.Promotion];
+const models = [User_1.User];
 sequelize.addModels(models);
 sequelize
     .sync()

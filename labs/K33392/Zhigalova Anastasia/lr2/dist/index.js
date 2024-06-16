@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const userRoute_1 = __importDefault(require("./routes/users/userRoute"));
 const discountsRoute_1 = __importDefault(require("./routes/discounts/discountsRoute"));
 const ordersRoute_1 = __importDefault(require("./routes/orders/ordersRoute"));
 const productsRoute_1 = __importDefault(require("./routes/products/productsRoute"));
@@ -16,11 +15,10 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 8080;
 app.use(express_1.default.json());
-app.use('/discounts', authenticateToken_1.default, discountsRoute_1.default);
-app.use('/orders', authenticateToken_1.default, ordersRoute_1.default);
-app.use('/products', productsRoute_1.default);
-app.use('/promotions', authenticateToken_1.default, promotionsRoute_1.default);
-app.use('/users', userRoute_1.default);
+app.use("/discounts", authenticateToken_1.default, discountsRoute_1.default);
+app.use("/orders", authenticateToken_1.default, ordersRoute_1.default);
+app.use("/products", productsRoute_1.default);
+app.use("/promotions", authenticateToken_1.default, promotionsRoute_1.default);
 app.listen(PORT, () => {
     db_1.default;
     console.log(`Server is running on port ${PORT}`);
