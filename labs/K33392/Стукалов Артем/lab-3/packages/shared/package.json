@@ -1,0 +1,38 @@
+{
+  "name": "@repo/shared",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./utils": "./src/utils/index.ts",
+    "./fastify": "./src/fastify/index.ts",
+    "./db": "./src/db/index.ts",
+    "./modelSchemas": "./src/modelSchemas/index.ts",
+    "./errors": "./src/errors/index.ts",
+    "./amqp": "./src/amqp/index.ts"
+  },
+  "scripts": {
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/amqplib": "^0.10.5",
+    "prisma": "^5.14.0",
+    "typescript": "*"
+  },
+  "dependencies": {
+    "@fastify/jwt": "^8.0.1",
+    "@prisma/client": "^5.14.0",
+    "amqplib": "^0.10.4",
+    "fastify": "^4.26.2",
+    "fastify-type-provider-zod": "^1.2.0",
+    "pino": "^9.1.0",
+    "pino-pretty": "^11.0.0",
+    "zod": "^3.23.8",
+    "zod-prisma-types": "^3.1.6",
+    "fastify-plugin": "^4.5.1"
+  }
+}

@@ -1,0 +1,19 @@
+
+> auth-service@0.0.0 build /home/astukalov/Documents/my-projects/api-monorepo/api-services/auth
+> webpack
+
+asset [1m[32mindex.js[39m[22m 993 KiB [1m[32m[emitted][39m[22m (name: index)
+runtime modules 937 bytes 4 modules
+cacheable modules 674 KiB
+  modules by path [1m./src/[39m[22m 7.29 KiB
+    modules by path [1m./src/*.ts[39m[22m 1.47 KiB 3 modules
+    modules by path [1m./src/routes/[39m[22m 1.59 KiB 3 modules
+    modules by path [1m./src/middlewares/*.ts[39m[22m 546 bytes 2 modules
+    + 5 modules
+  modules by path [1m../../[39m[22m 667 KiB
+    modules by path [1m../../packages/shared/src/[39m[22m 460 KiB 7 modules
+    modules by path [1m../../node_modules/.pnpm/@prisma+client@5.14.0_prisma@5.14.0/node_modules/[39m[22m 208 KiB
+      modules by path [1m../../node_modules/.pnpm/@prisma+client@5.14.0_prisma@5.14.0/node_modules/@...(truncated)[39m[22m 180 KiB 2 modules
+      modules by path [1m../../node_modules/.pnpm/@prisma+client@5.14.0_prisma@5.14.0/node_modules/.pris...(truncated)[39m[22m 27.7 KiB 2 modules
++ 17 modules
+webpack 5.91.0 compiled [1m[32msuccessfully[39m[22m in 426 ms

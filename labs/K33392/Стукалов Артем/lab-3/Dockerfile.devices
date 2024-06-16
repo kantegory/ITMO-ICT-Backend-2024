@@ -1,0 +1,11 @@
+FROM node:20-alpine 
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm turbo build
+EXPOSE 3000
+CMD [ "node", "api-services/devices/dist/index.js" ]

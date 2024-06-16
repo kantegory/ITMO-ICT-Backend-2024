@@ -1,0 +1,28 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build", "db:generate"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:generate": {
+      "env": ["DATABASE_URL"]
+    },
+    "db:migrate:dev": {
+      "env": ["DATABASE_URL"]
+    },
+    "db:migrate:deploy": {
+      "env": ["DATABASE_URL"]
+    },
+    "db:studio": {
+      "env": ["DATABASE_URL"]
+    }
+  }
+}
