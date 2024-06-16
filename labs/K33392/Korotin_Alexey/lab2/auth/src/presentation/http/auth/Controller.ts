@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 import {encodeSession, PartialSession} from "../../../application/services/JWT";
 import {InvalidEmailException} from "../../../domain/account/EmailAddress";
 import {validationResult} from 'express-validator';
+import {decodeRefresh} from "../../../application/services/RefreshToken";
+
 
 export default class AuthController {
 
@@ -125,6 +127,70 @@ export default class AuthController {
 
         const result = encodeSession(session);
         res.status(200).json(result);
+    }
 
+    /**
+     * @swagger
+     * /auth/refresh:
+     *      post:
+     *          tags: [Auth]
+     *          summary: Refresh session via refresh token
+     *          requestBody:
+     *              description: Refresh token
+     *              required: true
+     *              content:
+     *                  application/json:
+     *                      schema:
+     *                          type: object
+     *                          required:
+     *                              - token
+     *                          properties:
+     *                              token:
+     *                                  type: string
+     *          responses:
+     *              200:
+     *                  description: Ok
+     *                  content:
+     *                      application/json:
+     *                          schema:
+     *                              $ref: '#components/schemas/JWT'
+     *              400:
+     *                  description: Bad request
+     *              401:
+     *                  description: Invalid token
+     */
+
+    refresh = async (req: Request, res: Response) => {
+        const bindingResult = validationResult(req);
+        if (!bindingResult.isEmpty()) {
+            res.status(400).json({errors: bindingResult.array()});
+        }
+        const token = req.body.token as string;
+        const decodeResult = decodeRefresh(token);
+
+        if (decodeResult.type !== "VALID") {
+            res.status(401).json({message: decodeResult.type});
+        }
+
+        const userId = decodeResult.token?.sub as string;
+
+        const existing = await this.repository.findById(userId)
+            .catch((r) => {
+                res.status(401).json(r);
+                return null;
+            });
+        if (!existing) {
+            return res;
+        }
+
+        const session: PartialSession = {
+            sub: existing.id,
+            email: existing.email.value,
+            role: existing.role,
+            status: existing.status
+        };
+
+        const result = encodeSession(session);
+        return res.status(200).json(result);
     }
 }

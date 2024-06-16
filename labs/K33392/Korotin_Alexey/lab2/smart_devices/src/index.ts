@@ -4,6 +4,8 @@ import bodyParser from 'body-parser';
 import routes from "./presentation/http";
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import {bootstrapKafka} from "./application/kafka";
+
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 8000;
 
@@ -34,7 +36,10 @@ const swaggerOptions: swaggerJsDoc.Options = {
         schemes: ['http'],
         servers: [
             {
-                url: `http://${appHost}:${appPort}`
+                url: `http://${DEFAULT_HOST}:${appPort}`
+            },
+            {
+                url: `http://${appHost}:${appPort}`,
             }
         ],
         basePath: '/v1',
@@ -64,4 +69,7 @@ app.get('/swagger.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(docs);
 });
-app.listen(appPort, appHost, () => console.log(`Application have started listening ${appHost} at port ${appPort}`));
+app.listen(appPort, appHost, async () => {
+    console.log(`Application have started listening ${appHost} at port ${appPort}`);
+    await bootstrapKafka().then(() => console.log("Kafka bootstrapped successfully"));
+});

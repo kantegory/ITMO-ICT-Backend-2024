@@ -13,7 +13,7 @@ export enum AccountStatus {
 }
 
 export class Account implements Entity<string> {
-    public constructor(public id: string, public email: string, public password: string,
+    public constructor(public id: string, public email: string,
                        public role: AccountRole, public status: AccountStatus) {
     }
 
