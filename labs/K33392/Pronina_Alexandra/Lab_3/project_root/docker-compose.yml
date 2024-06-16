@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: bookstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  book-service:
+    build: ./book_service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: 1234
+      DB_NAME: bookstore
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: jwt_secret
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "3001:3001"
+
+  order-service:
+    build: ./order_service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: 1234
+      DB_NAME: bookstore
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: jwt_secret
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "3002:3002"
+
+  user-service:
+    build: ./user-service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: 1234
+      DB_NAME: bookstore
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: jwt_secret
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "3003:3003"
+
+  payment-service:
+    build: ./payment-service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: 1234
+      DB_NAME: bookstore
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: jwt_secret
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "3004:3004"
+
+  stock-service:
+    build: ./stock-service
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: 1234
+      DB_NAME: bookstore
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: jwt_secret
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "3005:3005"
+
+volumes:
+  pgdata:

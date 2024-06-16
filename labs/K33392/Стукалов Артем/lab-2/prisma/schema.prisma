@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider = "zod-prisma-types"
+  output   = "../src/modelSchemas"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  username  String  @unique()
+  passHash  String
+  passSalt  String
+  createdAt Int
+  isActive  Boolean @default(true)
+  isAdmin   Boolean @default(false)
+
+  devices  Device[]
+  areas    Area[]
+  commands Command[]
+  scripts  Script[]
+}
+
+enum DeviceType {
+  Temperature
+  Relay
+}
+
+model Device {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  isConnected Boolean    @default(false)
+  uuid        String     @unique
+  type        DeviceType
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  area             Area?        @relation(fields: [areaId], references: [id])
+  areaId           Int?
+  commands         Command[]
+  conditionScripts Script[]     @relation("conditionDevice")
+  commandScripts   Script[]     @relation("commandDevice")
+  deviceData       DeviceData[]
+}
+
+enum AreaType {
+  Room
+}
+
+model Area {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  type        AreaType
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  devices Device[]
+}
+
+model BaseCommand {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  args Json
+
+  commands Command[]
+  scripts  Script[]
+}
+
+model Command {
+  id         Int     @id @default(autoincrement())
+  ts         Int
+  isExecuted Boolean @default(false)
+  status     Json
+  params     Json
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  device   Device @relation(fields: [deviceId], references: [id])
+  deviceId Int
+
+  baseCommand   BaseCommand @relation(fields: [baseCommandId], references: [id])
+  baseCommandId Int
+}
+
+model Script {
+  id              Int    @id @default(autoincrement())
+  name            String
+  description     String
+  conditionParams Json
+  commandParams   Json
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  conditionDevice   Device? @relation("conditionDevice", fields: [conditionDeviceId], references: [id])
+  conditionDeviceId Int?
+
+  commandDevice   Device @relation("commandDevice", fields: [commandDeviceId], references: [id])
+  commandDeviceId Int
+
+  baseCommand   BaseCommand @relation(fields: [baseCommandId], references: [id])
+  baseCommandId Int
+}
+
+model DeviceData {
+  id     Int  @id @default(autoincrement())
+  ts     Int
+  status Json
+
+  device   Device @relation(fields: [deviceId], references: [id])
+  deviceId Int
+}
