@@ -114,8 +114,8 @@ export class UsersController {
       const { token } = req.body
       if (!token) return res.sendStatus(401)
       const resp = jwt.verify(token, process.env.SECRET_KEY as string)
-      await this.service.findByEmail(resp.sub as string)
-      res.sendStatus(200)
+      const user = await this.service.findByEmail(resp.sub as string)
+      res.status(200).json(user)
     } catch (error) {
       console.log(error)
       res.sendStatus(401)

@@ -1,0 +1,23 @@
+name: Deploy to the server
+
+on:
+  push:
+    branches:
+      - lr4
+
+jobs:
+  deploy_dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Update code
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        script: cd /root/ITMO-ICT-Backend-2024 && git checkout lr4 && git pull && cd labs/K33392/Рыбалко_Олег && docker compose up --build -d
+    
