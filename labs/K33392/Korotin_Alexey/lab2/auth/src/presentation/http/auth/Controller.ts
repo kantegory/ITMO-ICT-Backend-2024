@@ -6,7 +6,9 @@ import bcrypt from 'bcrypt';
 import {encodeSession, PartialSession} from "../../../application/services/JWT";
 import {InvalidEmailException} from "../../../domain/account/EmailAddress";
 import {validationResult} from 'express-validator';
+
 import {decodeRefresh} from "../../../application/services/RefreshToken";
+
 
 export default class AuthController {
 

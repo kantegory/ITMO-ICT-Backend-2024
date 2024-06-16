@@ -1,0 +1,85 @@
+name: Deploy on push
+
+# Runs tests on any push
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  pub-shared-core:
+    runs-on: [ubuntu-latest]
+    defaults:
+      run:
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/core
+    steps:
+      - name: Checkout repositoryd
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Patch version
+        run: npm version patch
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  pub-shared-database:
+    runs-on: [ubuntu-latest]
+    defaults:
+      run:
+        working-directory: ./labs/K33402/Тюмин Никита/lab4/shared/database
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Patch version
+        run: npm version patch
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  deploy:
+    needs: [pub-shared-core, pub-shared-database]
+    runs-on: [ubuntu-latest]
+    defaults:
+      run:
+        working-directory: ./labs/K33402/Тюмин Никита/lab4
+    steps:
+      - name: Ssh update
+        uses: D3rHase/ssh-command-action@v0.2.2
+        with:
+          host: ${{secrets.SSH_HOST}}
+          user: ${{secrets.SSH_USER}}
+          private_key: ${{secrets.SSH_PRIVATE_KEY}}
+          command: |
+            cd ${{ secrets.PROJECT_FOLDER }};
+            git pull;
+            docker compose build;
+            docker compose down;
+            docker compose up -d;

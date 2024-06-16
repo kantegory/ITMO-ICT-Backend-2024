@@ -73,3 +73,4 @@ app.listen(appPort, appHost, async () => {
     console.log(`Application have started listening ${appHost} at port ${appPort}`);
     await bootstrapKafka().then(() => console.log("Kafka bootstrapped successfully"));
 });
+
