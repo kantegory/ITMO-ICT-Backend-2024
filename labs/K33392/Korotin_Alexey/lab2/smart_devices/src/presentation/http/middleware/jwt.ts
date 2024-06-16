@@ -43,7 +43,7 @@ export function jwtAuthMiddleware(request: Request, response: Response, next: Ne
     }
 
     const session: Session = decodedSession.session;
-    const user = new Account(session.sub, session.email, "_", session.role, session.status);
+    const user = new Account(session.sub, session.email, session.role, session.status);
     // Set the session on response.locals object for routes to access
     response.locals = {
         ...response.locals,
