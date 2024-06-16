@@ -15,7 +15,7 @@ const authenticateToken = (req, res, next) => {
     if (!authHeader.startsWith('Bearer'))
         return res.sendStatus(401);
     const token = authHeader.split(' ')[1];
-    jsonwebtoken_1.default.verify(token, process_1.default.env.SECRET_KEY, (err, user) => {
+    jsonwebtoken_1.default.verify(token, secretKey, (err, user) => {
         if (err) {
             console.error(err);
             return res.status(403).send("Access Denied: Invalid Token");
