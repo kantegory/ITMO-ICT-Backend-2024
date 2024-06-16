@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "3000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:Kirill307477@postgres:5432/dockerBD
+    volumes:
+      - ./app:/usr/src/app:cached
+      - /usr/src/app/node_modules
+    networks:
+      - my-network
+
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:Kirill307477@postgres:5432/dockerBD
+    volumes:
+      - ./product-service:/usr/src/app:cached
+      - /usr/src/app/node_modules
+    networks:
+      - my-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - my-network
+
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Kirill307477
+      POSTGRES_DB: dockerBD
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  pgdata:
