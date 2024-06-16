@@ -1,0 +1,71 @@
+version: '1.0'
+services:
+  shop-service:
+    build:
+      context: ./shop-service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db_shop
+      - rabbitmq
+    environment:
+      DB_HOST: db_shop
+      DB_PORT: 5432
+      DB_USER: shop_user
+      DB_PASSWORD: shop_password
+      DB_NAME: shop_db
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db_user
+      - rabbitmq
+    environment:
+      DB_HOST: db_user
+      DB_PORT: 5432
+      DB_USER: user_user
+      DB_PASSWORD: user_password
+      DB_NAME: user_db
+
+  gateway:
+    build:
+      context: ./deployment/gateway/src
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - shop-service
+      - user-service
+
+  db_shop:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: shop_user
+      POSTGRES_PASSWORD: shop_password
+      POSTGRES_DB: shop_db
+    ports:
+      - "5432:5432"
+
+  db_user:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: user_password
+      POSTGRES_DB: user_db
+    ports:
+      - "5433:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+networks:
+  default:
+    name: my_network

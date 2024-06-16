@@ -1,0 +1,486 @@
+{
+	"info": {
+		"_postman_id": "432d46cd-9325-4583-8723-21e7342b80ab",
+		"name": "Online Shop (hw4)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30146478"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Антон\",\r\n    \"email\": \"anton@example.com\",\r\n    \"password\": \"Anton123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/users//register"
+					},
+					"response": []
+				},
+				{
+					"name": "Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Антон\",\r\n    \"email\": \"anton@example.com\",\r\n    \"password\": \"Anton123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/users/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Discounts",
+			"item": [
+				{
+					"name": "Create discounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"Весенняя распродажа\",\r\n  \"percentage\": 35,\r\n  \"startDate\": \"2024-26-04T00:00:00.000Z\",\r\n  \"endDate\": \"2024-05-50T23:59:59.999Z\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/discounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Id discounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/discounts/1"
+					},
+					"response": []
+				},
+				{
+					"name": "All discounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/discounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Change discount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"Весенняя распродажа\",\r\n  \"percentage\": 50,\r\n  \"startDate\": \"2024-25-04T00:00:00.000Z\",\r\n  \"endDate\": \"2024-05-50T23:59:59.999Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/discounts/3"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete discount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{server_url}}/discounts/3"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "New order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": 1,\r\n  \"productId\": 1,\r\n  \"quantity\": 2,\r\n  \"orderDate\": \"2024-25-04T12:00:00.000Z\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/orders/"
+					},
+					"response": []
+				},
+				{
+					"name": "User's order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/orders/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Change order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": 2,\r\n  \"productId\": 1,\r\n  \"quantity\": 2,\r\n  \"orderDate\": \"2024-25-04T12:00:00.000Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/orders/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{server_url}}/orders/2"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "All products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/products"
+					},
+					"response": []
+				},
+				{
+					"name": "Id product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/products/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Джинсы женские\",\r\n  \"price\": 10000,\r\n  \"stockQuantity\": 40,\r\n  \"discountId\": 2,\r\n  \"promotionId\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/products"
+					},
+					"response": []
+				},
+				{
+					"name": "Change product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Джинсы женские\",\r\n  \"price\": 12000,\r\n  \"stockQuantity\": 40,\r\n  \"discountId\": 2,\r\n  \"promotionId\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/products/3"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{server_url}}/products/3"
+					},
+					"response": []
+				},
+				{
+					"name": "Id products to orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/products/1/orders"
+					},
+					"response": []
+				},
+				{
+					"name": "Id products to stock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/products/1/stock"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Promotions",
+			"item": [
+				{
+					"name": "Id promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/promotions/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Id promotions to products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{server_url}}/promotions/1/products"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete products from promotions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{server_url}}/promotions/products/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create product to Promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Пальто\",\r\n  \"price\": 20000,\r\n  \"stockQuantity\": 15,\r\n  \"discountId\": 1,\r\n  \"promotionId\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/promotions/1/products/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{jwt_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Черный понедельник\",\r\n  \"description\": \"Скидки до 40% на выбранные товары\",\r\n  \"startDate\": \"2024-04-29T00:00:00.000Z\",\r\n  \"endDate\": \"2023-04-29T23:59:59.999Z\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{server_url}}/promotions"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzE0MDQ4NjIyfQ.RYdJSm4-HDegtPVlJMMRYp5i6HHRyWcD2EqaskL3tWw",
+			"type": "string"
+		}
+	]
+}
