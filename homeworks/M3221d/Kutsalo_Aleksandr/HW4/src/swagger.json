@@ -1,0 +1,406 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "User API",
+    "description": "API for managing users",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "User",
+      "description": "Operations related to users creation and usage"
+    },
+    {
+      "name": "Shop",
+      "description": "Operations related to the shop"
+    }
+  ],
+  "paths": {
+    "/users/id/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/create": {
+      "post": {
+        "summary": "Create a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "User login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginCredentials"
+              }
+            }
+          }
+        },
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/auth_only": {
+      "get": {
+        "summary": "Access private page (requires authentication)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "Access granted"
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "summary": "Logout",
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          }
+        },
+        "tags": ["User"]
+      }
+    },
+    "/shop/": {
+      "get": {
+        "summary": "Test frontend homepage",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "tags": ["Shop"]
+      }
+    },
+    "/shop/item": {
+      "get": {
+        "summary": "Get all items",
+        "parameters": [
+          {
+            "name": "tagId",
+            "in": "query",
+            "description": "Array of tag IDs",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        ],
+        "tags": ["Shop"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shop/item/{id}": {
+      "get": {
+        "summary": "Get item by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["Shop"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content":{
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add item to shopping cart",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": ["Shop"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToCartRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item added to shopping cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingCartItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/shop/cart": {
+      "get": {
+        "summary": "Get shopping cart contents",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["Shop"],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddToCartRequest": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "integer",
+            "example": 12
+          },
+          "itemId": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "password": {
+            "type": "string",
+            "description": "Hashed password",
+            "example": "$2b$05$qa1Ss7dD6Vjxi.frJk05UOagBRwvPKxwqMgToFaVZabIl80n.nxwq"
+          },
+          "email": {
+            "type": "string",
+            "example": "johndoe@example.com"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "LoginCredentials": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "example@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "password",
+          "email"
+        ]
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Shoes"
+          },
+          "description": {
+            "type": "string",
+            "example": "These shoes are really good"
+          },
+          "price": {
+            "type": "number",
+            "example": 1000
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://example.com/example.png"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 12
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ]
+      },
+      "ItemTag": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "number",
+            "example": 1
+          },
+          "tagId": {
+            "type": "number",
+            "example": 2
+          }
+        },
+        "required": [
+          "tagId",
+          "itemId"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Hoodies"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ShoppingCartItem": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "number",
+            "example": 1
+          },
+          "itemId": {
+            "type": "number",
+            "example": 2
+          },
+          "quantity": {
+            "type": "number",
+            "example": 12
+          }
+        },
+        "required": [
+          "userId",
+          "itemId"
+        ]
+      }
+
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
