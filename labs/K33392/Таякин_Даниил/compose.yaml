@@ -1,0 +1,47 @@
+version: "3.9"
+name: backend
+
+services:
+  backend:
+    build:
+      context: ./lab-1
+    environment:
+      - "AUTH_URL=http://auth:9091"
+      - "PORT=9090"
+    ports:
+      - "9090:9090"
+    depends_on:
+      - auth
+      - rabbitmq
+
+  auth:
+    build:
+      context: ./lab-3
+    environment:
+      - "PORT=9091"
+    
+  logs:
+    build:
+      context: ./lab-4
+    depends_on:
+      rabbitmq:
+        condition:
+          service_healthy
+
+  gateway:
+    image: caddy
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - auth
+      - backend
+
+  rabbitmq:
+    image: "rabbitmq:3"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 5

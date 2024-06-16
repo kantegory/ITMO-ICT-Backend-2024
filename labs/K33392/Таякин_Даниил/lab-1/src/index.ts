@@ -5,11 +5,13 @@ import dotenv from 'dotenv'
 import customerRouter from './routes/Customer.js'
 import saleRouter from './routes/Sale.js'
 import productRouter from './routes/Product.js'
+import { logsMiddleware } from './middleware/logs.js'
 import { authMiddlware } from './middleware/auth.js'
 
 dotenv.config()
 const app = express()
 app.use(express.json())
+app.use(logsMiddleware)
 app.use(authMiddlware)
 app.use('/customers', customerRouter)
 app.use('/sales', saleRouter)
