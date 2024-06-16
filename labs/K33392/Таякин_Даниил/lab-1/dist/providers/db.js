@@ -2,7 +2,6 @@ import { Sequelize } from 'sequelize-typescript';
 import { Customer } from '../models/Customer.js';
 import { Sale } from '../models/Sale.js';
 import { Product } from '../models/Product.js';
-import { User } from '../models/User.js';
 const sequelize = new Sequelize({
     database: 'some_db',
     dialect: 'sqlite',
@@ -11,7 +10,7 @@ const sequelize = new Sequelize({
     storage: 'db.sqlite',
     logging: console.log,
 });
-const models = [User, Customer, Sale, Product];
+const models = [Customer, Sale, Product];
 sequelize.addModels(models);
 sequelize
     .sync()

@@ -14,8 +14,8 @@ export const authMiddlware = async (req: Request, res: Response, next: any) => {
         if (!token)
             return res.sendStatus(403)
         
-        console.log(`${req.protocol}://${req.hostname}:${process.env.PORT}/users/verify`)
-        const resp = await fetch(`${req.protocol}://${req.hostname}:${process.env.PORT}/users/verify`, {
+        console.log(`${req.protocol}://${req.hostname}/users/verify`)
+        const resp = await fetch(`${req.protocol}://${req.hostname}/users/verify`, {
             method: 'POST',
             body: JSON.stringify({ token: token }),
             headers: { 'Content-Type': 'application/json' },
