@@ -1,18 +1,15 @@
 import { User } from '../../models/user.js'
 import { Request, Response } from 'express'
-import { IService } from '../../services/base/index.js'
 import { UsersService } from '../../services/users/index.js'
 import { UserCreate, Auth } from './models.js'
 import crypto from 'crypto'
-import { BaseController } from '../base/index.js'
 import process from 'process'
 import jwt from 'jsonwebtoken'
 
-export class UsersController extends BaseController<User> {
+export class UsersController {
   protected service: UsersService
 
   constructor() {
-    super()
     this.service = new UsersService(User)
   }
 
@@ -96,11 +93,11 @@ export class UsersController extends BaseController<User> {
         .update(body.password)
         .digest('hex')
 
-      if (pwdHash === dbUser.passwordHash) {
+      if (pwdHash === dbUser!.passwordHash) {
         return res.send({
           token: jwt.sign(
             { sub: body.email, exp: Math.floor(Date.now() / 1000 + 60 * 100) },
-            process.env.SECRET_KEY
+            process.env.SECRET_KEY as string
           ),
         })
       } else {
@@ -109,6 +106,19 @@ export class UsersController extends BaseController<User> {
     } catch (error) {
       console.log(error)
       res.status(500).send({ error: 'Internal Server Error' })
+    }
+  }
+
+  verify = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body
+      if (!token) return res.sendStatus(401)
+      const resp = jwt.verify(token, process.env.SECRET_KEY as string)
+      await this.service.findByEmail(resp.sub as string)
+      res.sendStatus(200)
+    } catch (error) {
+      console.log(error)
+      res.sendStatus(401)
     }
   }
 }
