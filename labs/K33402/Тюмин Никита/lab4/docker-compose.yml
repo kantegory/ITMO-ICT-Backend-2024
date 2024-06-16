@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  auth:
+    container_name: node_auth
+    ports:
+      - "4000:8000"
+    restart: unless-stopped
+    build:
+      context: ./auth
+    networks:
+      - node
+  recommendations:
+    container_name: node_recommendations
+    ports:
+      - "6000:8000"
+    restart: unless-stopped
+    build:
+      context: ./recommendations
+    networks:
+      - node
+  tours:
+    container_name: node_tours
+    ports:
+      - "5000:8000"
+    restart: unless-stopped
+    build:
+      context: ./tours
+    networks:
+      - node
+  core:
+    depends_on:
+      - postgres
+    container_name: node_core
+    restart: "no"
+    build:
+      context: ./core
+    networks:
+      - node
+    command: ["sh", "-c", "npm run migrate && npm run seed"]
+
+  postgres:
+    container_name: node_postgres
+    restart: unless-stopped
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./pgsql/.env
+    volumes:
+      - node-pgsql-volume:/var/lib/postgresql/data
+    networks:
+      - node
+
+networks:
+  node:
+    driver: bridge
+
+volumes:
+  node-pgsql-volume:
+    driver: local
