@@ -7,6 +7,9 @@ import swaggerUi from 'swagger-ui-express';
 import {bootstrapKafka} from "./application/services/kafka";
 import {log} from "node:util";
 
+import swaggerJSDoc from "swagger-jsdoc";
+
+
 
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = 8000;
@@ -44,7 +47,6 @@ const swaggerOptions: swaggerJsDoc.Options = {
             }
         ],
         basePath: '/v1'
-
     },
     apis: ['**/presentation/http/*/*.ts']
 };
@@ -62,3 +64,4 @@ app.listen(appPort, appHost,
         console.log(`Application have started listening ${appHost} at port ${appPort}`);
         await bootstrapKafka().then(() => console.log("Kafka producer bootstrap completed"));
     });
+
