@@ -49,6 +49,7 @@ router.use('/me', jwtAuthMiddleware);
 router.route("/login").post(body('email').notEmpty(), body('password').notEmpty(), controller.login);
 router.route("/register").post(body('email').notEmpty(), body('password').notEmpty(), controller.register);
 router.route('/me').get((req, res) => {
+
     const session: Session = res.locals.session;
 
     res.status(200).json(session);

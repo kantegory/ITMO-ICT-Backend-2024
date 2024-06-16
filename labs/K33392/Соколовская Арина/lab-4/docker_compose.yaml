@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  auth:
+    build:
+      dockerfile: auth.Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_PORT=8081
+    depends_on:
+      - hackathon
+      - rabbitmq
+
+
+  hackathon:
+    build:
+      dockerfile: app.Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_PORT=8080
+    depends_on:
+      - rabbitmq
+
+  gateway:
+    build:
+      dockerfile: gateway.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - SERVICE_PORT=8000
+    depends_on:
+      - hackathon
+      - auth
+
+  
+  rabbitmq:
+      image: rabbitmq
+      ports:
+          - "5672:5672"
+      healthcheck:
+        test: rabbitmq-diagnostics -q ping
+        interval: 5s
+        timeout: 5s
+        retries: 5

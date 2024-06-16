@@ -1,0 +1,12 @@
+{
+  "name": "hw_1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "rme": "/usr/local/bin/npm uninstall express"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
