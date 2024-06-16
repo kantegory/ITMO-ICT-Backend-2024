@@ -1,5 +1,5 @@
-import BaseTransformer from "./baseTransformer";
-import User from "../models/user";
+import { BaseTransformer } from "shared-core";
+import { User } from "shared-database";
 
 
 class UserTransformer extends BaseTransformer {
