@@ -12,14 +12,6 @@ export interface Session {
     exp: number;
 }
 
-export type PartialSession = Omit<Session, "iat" | "exp">;
-
-export interface EncodeResult {
-    token: string;
-    expires: number;
-    issued: number;
-}
-
 export type DecodeResult =
     | {
     type: "valid";

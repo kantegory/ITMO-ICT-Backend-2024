@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 20.x
+      - name: Preparation
+        run: |
+          sudo apt-get update
+          sudo apt-get install rsync -y
+          mkdir "$HOME/.ssh"
+          echo "${{ secrets.CLOUD_PRIVATE_KEY }}" > "$HOME/.ssh/key"
+          chmod 600 "$HOME/.ssh/key"
+      - name: Sync
+        run: |
+          rsync -e "ssh -p 22 -i $HOME/.ssh/key -o StrictHostKeyChecking=no" -avz --exclude '.git' --chown=github:www-data --chmod=Dg=rwx,Fg=rwx --archive --compress --delete . ${{ secrets.CLOUD_UNAME }}@${{ secrets.CLOUD_HOST }}:/home/alexey/deploy
+      - name: Build
+        run: |
+          ssh -p 22 -i $HOME/.ssh/key ${{ secrets.CLOUD_UNAME }}@${{ secrets.CLOUD_HOST }} 'cd /home/alexey/deploy/labs/K33392/Korotin_Alexey/lab2 && sudo docker compose up -d --build'

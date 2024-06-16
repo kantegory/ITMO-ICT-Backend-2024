@@ -44,7 +44,7 @@ export function jwtAuthMiddleware(request: Request, response: Response, next: Ne
     // Set the session on response.locals object for routes to access
     response.locals = {
         ...response.locals,
-        session: Session
+        session: decodedSession.session
     };
 
     // Request has a valid session. Call next to continue to the authenticated route handler

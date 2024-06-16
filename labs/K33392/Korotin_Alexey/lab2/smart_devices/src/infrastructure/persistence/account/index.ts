@@ -17,6 +17,4 @@ export class AccountModel extends Model {
     @Column(DataType.ENUM(...Object.keys(AccountStatus)))
     declare status: AccountStatus
 
-    @Column
-    declare password: string
 }
