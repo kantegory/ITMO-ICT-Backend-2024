@@ -1,0 +1,16 @@
+{
+  "type": "mysql",
+  "host": "localhost",
+  "port": 3306,
+  "username": "Alexa",
+  "password": "pass_by",
+  "database": "db",
+  "synchronize": false,
+  "logging": false,
+  "entities": ["src/models/*.ts"],
+  "migrations": ["src/migrations/*.ts"],
+  "cli": {
+    "entitiesDir": "src/models",
+    "migrationsDir": "src/migrations"
+  }
+}

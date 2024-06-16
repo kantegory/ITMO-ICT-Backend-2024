@@ -34,6 +34,7 @@ export type DecodeResult =
 export type ExpirationStatus = "expired" | "active";
 
 const SECRET = process.env["app.secret"] ?? "";
+
 const TOKEN_DURATION_MINUTES = Number(process.env["app.token.access.durationMinutes"]) ?? 15;
 const TOKEN_ISSUER_CLAIM = process.env['app.token.issuer'] ?? "Unknown";
 export function encodeSession(partialSession: PartialSession): EncodeResult {

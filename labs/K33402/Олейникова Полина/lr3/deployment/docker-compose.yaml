@@ -1,0 +1,63 @@
+version: '1.0'
+services:
+  gateway:
+    container_name: gateway
+    build:
+      context: ./gateway/src
+    restart: always
+    ports:
+      - 8080:8080
+
+  service-auth:
+    build:
+      context: ../auth
+    container_name: service-auth
+    restart: always
+    expose:
+      - 8008
+    env_file:
+      - service/auth/.env
+    depends_on:
+      - auth-db
+    volumes:
+      - /backend/service-auth/node_modules
+
+  service-articles:
+    build:
+      context: ../articles
+    container_name: service-articles
+    restart: always
+    expose:
+      - 8005
+    env_file:
+      - service/articles/.env
+    depends_on:
+      - articles-db
+    volumes:
+      - /backend/service-articles/node_modules
+
+  auth-db:
+    image: postgres
+    container_name: auth-db
+    restart: always
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME_AUTH}
+    volumes:
+      - ./backend/auth_data:/var/lib/postgresql/data
+
+  articles-db:
+    image: postgres
+    container_name: articles-db
+    restart: always
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME_ARTCILES}
+    volumes:
+      - ./backend/articles_data:/var/lib/postgresql/data
