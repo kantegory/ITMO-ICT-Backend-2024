@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq
+    restart: always
+
+  auth:
+    container_name: auth
+    build: ./auth
+    restart: always
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8000:8000
+
+  book:
+    container_name: book
+    build:
+      context: ./books
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8001:8001
+    restart: always

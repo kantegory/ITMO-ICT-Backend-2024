@@ -1,0 +1,23 @@
+services:
+  rabbit_mq:
+    image: rabbitmq
+    restart: always
+    expose:
+      - '5672'
+
+  auth:
+    build: './auth'
+    restart: always
+    depends_on:
+      - rabbit_mq
+    ports:
+      - 3000:3000
+
+  book:
+    build:
+      context: ./books
+    depends_on:
+      - rabbit_mq
+    ports:
+      - 3001:3001
+    restart: always
