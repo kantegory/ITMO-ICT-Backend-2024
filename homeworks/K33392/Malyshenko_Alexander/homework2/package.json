@@ -1,0 +1,23 @@
+{
+  "name": "hw2",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "npx nodemon index.js"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "fs": "^0.0.1-security",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "nodemon": "^3.1.0",
+    "path": "^0.12.7",
+    "pug": "2.0.0-beta11",
+    "sequelize": "^6.37.1",
+    "sequelize-cli": "^6.6.2",
+    "sqlite3": "^5.1.7"
+  }
+}

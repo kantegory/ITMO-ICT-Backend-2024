@@ -17,4 +17,7 @@ node_modules
 .idea
 node_modules
 .DS_Store
+<<<<<<< HEAD
 .env
+=======
+>>>>>>> master
