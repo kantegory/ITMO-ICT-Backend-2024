@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-        echo "${{ secrets.vps_private_key }}" > "$HOME/.ssh/key"
       - name: Setup
         run: |
           sudo apt-get update
