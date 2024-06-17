@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq
+    expose:
+      - 5672
+
+  auth-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile_auth
+    tty: true
+    volumes:
+      - ./auth-service/db:/app/db
+    ports:
+      - "3001:3001"
+    command: sh -c "npm start"
+    depends_on:
+      - rabbitmq
+
+  main-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile_main
+    tty: true
+    volumes:
+      - ./main-service/db:/app/db
+    ports:
+      - "3000:3000"
+    command: sh -c "npm start"
+    depends_on:
+      - rabbitmq
+      - auth-service
+
