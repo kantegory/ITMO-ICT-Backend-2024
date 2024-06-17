@@ -10,6 +10,8 @@ interface Log {
   method: string
 }
 
+console.log("Starting logging service...");
+
 db.exec(`CREATE TABLE IF NOT EXISTS logs (id integer primary key autoincrement, path text, code integer, method TEXT);`)
 
 amqp.connect(
