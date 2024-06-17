@@ -6,7 +6,7 @@ import handleError from '../utils/handleError'
 
 class ProfileController {
 	public static async createOrUpdateProfile(req: Request, res: Response) {
-		const userId = Number(req.params.userId)
+		const userId = Number(req.body.userId)
 		const { location, bio } = req.body
 
 		try {
@@ -33,7 +33,7 @@ class ProfileController {
 	}
 
 	public static async getProfileByUserId(req: Request, res: Response) {
-		const userId = Number(req.params.userId)
+		const userId = Number(req.body.userId)
 
 		try {
 			const profileData = await ProfileService.getProfileByUserId(userId)
@@ -41,6 +41,7 @@ class ProfileController {
 			if (!profileData) {
 				return handleError({ res, code: 404, text: 'Профиль не найден' })
 			}
+			console.log('ДАННЫЕ ПРОФИЛЯ:', profileData)
 			return res.status(200).json(profileData.profile)
 		} catch (error) {
 			return handleError({

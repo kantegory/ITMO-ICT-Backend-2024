@@ -7,8 +7,8 @@ class BookController {
 	public static async createBook(req: Request, res: Response) {
 		const { title, author } = req.body
 		try {
-			await BookService.createBook(title, author)
-			return res.status(201).send('Книга создана успешно')
+			const book = await BookService.createBook(title, author)
+			return res.status(201).json(book)
 		} catch (error) {
 			return handleError({
 				res,

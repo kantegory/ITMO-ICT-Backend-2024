@@ -7,6 +7,6 @@ const exchangeRoutes = express.Router()
 exchangeRoutes.get('/:id', ExchangeController.getUserExchanges)
 exchangeRoutes.post('/', ExchangeController.createExchange)
 exchangeRoutes.put('/:id', ExchangeController.confirmExchange)
-exchangeRoutes.delete('/:id', ExchangeController.deleteExchange)
+exchangeRoutes.delete('/', ExchangeController.deleteExchange)
 
 export default exchangeRoutes

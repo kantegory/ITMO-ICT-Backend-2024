@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import {
+	AutoIncrement,
 	Column,
 	DataType,
 	Model,
@@ -8,9 +9,12 @@ import {
 	Unique,
 } from 'sequelize-typescript'
 
-@Table
+@Table({
+	tableName: 'User',
+})
 class User extends Model {
 	@PrimaryKey
+	@AutoIncrement
 	@Column(DataType.INTEGER)
 	declare id: number
 
@@ -32,7 +36,12 @@ class User extends Model {
 	}
 
 	public async checkPassword(password: string) {
-		return await bcrypt.compare(password, this.password)
+		return bcrypt.compare(password, this.password, (err, data) => {
+			if (data) {
+				return true
+			}
+			return false
+		})
 	}
 }
 

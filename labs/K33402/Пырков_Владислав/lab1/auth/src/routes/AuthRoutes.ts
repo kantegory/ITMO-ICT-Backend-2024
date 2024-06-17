@@ -8,7 +8,7 @@ const userRoutes = express.Router()
 
 userRoutes.post('/reg', AuthController.reg)
 userRoutes.post('/login', AuthController.login)
-userRoutes.post('/check_token', AuthController.verify)
+userRoutes.post('/verify', AuthController.verify)
 
 userRoutes.get('/profile', ProfileController.getProfileByUserId)
 userRoutes.post('/profile', ProfileController.createOrUpdateProfile)

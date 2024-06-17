@@ -11,7 +11,9 @@ import {
 import Book from './Book'
 import User from './User'
 
-@Table
+@Table({
+	tableName: 'UserHasBook',
+})
 class UserHasBook extends Model {
 	@PrimaryKey
 	@AutoIncrement

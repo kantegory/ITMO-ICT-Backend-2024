@@ -1,4 +1,4 @@
-import sequelize from '../database'
+import sequelize from '../database/index'
 import User from '../database/models/User'
 import serviceHandleError from '../utils/serviceHandleError'
 
@@ -15,7 +15,6 @@ class UserService {
 
 	static async createUser(userData: any) {
 		const { name, email, passoword } = userData
-		console.log(userData)
 		// todo any replace
 		return userRepository.create({ name, email, passoword })
 	}
@@ -33,7 +32,7 @@ class UserService {
 	}
 
 	static async deleteUser(id: number) {
-		const user = await User.findByPk(id)
+		const user = await userRepository.findByPk(id)
 
 		if (!user) {
 			return serviceHandleError({ message: 'Пользователь не найден' })

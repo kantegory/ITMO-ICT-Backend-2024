@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import process from 'process'
 
@@ -9,22 +10,18 @@ const userRepository = sequelize.getRepository(User)
 
 class AuthService {
 	static async reg(name: string, email: string, password: string) {
-		const existingUser = await userRepository.findOne({ where: { email } })
-		if (existingUser) {
-			return serviceHandleError({ message: 'Эта почта уже используется' })
-		}
 		try {
 			const newUser = await userRepository.create({
 				name,
 				email,
-				password,
+				password: await bcrypt.hash(password, 10),
 			})
-			const key = process.env.JWT_SECRET_KEY || ''
+			const key = process.env.JWT_SECRET_KEY || 'testkey1'
 			const token = jwt.sign({ userId: newUser.id }, key, {
 				expiresIn: '1h',
 			})
 
-			return token
+			return { token, user: newUser }
 		} catch (error) {
 			return serviceHandleError({
 				error,
@@ -40,12 +37,12 @@ class AuthService {
 				return serviceHandleError({ message: 'Некорретный адрес почты' })
 			}
 
-			const passwordMatch = await user.checkPassword(password)
+			const passwordMatch = user.checkPassword(password)
 			if (!passwordMatch) {
 				return serviceHandleError({ message: 'Некорректный пароль' })
 			}
 
-			const key = process.env.JWT_SECRET_KEY || ''
+			const key = process.env.JWT_SECRET_KEY || 'testkey1'
 			const token = jwt.sign({ userId: user.id }, key, {
 				expiresIn: '1h',
 			})

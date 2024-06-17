@@ -7,8 +7,12 @@ class ExchangeController {
 	public static async createExchange(req: Request, res: Response) {
 		const { senderId, recepientId, bookId } = req.body
 		try {
-			await ExchangeService.createExchange(senderId, recepientId, bookId)
-			return res.status(201).send('Обмен создан успешно')
+			const exchange = await ExchangeService.createExchange(
+				senderId,
+				recepientId,
+				bookId,
+			)
+			return res.status(201).json(exchange)
 		} catch (error) {
 			return handleError({
 				res,
@@ -20,11 +24,11 @@ class ExchangeController {
 	}
 
 	public static async deleteExchange(req: Request, res: Response) {
-		const exchangeId = Number(req.params.id)
+		const exchangeId = Number(req.body.id)
 		try {
 			const success = await ExchangeService.deleteExchange(exchangeId)
 			if (success) {
-				return res.status(204).send()
+				return res.status(204).send('Обмен успешно удалён')
 			}
 			return res.status(404).send('Запись обмена не найдена')
 		} catch (error) {

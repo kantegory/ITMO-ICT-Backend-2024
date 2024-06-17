@@ -1,4 +1,5 @@
 import {
+	AutoIncrement,
 	Column,
 	DataType,
 	ForeignKey,
@@ -9,9 +10,12 @@ import {
 
 import User from './User'
 
-@Table
+@Table({
+	tableName: 'Profile',
+})
 class Profile extends Model {
 	@PrimaryKey
+	@AutoIncrement
 	@Column(DataType.INTEGER)
 	declare id: number
 

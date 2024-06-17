@@ -1,22 +1,23 @@
 {
-	"include": ["./"],
+	"include": ["app.ts", "src/**/*"],
 	"exclude": ["node_modules", "lib"],
 	"compilerOptions": {
-		"target": "ES2021",
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
-		"lib": ["ES2021"],
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+		"esModuleInterop": true,
+		"lib": ["ES6"],
+		"target": "ES6",
 		"outDir": "./dist",
+		"rootDir": "./",
 		"baseUrl": "./",
 		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"useDefineForClassFields": true,
 		"skipLibCheck": true,
 
 		"experimentalDecorators": true,
 
-		"allowImportingTsExtensions": true,
+		"allowImportingTsExtensions": false,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
@@ -32,9 +33,6 @@
 		"noUncheckedIndexedAccess": true,
 
 		"noImplicitReturns": true,
-		// "noUnusedLocals": true,
-		// "noUnusedParameters": true,
-		// "noFallthroughCasesInSwitch": true - used in eslint
 
 		/* Advanced */
 		"allowUnreachableCode": false

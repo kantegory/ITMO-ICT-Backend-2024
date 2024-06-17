@@ -1,4 +1,4 @@
-import sequelize from '../database'
+import sequelize from '../database/index'
 import Book from '../database/models/Book'
 import serviceHandleError from '../utils/serviceHandleError'
 

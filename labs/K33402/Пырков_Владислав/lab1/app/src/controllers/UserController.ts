@@ -26,15 +26,7 @@ export default {
 
 	async createUser(req: Request, res: Response) {
 		try {
-			console.log(req.body)
-			console.log('TRY CREATE')
-			console.log('TRY CREATE')
-			console.log('TRY CREATE')
-			console.log('TRY CREATE')
-			console.log('TRY CREATE')
-			console.log('TRY CREATE')
 			const newUser = await UserService.createUser(req.body)
-			console.log('created')
 			res.status(201).json(newUser)
 		} catch (error) {
 			handleError({ res, error, code: 500 })
@@ -64,13 +56,19 @@ export default {
 	async verify(req: Request, res: Response) {
 		try {
 			const { token } = req.body
-			if (!token) return res.sendStatus(401)
-			const key = process.env.SECRET_KEY || ''
+			if (!token) {
+				return res.sendStatus(401)
+			}
+			const key = process.env.SECRET_KEY || 'testkey1'
 			const payload = jwt.verify(token, key)
 			const userId = (payload as JwtPayload).id
-			if (!userId) return res.sendStatus(401)
+			if (!userId) {
+				return res.sendStatus(401)
+			}
 			const user = await UserService.getUserById(userId)
-			if (!user) return res.sendStatus(401)
+			if (!user) {
+				return res.sendStatus(401)
+			}
 			return res.sendStatus(200)
 		} catch (error) {
 			return handleError({ res, error })

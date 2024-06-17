@@ -12,20 +12,19 @@ class ProfileService {
 		location: string,
 		bio: string,
 	) {
+		console.log('STARTED ENDPOINT')
+		console.log(userId, location, bio)
 		try {
-			let profile = await profileRepository.findOne({ where: { userId } })
-			if (!profile) {
-				profile = await profileRepository.create({ userId, location, bio })
-			} else {
-				profile.location = location
-				profile.bio = bio
-				await profile.save()
-			}
+			console.log('СОздание профиля')
+			const profile = await profileRepository.create({ userId, location, bio })
 
-			const user = await userRepository.findByPk(userId)
+			console.log('profile created')
+			const user = await userRepository.findByPk(Number(userId))
 			if (!user) {
 				return serviceHandleError({ message: 'Пользователь не найден' })
 			}
+
+			console.log('user found')
 
 			return {
 				profile: {
@@ -53,19 +52,12 @@ class ProfileService {
 		}
 
 		const profile = await profileRepository.findOne({ where: { userId } })
-
 		if (!profile) {
 			return { message: 'Такого профиля нет' }
 		}
 
 		return {
-			profile: {
-				id: profile.id,
-				userId: profile.userId,
-				location: profile.location,
-				bio: profile.bio,
-			},
-
+			profile,
 			userName: user.name,
 			userEmail: user.email,
 		}

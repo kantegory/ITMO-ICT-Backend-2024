@@ -1,4 +1,4 @@
-import sequelize from '../database'
+import sequelize from '../database/index'
 import Exchange from '../database/models/Exchange'
 import serviceHandleError from '../utils/serviceHandleError'
 

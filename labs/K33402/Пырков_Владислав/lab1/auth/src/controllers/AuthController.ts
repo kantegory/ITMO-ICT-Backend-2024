@@ -8,12 +8,9 @@ import handleError from '../utils/handleError'
 class AuthController {
 	static async reg(req: Request, res: Response) {
 		try {
-			console.log('HANDLE REQUEST')
-			console.log(req.body)
 			const { name, email, password } = req.body
-			console.log(name)
-			const token = await AuthService.reg(name, email, password)
-			return res.status(201).json({ token })
+			const { token, user } = await AuthService.reg(name, email, password)
+			return res.status(201).json({ token, user })
 		} catch (error) {
 			return { message: 'отработка ошибки' }
 		}
@@ -31,11 +28,14 @@ class AuthController {
 
 	static async verify(req: Request, res: Response) {
 		try {
-			const token = req.body.token
+			const { token } = req.body
 			if (!token) {
 				return handleError({ res, text: 'Отсутствует токен' })
 			}
-			const payload = jwt.verify(token, process.env.JWT_SECRET_KEY || '')
+			const payload = jwt.verify(
+				token,
+				process.env.JWT_SECRET_KEY || 'testkey1',
+			)
 			const userId = (payload as JwtPayload).userId
 			if (!userId) {
 				return handleError({ res, text: 'Неверный токен' })

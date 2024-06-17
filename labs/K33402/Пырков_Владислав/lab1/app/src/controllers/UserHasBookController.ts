@@ -6,7 +6,7 @@ import handleError from '../utils/handleError'
 export default {
 	async getUserBooks(req: Request, res: Response) {
 		try {
-			const id = Number(req.params.id)
+			const id = Number(req.body.id)
 			const books = await UserHasBookService.getUserBooks(id)
 			return res.status(201).json(books)
 		} catch (error) {
@@ -26,7 +26,7 @@ export default {
 
 	async deleteUserBook(req: Request, res: Response) {
 		try {
-			const id = Number(req.params.id)
+			const id = Number(req.body.id)
 			const userBook = await UserHasBookService.deleteUserBook(id)
 			return res.status(204).json(userBook)
 		} catch (error) {

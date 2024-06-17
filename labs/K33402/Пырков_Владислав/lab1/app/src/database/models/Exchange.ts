@@ -12,7 +12,9 @@ import {
 import Book from './Book'
 import User from './User'
 
-@Table
+@Table({
+	tableName: 'Exchange',
+})
 class Exchange extends Model {
 	@PrimaryKey
 	@AutoIncrement

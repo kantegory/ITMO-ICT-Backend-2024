@@ -1,4 +1,4 @@
-import sequelize from '../database'
+import sequelize from '../database/index'
 import UserHasBook from '../database/models/UserHasBook'
 import Book from '../database/models/UserHasBook'
 import serviceHandleError from '../utils/serviceHandleError'
@@ -9,10 +9,7 @@ const userHasBookRepository = sequelize.getRepository(UserHasBook)
 class UserHasBookService {
 	public static async getUserBooks(userId: number) {
 		try {
-			const userBooks = await userHasBookRepository.findAll({
-				where: { userId },
-				include: [{ model: bookRepository, as: 'book' }],
-			})
+			const userBooks = await bookRepository.findAll({ where: { userId } })
 			return userBooks
 		} catch (error) {
 			return serviceHandleError({
