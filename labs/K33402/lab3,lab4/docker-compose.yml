@@ -1,0 +1,35 @@
+version: '3.0'
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+    environment:
+        PORT: 8000
+
+  main:
+    build:
+      context: ./main
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    depends_on:
+      - rabbitmq
+    environment:
+      PORT: 8001
+      AUTH_SERVICE: http://auth:8000
+
+networks:
+  default:
+    name: my_network
