@@ -19,4 +19,4 @@ jobs:
 
       - name: Deploy to Remote Server
         run: |
-          ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/key ubuntu@89.208.222.44 'cd /home/ubuntu/ITMO-ICT-Backend-2024 && git pull && cd /home/ubuntuITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/ && docker-compose up -d --build'
+          ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no ubuntu@213.219.215.18 'cd /home/ubuntu/ITMO-ICT-Backend-2024 && git pull && cd /home/ubuntu/ITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/ && docker-compose up -d --build'
