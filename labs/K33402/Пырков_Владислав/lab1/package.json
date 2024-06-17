@@ -1,0 +1,13 @@
+{
+	"name": "lab1",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"dev:app": "cd app & nodemon app.ts"
+	},
+	"author": "impsyn",
+	"devDependencies": {
+		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
+		"prettier": "^3.3.1"
+	}
+}

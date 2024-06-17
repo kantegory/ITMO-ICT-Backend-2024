@@ -1,0 +1,20 @@
+{
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "lib"],
+	"compilerOptions": {
+		"module": "CommonJS",
+		"sourceMap": true,
+		"moduleResolution": "Node",
+		"esModuleInterop": true,
+		"lib": ["ES6"],
+		"target": "ES6",
+		"outDir": "dist",
+		"baseUrl": "./",
+
+		"experimentalDecorators": true,
+
+		/* Strict Checks */
+		"strict": true,
+		"alwaysStrict": true
+	}
+}
