@@ -1,0 +1,15 @@
+name: Deploy
+on: push 
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Setup Docker bilder
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with: 
+          file: docker-compose.yml
+          push: false
