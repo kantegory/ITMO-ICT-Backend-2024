@@ -20,3 +20,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         script: cd /root/ITMO-ICT-Backend-2024 && git checkout lab-4 && git pull && cd labs/K33392/Таякин_Даниил && docker compose up --build -d
+    
