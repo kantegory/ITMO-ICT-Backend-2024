@@ -14,10 +14,9 @@ jobs:
         run: |
           sudo apt-get update
           mkdir "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$HOME/.ssh/key"
           chmod 600 "$HOME/.ssh/key"
-          eval `ssh-agent -s`
-          ssh-add "$HOME/.ssh/key"
 
       - name: Deploy to Remote Server
         run: |
