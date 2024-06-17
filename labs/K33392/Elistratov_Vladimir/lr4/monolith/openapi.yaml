@@ -1,0 +1,1618 @@
+openapi: 3.0.3
+info:
+  title: Backend lab2 OpenAPI specification
+  description: |-
+    Спецификация OpenAPI для лабораторной работы №2 по предмету Бэкенд-разработка (Домашная работа №4)   
+    Тема - Сервис помошник для планирования путешествий   
+    
+    Выполнили:
+      - Малышенко Александр   
+      - Елистратов Владимир   
+      
+    Группа К33392
+  version: 0.0.1
+servers:
+  - url: http://localhost:3000/v1/
+    description: local dev server (router v1)
+  - url: don't/look/the/server/is/shy
+    description: main server
+paths:
+  /users/singup:
+    post:
+      summary: Создание нового пользователя (регистрация)
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '201':
+          description: Успешный ответ с созданным пользователем
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/login:
+    post:
+      summary: Авторизация пользователя
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAuth"
+      responses:
+        '200':
+          description: Успешный ответ с jwt-токеном
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+
+  /users/list:
+    get:
+      summary: Список всех пользователей
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Успешный ответ со списком пользователей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"        
+
+  /users/one/{id}:
+    get:
+      summary: Получение одного пользователя по его идентификатору
+      tags:
+        - Users
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с пользователем
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"  
+
+  /users/delete/{id}:
+    delete:
+      summary: Удаление одного пользователя по его идентификатору
+      tags:
+        - Users
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении пользователя
+
+  /users/update/{id}:
+    patch:
+      summary: Обновление данных о пользователе по его идентификатору
+      tags:
+        - Users
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных пользователя
+
+
+  /users/info/add:
+    post:
+      summary: Добавление данных о пользователе
+      tags:
+        - User info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInfo"
+      responses:
+        '200':
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+
+  /users/info/list:
+    get:
+      summary: Получение всех данных пользователей
+      tags:
+        - User info
+      responses:
+        '200':
+          description: Успешный ответ со списком информации пользователей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersInfoList"  
+
+  /users/info/one/{id}:
+    get:
+      summary: Получение информации об одном пользователе по идентификатору данных
+      tags:
+        - User info
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор информации пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с информацией о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"  
+  
+  /users/info/one/by/user/{user_id}:
+    get:
+      summary: Получение информации об одном пользователе по его идентификатору
+      tags:
+        - User info
+      parameters: 
+        - name: user_id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с информацией о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo" 
+
+  /users/info/delete/{id}:
+    delete:
+      summary: Удаление информации об одном пользователе по идентификатору информации
+      tags:
+        - User info
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор информации пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении информации пользователя
+
+  /users/info/update/{id}:
+    patch:
+      summary: Обновление информации о пользователе по идентификатору информации
+      tags:
+        - User info
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор информации пользователя
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInfo"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных пользователя
+
+
+  /travels/add:
+    post:
+      summary: Добавление новой поездки
+      tags:
+        - Travels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Travel"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении новой поездки
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Travel"
+
+  /travels/list:
+    get:
+      summary: Получение всех поездок
+      tags:
+        - Travels
+      responses:
+        '200':
+          description: Успешный ответ со списком поездок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Travels"  
+
+  /travels/list/by/dep_city/{dep_city_id}:
+    get:
+      summary: Получение всех поездок по идентификатору города отправления
+      tags:
+        - Travels
+      parameters: 
+        - name: dep_city_id
+          in: path
+          required: true
+          description: Идентификатор города отправления
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ со списком поездок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Travels" 
+
+  /travels/list/by/dep_and_dest_city/{dep_city_id}/{dest_city_id}:
+    get:
+      summary: Получение всех поездок по идентификатору города отправления
+      tags:
+        - Travels
+      parameters: 
+        - name: dep_city_id
+          in: path
+          required: true
+          description: Идентификатор города отправления
+          schema:
+            type: integer
+          example: 0
+        - name: dest_city_id
+          in: path
+          required: true
+          description: Идентификатор города прибытия
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ со списком поездок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Travels" 
+  
+  /travels/list/by/seats_number/{seats_number}:
+    get:
+      summary: Получение всех поездок по количеству свободных мест
+      tags:
+        - Travels
+      parameters: 
+        - name: seats_number
+          in: path
+          required: true
+          description: Количество свободных мест
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ со списком поездок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Travels"
+
+  /travels/one/by/{id}:
+    get:
+      summary: Получение поездки по ее идентификатору
+      tags:
+        - Travels
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор поездки
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с поездкой
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Travel" 
+
+  /travels/delete/{id}:
+    delete:
+      summary: Удаление поездки по ее идентификатору
+      tags:
+        - Travels
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор поездки
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении поезки
+
+  /travels/update/{id}:
+    patch:
+      summary: Обновление информации о поездке по ее идентификатору
+      tags:
+        - Travels
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор поездки
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Travel"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных поездки
+
+
+  /transports/add:
+    post:
+      summary: Добавление нового транспорта
+      tags:
+        - Transports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transport"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении нового транспорта
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transport"
+
+  /transports/list:
+    get:
+      summary: Получение всего транспорта
+      tags:
+        - Transports
+      responses:
+        '200':
+          description: Успешный ответ со списком транспорта
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transports"  
+
+  /transports/list/by/user/{user_id}:
+    get:
+      summary: Получение всего транспорта пользователя по его идентификатору
+      tags:
+        - Transports
+      parameters: 
+        - name: user_id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с транспортом
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transport" 
+
+  /transports/one/{id}:
+    get:
+      summary: Получение поездки по ее идентификатору
+      tags:
+        - Transports
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор поездки
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с поездкой
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Travel" 
+
+  /transports/delete/{id}:
+    delete:
+      summary: Удаление транспорта по его идентификатору
+      tags:
+        - Transports
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор транспорта
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении транспорта
+
+  /transports/update/{id}:
+    patch:
+      summary: Обновление информации о транспорте по его идентификатору
+      tags:
+        - Transports
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор транспорта
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transport"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных транспорта
+
+
+  /places/add:
+    post:
+      summary: Добавление нового места
+      tags:
+        - Places
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Place"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении нового места
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Place"
+
+  /places/list:
+    get:
+      summary: Получение всех мест
+      tags:
+        - Places
+      responses:
+        '200':
+          description: Успешный ответ со списком мест
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Places"  
+
+  /places/list/by/city/{city_id}:
+    get:
+      summary: Получение всех мест города по его идентификатору
+      tags:
+        - Places
+      parameters: 
+        - name: city_id
+          in: path
+          required: true
+          description: Идентификатор города
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с списком мест
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Places" 
+
+  /places/one/{id}:
+    get:
+      summary: Получение места по его идентификатору
+      tags:
+        - Places
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор места
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с местом
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Place" 
+
+  /places/delete/{id}:
+    delete:
+      summary: Удаление места по его идентификатору
+      tags:
+        - Places
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор места
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении места
+
+  /places/update/{id}:
+    patch:
+      summary: Обновление информации о месте по его идентификатору
+      tags:
+        - Places
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор места
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Place"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных места
+
+
+  /hotels/add:
+    post:
+      summary: Добавление нового отеля
+      tags:
+        - Hotels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Hotel"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении нового отеля
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hotel"
+
+  /hotels/list:
+    get:
+      summary: Получение всех отелей
+      tags:
+        - Hotels
+      responses:
+        '200':
+          description: Успешный ответ со списком отелей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hotels"  
+
+  /hotels/list/by/city/{city_id}:
+    get:
+      summary: Получение всех отелей города по его идентификатору
+      tags:
+        - Hotels
+      parameters: 
+        - name: city_id
+          in: path
+          required: true
+          description: Идентификатор города
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с списком отелей
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hotels" 
+
+  /hotels/one/{id}:
+    get:
+      summary: Получение отеля по его идентификатору
+      tags:
+        - Hotels
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор отеля
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с отелем
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hotel" 
+
+  /hotels/delete/{id}:
+    delete:
+      summary: Удаление отеля по его идентификатору
+      tags:
+        - Hotels
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор отеля
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении отеля
+
+  /hotels/update/{id}:
+    patch:
+      summary: Обновление информации об отеле по его идентификатору
+      tags:
+        - Hotels
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор отеля
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Hotel"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных отеля
+
+
+  /cities/add:
+    post:
+      summary: Добавление нового города
+      tags:
+        - Cities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/City"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении нового города
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/City"
+
+  /cities/list:
+    get:
+      summary: Получение всех городов
+      tags:
+        - Cities
+      responses:
+        '200':
+          description: Успешный ответ со списком городв
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cities"  
+
+  /cities/list/by/country/{country_id}:
+    get:
+      summary: Получение всех городов страны по ее идентификатору
+      tags:
+        - Cities
+      parameters: 
+        - name: country_id
+          in: path
+          required: true
+          description: Идентификатор страны
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с списком городов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cities" 
+
+  /cities/one/{id}:
+    get:
+      summary: Получение города по его идентификатору
+      tags:
+        - Cities
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор города
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с городом
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/City" 
+
+  /cities/delete/{id}:
+    delete:
+      summary: Удаление города по его идентификатору
+      tags:
+        - Cities
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор города
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении города
+
+  /cities/update/{id}:
+    patch:
+      summary: Обновление информации о городе по его идентификатору
+      tags:
+        - Cities
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор города
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/City"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных города
+
+
+  /countries/add:
+    post:
+      summary: Добавление новой страны
+      tags:
+        - Countries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Country"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении новой страны
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Country"
+
+  /countries/list:
+    get:
+      summary: Получение всех стран
+      tags:
+        - Countries
+      responses:
+        '200':
+          description: Успешный ответ со списком стран
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Countries"  
+
+  /countries/one/{id}:
+    get:
+      summary: Получение страны по ее идентификатору
+      tags:
+        - Countries
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор стран
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ со страной
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Country" 
+
+  /countries/delete/{id}:
+    delete:
+      summary: Удаление страны по ее идентификатору
+      tags:
+        - Countries
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор стран
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении страны
+
+  /countries/update/{id}:
+    patch:
+      summary: Обновление информации о стране по е идентификатору
+      tags:
+        - Countries
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор страны
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Country"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении данных страны
+
+
+  /comments/user/add:
+    post:
+      summary: Добавление нового комментария пользователя
+      tags:
+        - User comments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении нового комментария пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+
+  /comments/user/list:
+    get:
+      summary: Получение списка всех комментариев пользователей
+      tags:
+        - User comments
+      responses:
+        '200':
+          description: Успешный ответ со списком комментариев
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments"  
+
+  /comments/user/one/{id}:
+    get:
+      summary: Получение комментария пользователя по его идентификатору
+      tags:
+        - User comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с комментарием пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment" 
+
+  /comments/user/list/by/user/{user_id}:
+    get:
+      summary: Получение комментариев пользователя по идентификатору пользователя
+      tags:
+        - User comments
+      parameters: 
+        - name: user_id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ со списком комментариев пользователя
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments" 
+
+  /comments/user/delete/{id}:
+    delete:
+      summary: Удаление комментария пользователя по его идентификатору
+      tags:
+        - User comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария пользователя
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении комментария пользователя
+
+  /comments/user/update/{id}:
+    patch:
+      summary: Обновление комментария пользователя по его идентификатору
+      tags:
+        - User comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария пользователя
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении комментария пользователя
+
+
+  /comments/place/add:
+    post:
+      summary: Добавление нового комментария места
+      tags:
+        - Place comments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении нового комментария места
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+
+  /comments/place/list:
+    get:
+      summary: Получение списка всех комментариев мест
+      tags:
+        - Place comments
+      responses:
+        '200':
+          description: Успешный ответ со списком комментариев
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments"  
+
+  /comments/place/one/{id}:
+    get:
+      summary: Получение комментария места по его идентификатору
+      tags:
+        - Place comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария места
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с комментарием места
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment" 
+
+  /comments/place/list/by/place/{place_id}:
+    get:
+      summary: Получение комментариев места по идентификатору места
+      tags:
+        - Place comments
+      parameters: 
+        - name: place_id
+          in: path
+          required: true
+          description: Идентификатор места
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ со списком комментариев места
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments" 
+
+  /comments/place/delete/{id}:
+    delete:
+      summary: Удаление комментария места по его идентификатору
+      tags:
+        - Place comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария места
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении комментария места
+
+  /comments/place/update/{id}:
+    patch:
+      summary: Обновление комментария места по его идентификатору
+      tags:
+        - Place comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария места
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении комментария места
+
+
+  /comments/hotel/add:
+    post:
+      summary: Добавление нового комментария отеля
+      tags:
+        - Hotel comments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+      responses:
+        '200':
+          description: Успешный ответ о добавлении нового комментария отеля
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+
+  /comments/hotel/list:
+    get:
+      summary: Получение списка всех комментариев отелей
+      tags:
+        - Hotel comments
+      responses:
+        '200':
+          description: Успешный ответ со списком комментариев
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments"  
+
+  /comments/hotel/one/{id}:
+    get:
+      summary: Получение комментария отеля по его идентификатору
+      tags:
+        - Hotel comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария отеля
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ с комментарием отеля
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment" 
+
+  /comments/hotel/list/by/hotel/{hotel_id}:
+    get:
+      summary: Получение комментариев отеля по идентификатору отеля
+      tags:
+        - Hotel comments
+      parameters: 
+        - name: hotel_id
+          in: path
+          required: true
+          description: Идентификатор отеля
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '200':
+          description: Успешный ответ со списком комментариев отеля
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments" 
+
+  /comments/hotel/delete/{id}:
+    delete:
+      summary: Удаление комментария отеля по его идентификатору
+      tags:
+        - Hotel comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария отеля
+          schema:
+            type: integer
+          example: 0
+      responses:
+        '204':
+          description: Успешный ответ о удалении комментария отеля
+
+  /comments/hotel/update/{id}:
+    patch:
+      summary: Обновление комментария отеля по его идентификатору
+      tags:
+        - Hotel comments
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор комментария отеля
+          schema:
+            type: integer
+          example: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+      responses:
+        '204':
+          description: Успешный ответ о обновлении комментария отеля
+
+components:
+  schemas:
+    User:
+      type: object
+      required: 
+        - homeland_id
+        - email
+        - password
+      properties:
+        id:
+          type: integer
+          example: 0
+        homeland_id:
+          type: integer
+          example: 0
+        email:
+          type: string
+          example: example@example.com
+        password:
+          type: string
+          example: example_password
+        rating:
+          type: integer
+          example: 0
+        amount_of_rates:
+          type: integer
+          example: 0
+ 
+    UserAuth:
+      type: object
+      required: 
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: example@example.com
+        password:
+          type: string
+          example: example_password
+ 
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+
+    Token:
+      type: object
+      required: 
+        - token
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQGV4YW1wbGUuY29tIiwiaWF0IjoxNzEzMzY3MDY3fQ.96vQe9xq6qt7yFnNR6uucWelnG8dXpHth9euVJU0Yi
+
+ 
+    UserInfo:
+      type: object
+      required: 
+        - user_id
+        - main_info
+        - firstname
+        - lastname
+      properties:
+        id:
+          type: integer
+          example: 0
+        user_id:
+          type: integer
+          example: 0
+          description: Идентификатор пользователя, которому принадлежит информация
+        main_info:
+          type: string
+          example: Some main info
+        firstname:
+          type: string
+          example: Ivan
+        lastname:
+          type: string
+          example: Ivanov
+        age:
+          type: integer
+          example: 0
+        phone_number:
+          type: string
+          example: "000000000"
+
+    UsersInfoList:
+      type: array
+      items:
+        $ref: "#/components/schemas/UserInfo"
+
+
+    Travel:
+      type: object
+      required: 
+        - transport_id
+        - user_id
+        - departure_city
+        - destination_city
+        - departure_date
+        - expected_arrival_date
+      properties:
+        id:
+          type: integer
+          example: 0
+        user_id:
+          type: integer
+          example: 0
+          description: Идентификатор пользователя, которому принадлежит информация
+        transport_id:
+          type: integer
+          example: 0
+        departure_city:
+          type: integer
+          example: 0
+        destination_city:
+          type: integer
+          example: 0
+        departure_date:
+          type: string
+          format: 2024-01-01T15:00:00+01
+        expected_arrival_date:
+          type: string
+          format: 2024-01-01T15:00:00+01
+        actual_arrival_date:
+          type: string
+          format: 2024-01-01T15:00:00+01
+        state:
+          type: string
+          example: in progress
+        seats:
+          type: string
+          example: 0
+
+    Travels:
+      type: array
+      items:
+        $ref: "#/components/schemas/Travel"  
+
+
+    Transport:
+      type: object
+      required: 
+        - user_id
+        - name
+        - type
+        - seats
+      properties:
+        id:
+          type: integer
+          example: 0
+        user_id:
+          type: integer
+          example: 0
+        name:
+          type: string
+          example: example name
+        type:
+          type: string
+          example: example type
+        seats:
+          type: integer
+          example: 0
+
+    Transports:
+      type: array
+      items:
+        $ref: "#/components/schemas/Transport"  
+
+
+    Place:
+      type: object
+      required: 
+        - city_id
+        - name
+      properties:
+        id:
+          type: integer
+          example: 0
+        city_id:
+          type: integer
+          example: 0
+        name:
+          type: string
+          example: example name
+        description:
+          type: string
+          example: example description
+        rating:
+          type: integer
+          example: 0
+        amount_of_rates:
+          type: integer
+          example: 0 
+
+    Places:
+      type: array
+      items:
+        $ref: "#/components/schemas/Place"      
+
+
+    Hotel:
+      type: object
+      required: 
+        - city_id
+        - name
+        - stars
+      properties:
+        id:
+          type: integer
+          example: 0
+        city_id:
+          type: integer
+          example: 0
+        name:
+          type: string
+          example: example name
+        stars:
+          type: integer
+          example: 5
+        rating:
+          type: integer
+          example: 0
+        amount_of_rates:
+          type: integer
+          example: 0 
+
+    Hotels:
+      type: array
+      items:
+        $ref: "#/components/schemas/Hotel"      
+
+
+    City:
+      type: object
+      required: 
+        - country_id
+        - name
+      properties:
+        id:
+          type: integer
+          example: 0
+        country_id:
+          type: integer
+          example: 0
+        name:
+          type: string
+          example: example name
+        description:
+          type: string
+          example: example description
+
+    Cities:
+      type: array
+      items:
+        $ref: "#/components/schemas/City"      
+
+
+    Country:
+      type: object
+      required: 
+        - name
+        - main_language
+      properties:
+        id:
+          type: integer
+          example: 0
+        name:
+          type: string
+          example: example name
+        main_language:
+          type: string
+          example: eng
+
+    Countries:
+      type: array
+      items:
+        $ref: "#/components/schemas/Country"      
+
+
+    Comment:
+      type: object
+      required: 
+        - entity_id
+        - title
+      properties:
+        id:
+          type: integer
+          example: 0
+        entity_id:
+          type: integer
+          example: 0
+        title:
+          type: string
+          example: example title
+        main_info:
+          type: string
+          example: example information
+        rating:
+          type: integer
+          example: 0
+
+    Comments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Comment"      
+
+
