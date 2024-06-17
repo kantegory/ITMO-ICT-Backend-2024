@@ -13,4 +13,4 @@ jobs:
       - run: mkdir -p ~/.ssh/
       - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
       - run: chmod 600 ~/.ssh/private.key
-      - run: ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@89.208.222.44 whoami
+      - run: ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@213.219.215.18 whoami
