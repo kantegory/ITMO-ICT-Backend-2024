@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.2",
+    "amqplib": "^0.10.4",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7",
+    "ts-node": "^10.9.2",
+    "typeorm": "^0.3.20",
+    "typescript": "^5.4.5"
+  },
+  "name": "auth-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts"
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
