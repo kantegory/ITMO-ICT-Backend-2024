@@ -18,5 +18,6 @@ jobs:
           sudo apt-get update 
           mkdir -p ~/.ssh/ 
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key 
+          ssh-keygen -l -f ~/.ssh/private.key
           chmod 600 ~/.ssh/private.key 
           ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@213.219.215.18 whoami
