@@ -1,1 +1,22 @@
-Я СДАЮСЬ
+name: Deploy
+
+on:
+  push:
+    branches:
+      - lab-4
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 20.x
+      - name: Copy
+        run: |
+          sudo apt-get update 
+          mkdir -p ~/.ssh/ 
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key 
+          chmod 600 ~/.ssh/private.key 
+          ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@213.219.215.18 whoami
