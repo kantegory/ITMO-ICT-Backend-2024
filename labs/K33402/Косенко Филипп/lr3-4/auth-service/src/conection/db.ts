@@ -1,0 +1,46 @@
+import { Sequelize } from "sequelize-typescript";
+import User from "../model/users"
+import dotenv from 'dotenv';
+
+dotenv.config()
+
+// const url = "postgresql://postgres:2198@localhost:5443/market_bd";
+
+// if(url === undefined){
+//     throw new Error;
+// }
+
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './src/models/models.db'
+});
+
+const test = async () => {
+    try {
+      await sequelize.authenticate();
+      console.log('Connection has been established successfully.');
+    } catch (error) {
+      console.error('Unable to connect to the database:', error);
+      // Handle the error appropriately (e.g., log and exit, retry)
+    }
+  };
+
+test();
+  
+
+const models : any = [User];
+sequelize.addModels(models);
+
+
+const testConection = async () => {
+    try{
+        await sequelize.authenticate();
+        console.log('conect is good');
+    } catch (err) {
+        console.error('oups disconect', err);
+    }
+}
+
+testConection();
+
+export default sequelize
