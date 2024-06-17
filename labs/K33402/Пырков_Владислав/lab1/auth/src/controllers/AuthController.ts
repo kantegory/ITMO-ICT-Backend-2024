@@ -12,7 +12,7 @@ class AuthController {
 			const { token, user } = await AuthService.reg(name, email, password)
 			return res.status(201).json({ token, user })
 		} catch (error) {
-			return { message: 'отработка ошибки' }
+			return { message: 'Ошибка при регистрации пользователя' }
 		}
 	}
 

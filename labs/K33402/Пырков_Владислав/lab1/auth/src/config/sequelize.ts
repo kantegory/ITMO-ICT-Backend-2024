@@ -7,13 +7,13 @@ import User from '../models/User'
 
 dotenv.config()
 const sequelize = new Sequelize({
-	database: process.env.DB_NAME || 'postgres',
-	username: process.env.DB_USER || 'postgres',
-	password: process.env.DB_PASSWORD || 'toraha01',
+	database: 'postgres',
+	username: 'postgres',
+	password: 'toraha01',
 	dialect: 'postgres',
 	storage: 'db.postgres',
 	host: process.env.DB_HOST || 'localhost',
-	port: Number(process.env.DB_PORT || '5432'),
+	port: 5432,
 	repositoryMode: true,
 	logging: console.log,
 })

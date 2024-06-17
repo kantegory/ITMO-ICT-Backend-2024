@@ -1,40 +1,20 @@
 {
-	"include": ["app.ts", "src/**/*"],
+	"include": ["src/**/*"],
 	"exclude": ["node_modules", "lib"],
 	"compilerOptions": {
 		"module": "CommonJS",
+		"sourceMap": true,
 		"moduleResolution": "Node",
 		"esModuleInterop": true,
 		"lib": ["ES6"],
 		"target": "ES6",
-		"outDir": "./dist",
-		"rootDir": "./",
+		"outDir": "dist",
 		"baseUrl": "./",
-		"allowSyntheticDefaultImports": true,
-		"forceConsistentCasingInFileNames": true,
-		"useDefineForClassFields": true,
-		"skipLibCheck": true,
 
 		"experimentalDecorators": true,
 
-		"allowImportingTsExtensions": false,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"noEmit": true,
-
 		/* Strict Checks */
 		"strict": true,
-		"alwaysStrict": true,
-		"noImplicitAny": true,
-		"strictNullChecks": true,
-
-		/* Linter Checks */
-		"noPropertyAccessFromIndexSignature": false,
-		"noUncheckedIndexedAccess": true,
-
-		"noImplicitReturns": true,
-
-		/* Advanced */
-		"allowUnreachableCode": false
+		"alwaysStrict": true
 	}
 }

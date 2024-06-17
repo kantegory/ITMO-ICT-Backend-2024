@@ -2,11 +2,11 @@
 	"name": "app",
 	"version": "1.0.0",
 	"description": "",
-	"main": "app.ts",
+	"main": "./src/app.ts",
 	"scripts": {
-		"build": "npx tsc",
-		"start": "ts-node app.ts",
-		"dev": "nodemon app.ts"
+		"build": "npx tsc --build",
+		"start": "node ./dist/app.js",
+		"dev": "nodemon ./src/app.ts"
 	},
 	"author": "impsyn",
 	"dependencies": {

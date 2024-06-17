@@ -1,7 +1,7 @@
 import express from 'express'
 
-import sequelize from './src/config/sequelize.ts'
-import router from './src/routes/index.ts'
+import sequelize from './src/config/sequelize'
+import router from './src/routes/index'
 
 const PORT = Number(process.env.PORT) || 8000
 

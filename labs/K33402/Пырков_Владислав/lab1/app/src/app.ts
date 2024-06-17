@@ -1,8 +1,8 @@
 import express from 'express'
 
-import sequelize from './src/database/index'
-import authenticateToken from './src/middleware/authToken'
-import router from './src/routes/index'
+import sequelize from './database/index'
+import authenticateToken from './middleware/authToken'
+import router from './routes/index'
 
 const PORT = Number(process.env.PORT) || 5000
 

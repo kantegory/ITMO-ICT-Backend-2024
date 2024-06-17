@@ -5,7 +5,7 @@
 	"main": "index.ts",
 	"scripts": {
 		"build": "npx tsc",
-		"start": "ts-node index.ts",
+		"start": "node dist/index.js",
 		"dev": "nodemon index.ts"
 	},
 	"author": "impsyn",

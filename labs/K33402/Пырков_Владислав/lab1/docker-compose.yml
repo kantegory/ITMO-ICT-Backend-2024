@@ -39,12 +39,19 @@ services:
 
   postgres:
     image: postgres:16
+    restart: always
     environment:
       POSTGRES_DB: 'postgres'
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'toraha01'
     ports:
       - '5432:5432'
+    volumes:
+      - database_data:/var/lib/postgresql/data
+
+volumes:
+  database_data:
+    driver: local
 
 networks:
   mynetwork:
