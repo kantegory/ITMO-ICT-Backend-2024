@@ -18,4 +18,4 @@ jobs:
           mkdir -p ~/.ssh/ 
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key 
           chmod 600 ~/.ssh/private.key 
-          ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@89.208.222.44 whoami
+          ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@213.219.215.18 whoami
