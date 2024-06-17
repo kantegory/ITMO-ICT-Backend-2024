@@ -1,0 +1,27 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - lab-4
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+        echo "${{ secrets.vps_private_key }}" > "$HOME/.ssh/key"
+      - name: Setup
+        run: |
+          sudo apt-get update
+          mkdir "$HOME/.ssh"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$HOME/.ssh/key"
+          chmod 600 "$HOME/.ssh/key"
+
+      - name: Deploy to Remote Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@89.208.222.44 << 'EOF'
+            cd ITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/
+            git pull origin lab-4
+            docker-compose up --build -d
+          EOF

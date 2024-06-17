@@ -1,0 +1,7 @@
+node_modules
+.env
+
+package-lock.json
+
+postgres_auth
+postgres_main

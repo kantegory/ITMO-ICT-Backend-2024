@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  db_auth:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Tenerife1q2w3e
+      - POSTGRES_DB=db_auth
+    volumes:
+      - ./postgres_auth:/var/lib/postgresql/data
+    expose:
+      - 5432
+    restart: always
+
+  db_main:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Tenerife1q2w3e
+      - POSTGRES_DB=db_main
+    volumes:
+      - ./postgres_main:/var/lib/postgresql/data
+    expose:
+      - 5432
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq
+    expose:
+      - 5672
+
+  main:
+    build:
+      context: ./main
+      dockerfile: dockerfile
+    tty: true
+    command: sh -c "npx prisma migrate deploy && npm run dev"
+    env_file:
+      - ./main/.env
+    ports:
+      - 3000:3000
+    depends_on:
+      - db_main
+      - rabbitmq
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-d', 'db_main', '-p', '5432']
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+
+  auth:
+    build:
+      context: ./auth-service
+      dockerfile: dockerfile
+    tty: true
+    command: sh -c "npx prisma migrate deploy && npm run dev"
+    env_file:
+      - ./auth-service/.env
+    ports:
+      - 3001:3001
+    depends_on:
+      - db_auth
+      - rabbitmq
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-d', 'db_auth', '-p', '5432']
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
