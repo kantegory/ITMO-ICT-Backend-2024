@@ -1,0 +1,574 @@
+{
+	"info": {
+		"_postman_id": "a4c71128-ecd2-40dc-a26a-9b2bf1d0f238",
+		"name": "Shop and Auth API",
+		"description": "Документация API интернет-магазина",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36277802"
+	},
+	"item": [
+		{
+			"name": "Auth Service",
+			"item": [
+				{
+					"name": "User Registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Позволяет зарегистрировать нового пользователя, вернет ошибку, если пользователь уже существует"
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверка статуса ответа",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Проверка, что в ответе есть ключ \"token\" и что его значение является строкой",
+									"pm.test(\"Response contains token as a string\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"token\");",
+									"    pm.expect(jsonData.token).to.be.a(\"string\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "По username и паролю позволяет получить токен, который в дальнейшем можно использовать для авторизации"
+					},
+					"response": []
+				}
+			],
+			"description": "Документация к микросервису авторизаций"
+		},
+		{
+			"name": "Shop Service",
+			"item": [
+				{
+					"name": "Items",
+					"item": [
+						{
+							"name": "Create Item",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Проверка статуса ответа",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"// Получение данных запроса из body",
+											"let requestData;",
+											"",
+											"if (pm.request.body.mode === 'raw') {",
+											"    try {",
+											"        requestData = JSON.parse(pm.request.body.raw);",
+											"    } catch (e) {",
+											"        console.error(\"Request body is not a valid JSON\");",
+											"    }",
+											"}",
+											"",
+											"// Проверка полей в ответе",
+											"pm.test(\"Response contains correct fields\", function () {",
+											"    const jsonData = pm.response.json();",
+											"",
+											"    // Проверка, что поля ответа совпадают с полями запроса",
+											"    pm.expect(jsonData).to.have.property(\"name\", requestData.name);",
+											"    pm.expect(jsonData).to.have.property(\"price\", requestData.price);",
+											"    pm.expect(jsonData).to.have.property(\"stock\", requestData.stock);",
+											"",
+											"    // Проверка, что поля \"id\" и \"discount\" являются числами",
+											"    pm.expect(jsonData).to.have.property(\"id\").that.is.a(\"number\");",
+											"    pm.expect(jsonData).to.have.property(\"discount\").that.is.a(\"number\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Test Item\",\n    \"price\": 20.50,\n    \"stock\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/items",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"items"
+									]
+								},
+								"description": "Позволяет добавить новый товар в магазин"
+							},
+							"response": []
+						},
+						{
+							"name": "Modify Item",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Updated Test Item\",\n    \"price\": 25.00,\n    \"stock\": 80\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/items/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"items",
+										"1"
+									]
+								},
+								"description": "Позволяет изменить товар в магазине по id"
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Item",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/items/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"items",
+										"1"
+									]
+								},
+								"description": "Позволяет eудалить товар в магазине по id"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Item Stock",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/items/1/stock",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"items",
+										"1",
+										"stock"
+									]
+								},
+								"description": "Позволяет получить количество оставшихся предметов на складе"
+							},
+							"response": []
+						},
+						{
+							"name": "Apply Offer",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"discount\": 5.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/items/1/offer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"items",
+										"1",
+										"offer"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "CRUD для работы с предметами в магазине"
+				},
+				{
+					"name": "Order",
+					"item": [
+						{
+							"name": "Place Order",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": 1,\n    \"itemId\": 1,\n    \"quantity\": 2\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/order",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"order"
+									]
+								},
+								"description": "Позволяет произвести заказ"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Order History",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Проверка статуса ответа",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"// Проверка, что ответ является массивом",
+											"pm.test(\"Response is an array\", function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.be.an(\"array\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/order/history/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"order",
+										"history",
+										"1"
+									]
+								},
+								"description": "Позволяет получить историю заказов"
+							},
+							"response": []
+						}
+					],
+					"description": "Эндпоинты для работы с заказами"
+				},
+				{
+					"name": "Ratings",
+					"item": [
+						{
+							"name": "Add Rating",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemId\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great product!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/ratings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"ratings"
+									]
+								},
+								"description": "Позволяет оставить оценку на товар"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Ratings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/ratings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"ratings",
+										"1"
+									]
+								},
+								"description": "Позволяет получить оценки по id товара"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Rating",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"rating\": 4,\n    \"comment\": \"Updated comment\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/ratings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"ratings",
+										"1"
+									]
+								},
+								"description": "Позволяет изменить оценку товара от имени пользователя"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Rating",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:3000/api/ratings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"ratings",
+										"1"
+									]
+								},
+								"description": "Позволяет удалить оценку товара от имени пользователя"
+							},
+							"response": []
+						}
+					],
+					"description": "Эндпоинты для работы с рейтингом заказов"
+				}
+			],
+			"description": "Документация к микросервису магазина"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"// Проверка времени выполнения запроса",
+					"pm.test(\"Response time is less than 1 second\", function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+					"});",
+					""
+				]
+			}
+		}
+	]
+}
