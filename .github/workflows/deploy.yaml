@@ -8,16 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    name: Deploy
     steps:
-      - name: Setup
-        run: |
-          sudo apt-get update
-          mkdir "$HOME/.ssh"
-          chmod 700 "$HOME/.ssh"
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$HOME/.ssh/key"
-          chmod 600 "$HOME/.ssh/key"
-
-      - name: Deploy to Remote Server
-        run: |
-          ssh -i "$HOME/.ssh/key" -o StrictHostKeyChecking=no ubuntu@213.219.215.18 'cd /home/ubuntu/ITMO-ICT-Backend-2024 && git pull && cd /home/ubuntu/ITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/ && docker-compose up -d --build'
+      - run: mkdir -p ~/.ssh/
+      - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
+      - run: chmod 600 ~/.ssh/private.key
+      - run: ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@89.208.222.44 whoami
