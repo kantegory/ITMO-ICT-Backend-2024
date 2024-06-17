@@ -1,0 +1,107 @@
+# version: '3.8'
+# services:
+#   rabbitmq:
+#     image: rabbitmq:3-management
+#     ports:
+#       - "5672:5672"
+#       - "15672:15672"
+#     networks:
+#       - mynetwork
+
+#   auth-service:
+#     build:
+#       context: ./auth-service
+#       dockerfile: Dockerfile
+#     # volumes:
+#     #   - ./auth-service/db.sqlite:/app/db.sqlite
+#     depends_on:
+#       - rabbitmq
+#     networks:
+#       - mynetwork
+#     environment:
+#       - RABBITMQ_HOST=rabbitmq
+#       - PORT = 8001
+#     # working_dir: /app
+#     ports:
+#       - "8001:8001"
+
+#   product-service:
+#     build:
+#       context: ./product-service
+#       dockerfile: Dockerfile
+#     # volumes:
+#     #   - ./product-service/db.sqlite:/app/db.sqlite
+#     depends_on:
+#       - rabbitmq
+#     networks:
+#       - mynetwork
+#     environment:
+#       - RABBITMQ_HOST = rabbitmq
+#       - AUTH_SERVICE = http://auth-service:8001
+#     # working_dir: /app
+#     ports:
+#       - "8000:8000"
+
+# networks:
+#   mynetwork:
+#     driver: bridge
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+version: '3.0'
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - rabbitmq
+    environment:
+        PORT: 4000
+
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - "4001:4001"
+    depends_on:
+      - rabbitmq
+    environment:
+      PORT: 4001
+      AUTH_SERVICE: http://auth-service:4000
+
+  # gateway:
+  #   build:
+  #     context: ./deploy/gateway
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - product-service
+  #     - auth-service
+
+
+networks:
+  default:
+    name: my_network
