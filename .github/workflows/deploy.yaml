@@ -19,8 +19,4 @@ jobs:
 
       - name: Deploy to Remote Server
         run: |
-          ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/key ubuntu@89.208.222.44 << 'EOF'
-            cd ITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/
-            git pull origin lab-4
-            docker-compose up --build -d
-          EOF
+          ssh -i $HOME/.ssh/key ubuntu@89.208.222.44 'cd /home/ubuntu/ITMO-ICT-Backend-2024 && git pull && cd /home/ubuntuITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/ && docker-compose up -d --build'
