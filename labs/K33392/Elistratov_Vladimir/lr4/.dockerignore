@@ -1,0 +1,5 @@
+node_modules
+monolith/node_modules
+rating-service/node_modules
+user-auth-service/node_modules
+dist

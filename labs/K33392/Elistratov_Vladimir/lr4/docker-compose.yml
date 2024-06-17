@@ -1,0 +1,98 @@
+version: '3.9'
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  app-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: back-lr4-db-pg
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./volumes/app-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # rabbitmq:
+  #   image: rabbitmq:latest
+  #   expose:
+  #     - 9494
+
+  monolith:
+    build:
+      context: ./monolith
+      dockerfile: Dockerfile
+    ports:
+      - "9191:9191"
+    depends_on:
+      app-db:
+        condition: service_healthy
+      # rabbitmq:
+      #   condition: service_started
+    environment:
+      db_url: postgresql://postgres:admin@app-db:5432/back-lr4-db-pg
+      host: localhost
+      port: 9191
+      api_version: v1
+      auth_service_url: http://user-auth-service:9393/user-auth-service/v1/
+      rating_service_url: http://rating-service:9292/rating-service/v1/
+    volumes:
+      - ./monolith:/usr/src/monolith:cached
+      - /usr/src/monolith/node_modules
+    networks:
+      - app-network
+
+  rating-service:
+    build:
+      context: ./rating-service
+      dockerfile: Dockerfile
+    ports:
+      - "9292:9090"
+    depends_on:
+      app-db:
+        condition: service_healthy
+      # rabbitmq:
+      #   condition: service_started
+    environment:
+      db_url: postgresql://postgres:admin@app-db:5432/back-lr4-db-pg
+      host: localhost
+      port: 9292
+      api_version: v1
+    volumes:
+      - ./rating-service:/usr/src/rating-service:cached
+      - /usr/src/rating-service/node_modules
+    networks:
+      - app-network
+
+  user-auth-service:
+    build:
+      context: ./user-auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "9393:9090"
+    depends_on:
+      app-db:
+        condition: service_healthy
+      # rabbitmq:
+      #   condition: service_started
+    environment:
+      db_url: postgresql://postgres:admin@app-db:5432/back-lr4-db-pg
+      host: localhost
+      port: 9393
+      api_version: v1
+    volumes:
+      - ./user-auth-service:/usr/src/user-auth-service:cached
+      - /usr/src/user-auth-service/node_modules
+    networks:
+      - app-network
