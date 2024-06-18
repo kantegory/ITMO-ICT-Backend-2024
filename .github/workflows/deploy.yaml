@@ -18,6 +18,5 @@ jobs:
           sudo apt-get update 
           mkdir -p ~/.ssh/ 
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key 
-          ssh-keygen -l -f ~/.ssh/private.key
           chmod 600 ~/.ssh/private.key 
-          ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ubuntu@213.219.215.18 whoami
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private.key ubuntu@213.219.215.18 'cd /home/ubuntu/ITMO-ICT-Backend-2024 && git pull && cd /home/ubuntu/ITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/ && sudo docker compose up -d —build'
