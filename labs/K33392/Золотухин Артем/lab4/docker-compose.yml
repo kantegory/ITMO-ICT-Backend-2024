@@ -36,8 +36,6 @@ services:
       dockerfile: dockerfile
     tty: true
     command: sh -c "npx prisma migrate deploy && npm run dev"
-    env_file:
-      - ./main/.env
     ports:
       - 3000:3000
     depends_on:
@@ -56,8 +54,6 @@ services:
       dockerfile: dockerfile
     tty: true
     command: sh -c "npx prisma migrate deploy && npm run dev"
-    env_file:
-      - ./auth-service/.env
     ports:
       - 3001:3001
     depends_on:

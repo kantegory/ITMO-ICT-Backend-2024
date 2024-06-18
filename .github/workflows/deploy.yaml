@@ -13,10 +13,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 20.x
-      - name: Copyy
+      - name: Copy
         run: |
           sudo apt-get update 
           mkdir -p ~/.ssh/ 
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key 
           chmod 600 ~/.ssh/private.key 
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private.key ubuntu@213.219.215.18 'cd /home/ubuntu/ITMO-ICT-Backend-2024 && git pull && cd /home/ubuntu/ITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/ && sudo docker compose up -d —build'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private.key ubuntu@213.219.215.18 'cd /home/ubuntu/ITMO-ICT-Backend-2024 && git pull && cd /home/ubuntu/ITMO-ICT-Backend-2024/labs/K33392/Золотухин\ Артем/lab4/ && echo "${{ secrets.AUTH_SERVICE_ENV }}" > ./auth-service/.env  && echo "${{ secrets.MAIN_SERVICE_ENV }}" > ./main/.env  &&sudo docker compose up -d —build'
