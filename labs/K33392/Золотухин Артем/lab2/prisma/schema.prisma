@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  email        String       @unique
+  password     String
+  name         String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Teams        Team[]       @relation("TeamMembers")
+  UserProjects UserProject[]
+  Comments     Comment[]
+  Scores       Score[]
+}
+
+
+model Team {
+  id           Int          @id @default(autoincrement())
+  name         String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Members      User[]       @relation("TeamMembers")
+  Projects     Project[]
+}
+
+model Hackathon {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Projects     Project[]
+}
+
+model Project {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String
+  hackathonId  Int
+  TeamId       Int?
+  Team         Team?        @relation(fields: [TeamId], references: [id])
+  UserProjects UserProject[]
+  Comments     Comment[]
+  Scores       Score[]
+  Hackathon    Hackathon    @relation(fields: [hackathonId], references: [id])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model UserProject {
+  user        User         @relation(fields: [userId], references: [id])
+  userId      Int
+  project     Project      @relation(fields: [projectId], references: [id])
+  projectId   Int
+
+  @@id([userId, projectId])
+}
+
+model Score {
+  id          Int          @id @default(autoincrement())
+  projectId   Int
+  userId      Int
+  score       Int
+  createdAt   DateTime     @default(now())
+  Project     Project      @relation(fields: [projectId], references: [id])
+  User        User         @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id          Int          @id @default(autoincrement())
+  content     String
+  userId      Int
+  projectId   Int
+  createdAt   DateTime     @default(now())
+  User        User         @relation(fields: [userId], references: [id])
+  Project     Project      @relation(fields: [projectId], references: [id])
+}
